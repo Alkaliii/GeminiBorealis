@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=2]
+
+[node name="300line" type="RichTextLabel"]
+margin_right = 300.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "text here"
+text = "text here"
+scroll_active = false

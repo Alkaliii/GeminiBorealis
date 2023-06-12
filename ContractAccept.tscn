@@ -1,0 +1,62 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=1]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=2]
+[ext_resource path="res://ContractAcceptScript.gd" type="Script" id=3]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 225, 33, 30, 30 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "Flicker"
+length = 1.5
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.7, 1.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="ContractAccept" type="Button"]
+margin_right = 300.0
+margin_bottom = 22.0
+custom_fonts/font = ExtResource( 1 )
+text = "text here"
+icon = SubResource( 1 )
+flat = true
+align = 2
+icon_align = 2
+expand_icon = true
+script = ExtResource( 3 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Flicker = SubResource( 2 )
+anims/RESET = SubResource( 3 )
+
+[connection signal="pressed" from="." to="." method="_on_ContractAccept_pressed"]

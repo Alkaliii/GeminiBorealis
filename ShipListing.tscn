@@ -1,0 +1,266 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://Font/H1Default.tres" type="DynamicFont" id=1]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=2]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Font/H1Bold.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=7]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 289, 193, 30, 30 )
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.313726, 0.784314, 0.470588, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0, 0.501961, 0, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 1, 193, 30, 30 )
+
+[node name="Control" type="Control"]
+margin_right = 300.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 300, 130 )
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 300.0
+margin_bottom = 145.0
+rect_min_size = Vector2( 300, 0 )
+
+[node name="Title" type="RichTextLabel" parent="VBoxContainer"]
+margin_right = 300.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b]PROBE SATELLITE"
+text = "PROBE SATELLITE"
+scroll_active = false
+
+[node name="FRAME" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 34.0
+margin_right = 300.0
+margin_bottom = 42.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "FRAME_PROBE [b][0]"
+text = "FRAME_PROBE [0]"
+scroll_active = false
+
+[node name="REACTOR" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 46.0
+margin_right = 300.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "REACTOR_SOLAR_I [b][0]"
+text = "REACTOR_SOLAR_I [0]"
+scroll_active = false
+
+[node name="ENGINE" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 58.0
+margin_right = 300.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "ENGINE_IMPULSE_DRIVE_I [b][0]"
+text = "ENGINE_IMPULSE_DRIVE_I [0]"
+scroll_active = false
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+margin_top = 70.0
+margin_right = 300.0
+margin_bottom = 74.0
+
+[node name="Description" type="RichTextLabel" parent="VBoxContainer"]
+visible = false
+margin_top = 78.0
+margin_right = 300.0
+margin_bottom = 128.0
+rect_min_size = Vector2( 300, 50 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "A small, unmanned spacecraft used for exploration, reconnaissance, and scientific research."
+text = "A small, unmanned spacecraft used for exploration, reconnaissance, and scientific research."
+scroll_active = false
+
+[node name="Info" type="Button" parent="VBoxContainer"]
+margin_top = 78.0
+margin_right = 300.0
+margin_bottom = 100.0
+custom_fonts/font = ExtResource( 6 )
+text = "Details"
+icon = SubResource( 1 )
+flat = true
+align = 0
+icon_align = 2
+expand_icon = true
+
+[node name="ExtraDetails" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
+margin_top = 158.0
+margin_right = 300.0
+margin_bottom = 289.0
+
+[node name="ModSlot" type="RichTextLabel" parent="VBoxContainer/ExtraDetails"]
+margin_right = 300.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Module Slots: [b]0"
+text = "Module Slots: 0"
+scroll_active = false
+
+[node name="Modules" type="VBoxContainer" parent="VBoxContainer/ExtraDetails"]
+margin_top = 19.0
+margin_right = 300.0
+margin_bottom = 27.0
+
+[node name="Module" type="RichTextLabel" parent="VBoxContainer/ExtraDetails/Modules"]
+margin_right = 300.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]> MODULE"
+text = "> MODULE"
+scroll_active = false
+
+[node name="MouPoi" type="RichTextLabel" parent="VBoxContainer/ExtraDetails"]
+margin_top = 31.0
+margin_right = 300.0
+margin_bottom = 46.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Mounting Points: [b]0"
+text = "Mounting Points: 0"
+scroll_active = false
+
+[node name="Mounts" type="VBoxContainer" parent="VBoxContainer/ExtraDetails"]
+margin_top = 50.0
+margin_right = 300.0
+margin_bottom = 58.0
+
+[node name="Module" type="RichTextLabel" parent="VBoxContainer/ExtraDetails/Mounts"]
+margin_right = 300.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]> MOUNT"
+text = "> MOUNT"
+scroll_active = false
+
+[node name="FuelCap" type="RichTextLabel" parent="VBoxContainer/ExtraDetails"]
+margin_top = 62.0
+margin_right = 300.0
+margin_bottom = 77.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Fuel Capacity: [b]0"
+text = "Fuel Capacity: 0"
+scroll_active = false
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ExtraDetails"]
+margin_top = 81.0
+margin_right = 100.0
+margin_bottom = 85.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_horizontal = 0
+
+[node name="Power" type="RichTextLabel" parent="VBoxContainer/ExtraDetails"]
+margin_top = 89.0
+margin_right = 300.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Power: [b]0"
+text = "Power: 0"
+scroll_active = false
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/ExtraDetails"]
+margin_top = 108.0
+margin_right = 100.0
+margin_bottom = 112.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_horizontal = 0
+
+[node name="Speed" type="RichTextLabel" parent="VBoxContainer/ExtraDetails"]
+margin_top = 116.0
+margin_right = 300.0
+margin_bottom = 131.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Speed: [b]0"
+text = "Speed: 0"
+scroll_active = false
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+margin_top = 104.0
+margin_right = 300.0
+margin_bottom = 108.0
+
+[node name="Price" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 112.0
+margin_right = 300.0
+margin_bottom = 127.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[right][b] $69973"
+text = " $69973"
+scroll_active = false
+
+[node name="Buy" type="Button" parent="VBoxContainer"]
+margin_top = 131.0
+margin_right = 300.0
+margin_bottom = 147.0
+custom_fonts/font = ExtResource( 6 )
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 5 )
+custom_styles/normal = SubResource( 4 )
+text = "Purchase"
+icon = SubResource( 2 )
+align = 0
+icon_align = 2
+expand_icon = true

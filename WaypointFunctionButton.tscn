@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://sprite-action.png" type="Texture" id=2]
+[ext_resource path="res://WaypointActionScript.gd" type="Script" id=3]
+
+[sub_resource type="StyleBoxFlat" id=6]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 1, 0.74902, 0, 1 )
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id=5]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 25
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
+corner_radius_bottom_left = 25
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 33, 385, 30, 30 )
+
+[node name="WaypointAction" type="Button"]
+margin_right = 300.0
+margin_bottom = 22.0
+rect_min_size = Vector2( 300, 0 )
+size_flags_horizontal = 8
+custom_colors/font_color_focus = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0, 0, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 6 )
+custom_styles/normal = SubResource( 5 )
+text = "text here"
+icon = SubResource( 4 )
+align = 0
+icon_align = 2
+expand_icon = true
+script = ExtResource( 3 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[connection signal="pressed" from="." to="." method="_on_ContractAccept_pressed"]
