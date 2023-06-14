@@ -1,0 +1,712 @@
+[gd_scene load_steps=33 format=2]
+
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Interface/Theme.tres" type="Theme" id=2]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/H1Default.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Font/H1Bold.tres" type="DynamicFont" id=7]
+[ext_resource path="res://ViewSystem.gd" type="Script" id=8]
+[ext_resource path="res://Interface/Systems/WaypointBadge.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Interface/Systems/LoginScreen.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Interface/ClientMaster.gd" type="Script" id=11]
+[ext_resource path="res://Interface/WaypointInfoScript.gd" type="Script" id=12]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=13]
+[ext_resource path="res://Interface/ShipyardMarket/ShipPurchaseModule.tscn" type="PackedScene" id=14]
+[ext_resource path="res://Interface/ShopModule.gd" type="Script" id=15]
+[ext_resource path="res://WaypointArt/Assets.png" type="Texture" id=16]
+[ext_resource path="res://WaypointArt/Planet.png" type="Texture" id=17]
+[ext_resource path="res://Interface/ContractListScript.gd" type="Script" id=18]
+[ext_resource path="res://Interface/Ships/ViewShips.gd" type="Script" id=19]
+[ext_resource path="res://Interface/Ships/ShipStatusBadge.tscn" type="PackedScene" id=20]
+[ext_resource path="res://300line.tscn" type="PackedScene" id=21]
+[ext_resource path="res://Interface/Ships/ShipButton.tscn" type="PackedScene" id=22]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxLine" id=4]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+
+[sub_resource type="Theme" id=5]
+HScrollBar/styles/grabber = SubResource( 1 )
+HScrollBar/styles/grabber_highlight = SubResource( 2 )
+HScrollBar/styles/grabber_pressed = SubResource( 3 )
+HScrollBar/styles/scroll = SubResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 13 )
+region = Rect2( 65, 34, 30, 30 )
+
+[sub_resource type="StyleBoxLine" id=10]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=9]
+VScrollBar/styles/grabber = SubResource( 1 )
+VScrollBar/styles/grabber_highlight = SubResource( 2 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 10 )
+
+[node name="Node" type="Node"]
+script = ExtResource( 11 )
+
+[node name="Back" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.156863, 0.156863, 0.168627, 1 )
+
+[node name="SystemArt" type="Control" parent="Back"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="WayArt" type="TextureRect" parent="Back/SystemArt"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -600.0
+margin_top = -300.0
+margin_bottom = 300.0
+rect_pivot_offset = Vector2( 600, 300 )
+texture = ExtResource( 17 )
+
+[node name="TextureRect" type="TextureRect" parent="Back/SystemArt"]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 16 )
+
+[node name="MenuBack" type="ColorRect" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -640.0
+margin_top = -50.0
+margin_right = 640.0
+color = Color( 0.109804, 0.109804, 0.117647, 1 )
+
+[node name="StatusBack" type="ColorRect" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -640.0
+margin_right = 640.0
+margin_bottom = 20.0
+color = Color( 0.243137, 0.243137, 0.25098, 1 )
+
+[node name="GB" type="RichTextLabel" parent="StatusBack"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 15.0
+margin_top = -4.0
+margin_right = 215.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][b]GEMINI BOREALIS"
+text = "GEMINI BOREALIS"
+scroll_active = false
+
+[node name="Details" type="RichTextLabel" parent="StatusBack"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -515.0
+margin_top = -4.0
+margin_right = -15.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 500, 0 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[right][b][USER]:[/b] GEMINI_THREE[color=#69696b]([b]OMEGA[/b])[/color] | [b][CREDITS]:[/b] 150000"
+text = "[USER]: GEMINI_THREE(OMEGA) | [CREDITS]: 150000"
+scroll_active = false
+
+[node name="MainWindow" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -1280.0
+margin_right = 1280.0
+margin_bottom = -50.0
+rect_min_size = Vector2( 0, 550 )
+custom_constants/separation = 0
+
+[node name="Systems" type="Control" parent="MainWindow"]
+margin_top = 25.0
+margin_right = 1280.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 1280, 525 )
+size_flags_vertical = 8
+
+[node name="ViewSystem" type="VBoxContainer" parent="MainWindow/Systems"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -610.0
+margin_top = -69.0
+margin_right = 610.0
+grow_vertical = 0
+rect_min_size = Vector2( 1220, 0 )
+script = ExtResource( 8 )
+waypointInfo = NodePath("../WaypointInfo")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="MainWindow/Systems/ViewSystem"]
+use_threads = true
+
+[node name="Actions" type="HBoxContainer" parent="MainWindow/Systems/ViewSystem"]
+margin_right = 1220.0
+alignment = 2
+
+[node name="Label" type="RichTextLabel" parent="MainWindow/Systems/ViewSystem"]
+margin_top = 4.0
+margin_right = 1220.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "Current System:[b]"
+text = "Current System:"
+scroll_active = false
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Systems/ViewSystem"]
+margin_top = 23.0
+margin_right = 1220.0
+margin_bottom = 73.0
+rect_min_size = Vector2( 0, 50 )
+theme = SubResource( 5 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Systems/ViewSystem/ScrollContainer"]
+
+[node name="WaypointInfo" type="VBoxContainer" parent="MainWindow/Systems"]
+margin_left = 30.0
+margin_right = 492.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 462, 0 )
+size_flags_horizontal = 4
+script = ExtResource( 12 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Systems/WaypointInfo"]
+margin_right = 462.0
+margin_bottom = 30.0
+
+[node name="WaypointBadge" parent="MainWindow/Systems/WaypointInfo/HBoxContainer" instance=ExtResource( 9 )]
+margin_top = 5.0
+margin_bottom = 25.0
+
+[node name="Title" type="RichTextLabel" parent="MainWindow/Systems/WaypointInfo/HBoxContainer"]
+margin_left = 164.0
+margin_right = 462.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+size_flags_horizontal = 3
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]X1-KS52-23717D"
+text = "X1-KS52-23717D"
+scroll_active = false
+
+[node name="Traits" type="RichTextLabel" parent="MainWindow/Systems/WaypointInfo"]
+margin_top = 34.0
+margin_right = 462.0
+margin_bottom = 42.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495][MILITARY_BASE, MARKETPLACE, SHIPYARD]"
+text = "[MILITARY_BASE, MARKETPLACE, SHIPYARD]"
+scroll_active = false
+
+[node name="HSeparator" type="HSeparator" parent="MainWindow/Systems/WaypointInfo"]
+margin_top = 46.0
+margin_right = 462.0
+margin_bottom = 50.0
+
+[node name="Description" type="RichTextLabel" parent="MainWindow/Systems/WaypointInfo"]
+margin_top = 54.0
+margin_right = 462.0
+margin_bottom = 114.0
+rect_min_size = Vector2( 0, 60 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "text here"
+text = "text here"
+scroll_active = false
+
+[node name="Details" type="RichTextLabel" parent="MainWindow/Systems/WaypointInfo"]
+margin_top = 118.0
+margin_right = 462.0
+margin_bottom = 126.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495][right][b][wave]OMEGA"
+text = "OMEGA"
+scroll_active = false
+
+[node name="Actions" type="VBoxContainer" parent="MainWindow/Systems/WaypointInfo"]
+margin_top = 130.0
+margin_right = 462.0
+margin_bottom = 130.0
+
+[node name="Shop" type="HBoxContainer" parent="MainWindow/Systems"]
+margin_left = 30.0
+margin_top = 140.0
+margin_right = 528.0
+margin_bottom = 244.0
+script = ExtResource( 15 )
+
+[node name="Buttons" type="VBoxContainer" parent="MainWindow/Systems/Shop"]
+visible = false
+margin_right = 32.0
+margin_bottom = 104.0
+
+[node name="Button" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
+margin_right = 32.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 8 )
+align = 2
+icon_align = 1
+
+[node name="Button2" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
+margin_top = 36.0
+margin_right = 32.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 8 )
+align = 2
+icon_align = 1
+
+[node name="Button3" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
+margin_top = 72.0
+margin_right = 32.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 8 )
+align = 2
+icon_align = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Systems/Shop"]
+margin_right = 520.0
+margin_bottom = 280.0
+rect_min_size = Vector2( 520, 280 )
+theme = SubResource( 9 )
+
+[node name="Items" type="VBoxContainer" parent="MainWindow/Systems/Shop/ScrollContainer"]
+margin_right = 462.0
+margin_bottom = 340.0
+custom_constants/separation = 20
+
+[node name="ShipPurchase" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 462.0
+margin_bottom = 40.0
+
+[node name="ShipPurchase2" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 60.0
+margin_right = 462.0
+margin_bottom = 100.0
+
+[node name="ShipPurchase3" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 120.0
+margin_right = 462.0
+margin_bottom = 160.0
+
+[node name="ShipPurchase4" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 180.0
+margin_right = 462.0
+margin_bottom = 220.0
+
+[node name="ShipPurchase5" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 240.0
+margin_right = 462.0
+margin_bottom = 280.0
+
+[node name="ShipPurchase6" parent="MainWindow/Systems/Shop/ScrollContainer/Items" instance=ExtResource( 14 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 300.0
+margin_right = 462.0
+margin_bottom = 340.0
+
+[node name="Ships" type="Control" parent="MainWindow"]
+margin_left = 1280.0
+margin_top = 25.0
+margin_right = 2560.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 1280, 525 )
+size_flags_vertical = 8
+
+[node name="ViewShips" type="VBoxContainer" parent="MainWindow/Ships"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -610.0
+margin_top = -69.0
+margin_right = 610.0
+grow_vertical = 0
+rect_min_size = Vector2( 1220, 0 )
+script = ExtResource( 19 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="MainWindow/Ships/ViewShips"]
+use_threads = true
+
+[node name="Actions" type="HBoxContainer" parent="MainWindow/Ships/ViewShips"]
+margin_right = 1220.0
+alignment = 2
+
+[node name="Label" type="RichTextLabel" parent="MainWindow/Ships/ViewShips"]
+margin_top = 4.0
+margin_right = 1220.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[b]YOUR[/b] Fleet"
+text = "YOUR Fleet"
+scroll_active = false
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Ships/ViewShips"]
+margin_top = 23.0
+margin_right = 1220.0
+margin_bottom = 73.0
+rect_min_size = Vector2( 0, 50 )
+theme = SubResource( 5 )
+scroll_vertical_enabled = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Ships/ViewShips/ScrollContainer"]
+margin_right = 1516.0
+margin_bottom = 40.0
+size_flags_horizontal = 8
+alignment = 2
+
+[node name="ShipButton" parent="MainWindow/Ships/ViewShips/ScrollContainer/HBoxContainer" instance=ExtResource( 22 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 300.0
+margin_bottom = 40.0
+
+[node name="ShipButton2" parent="MainWindow/Ships/ViewShips/ScrollContainer/HBoxContainer" instance=ExtResource( 22 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 304.0
+margin_right = 604.0
+margin_bottom = 40.0
+
+[node name="ShipButton3" parent="MainWindow/Ships/ViewShips/ScrollContainer/HBoxContainer" instance=ExtResource( 22 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 608.0
+margin_right = 908.0
+margin_bottom = 40.0
+
+[node name="ShipButton4" parent="MainWindow/Ships/ViewShips/ScrollContainer/HBoxContainer" instance=ExtResource( 22 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 912.0
+margin_right = 1212.0
+margin_bottom = 40.0
+
+[node name="ShipButton5" parent="MainWindow/Ships/ViewShips/ScrollContainer/HBoxContainer" instance=ExtResource( 22 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 1216.0
+margin_right = 1516.0
+margin_bottom = 40.0
+
+[node name="Control" type="Control" parent="MainWindow/Ships"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 30.0
+margin_top = -20.5
+margin_right = 70.0
+margin_bottom = 19.5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Ships/Control"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 250, 92 )
+
+[node name="ShipType" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
+margin_right = 424.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "INTERCEPTOR"
+text = "INTERCEPTOR"
+scroll_active = false
+
+[node name="ShipName" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
+margin_top = 34.0
+margin_right = 424.0
+margin_bottom = 42.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "GEMINI_THREE-3"
+text = "GEMINI_THREE-3"
+scroll_active = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Ships/Control/VBoxContainer"]
+margin_top = 46.0
+margin_right = 424.0
+margin_bottom = 61.0
+
+[node name="ShipStatusBadge" parent="MainWindow/Ships/Control/VBoxContainer/HBoxContainer" instance=ExtResource( 20 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 120.0
+margin_bottom = 15.0
+
+[node name="300line" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer/HBoxContainer"]
+margin_left = 124.0
+margin_right = 424.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "-> PLANET X"
+text = "-> PLANET X"
+scroll_active = false
+
+[node name="300line" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
+margin_top = 65.0
+margin_right = 424.0
+margin_bottom = 73.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]/// FLIGHT MODE: [b]CRUISE"
+text = "/// FLIGHT MODE: CRUISE"
+scroll_active = false
+
+[node name="300line2" parent="MainWindow/Ships/Control/VBoxContainer" instance=ExtResource( 21 )]
+margin_top = 77.0
+margin_right = 424.0
+margin_bottom = 92.0
+bbcode_text = "TRANSIT TIME: 00:00"
+text = "TRANSIT TIME: 00:00"
+
+[node name="Agent" type="Control" parent="MainWindow"]
+margin_left = 2560.0
+margin_top = 25.0
+margin_right = 3840.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 1280, 525 )
+size_flags_vertical = 8
+
+[node name="Contracts" type="VBoxContainer" parent="MainWindow/Agent"]
+margin_left = 30.0
+margin_top = 140.0
+margin_right = 70.0
+margin_bottom = 180.0
+rect_min_size = Vector2( 400, 0 )
+script = ExtResource( 18 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="MainWindow/Agent/Contracts"]
+use_threads = true
+
+[node name="Contracts" type="RichTextLabel" parent="MainWindow/Agent/Contracts"]
+margin_right = 400.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 300, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[b]CONTRACTS"
+text = "CONTRACTS"
+scroll_active = false
+
+[node name="Button" type="Button" parent="MainWindow/Agent/Contracts"]
+margin_top = 12.0
+margin_right = 400.0
+margin_bottom = 34.0
+custom_fonts/font = ExtResource( 4 )
+text = "Refresh"
+flat = true
+
+[node name="HSeparator" type="HSeparator" parent="MainWindow/Agent/Contracts"]
+margin_top = 38.0
+margin_right = 400.0
+margin_bottom = 42.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Agent/Contracts"]
+margin_left = 10.0
+margin_top = 46.0
+margin_right = 400.0
+margin_bottom = 246.0
+rect_min_size = Vector2( 390, 200 )
+size_flags_horizontal = 8
+theme = SubResource( 9 )
+scroll_horizontal_enabled = false
+
+[node name="List" type="VBoxContainer" parent="MainWindow/Agent/Contracts/ScrollContainer"]
+custom_constants/separation = 10
+
+[node name="MainMenu" type="HBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -640.0
+margin_top = -45.0
+margin_right = 640.0
+margin_bottom = -5.0
+rect_min_size = Vector2( 1280, 40 )
+alignment = 1
+
+[node name="Systems" type="Button" parent="MainMenu"]
+margin_left = 186.0
+margin_right = 486.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 300, 0 )
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "SYSTEM"
+flat = true
+expand_icon = true
+
+[node name="Ships" type="Button" parent="MainMenu"]
+margin_left = 490.0
+margin_right = 790.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 300, 0 )
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "SHIPS"
+flat = true
+expand_icon = true
+
+[node name="Agent" type="Button" parent="MainMenu"]
+margin_left = 794.0
+margin_right = 1094.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 300, 0 )
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "AGENT"
+flat = true
+expand_icon = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Login" parent="CanvasLayer" instance=ExtResource( 10 )]
+
+[node name="Logout" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -75.0
+margin_top = -46.0
+margin_right = -15.0
+margin_bottom = -6.0
+custom_colors/font_color = Color( 0.411765, 0.411765, 0.419608, 1 )
+custom_colors/font_color_hover = Color( 0.823529, 0.168627, 0.168627, 1 )
+custom_fonts/font = ExtResource( 1 )
+text = "LOGOUT"
+flat = true
+icon_align = 2
+expand_icon = true
+
+[connection signal="pressed" from="MainWindow/Agent/Contracts/Button" to="MainWindow/Agent/Contracts" method="_on_Button_pressed"]
+[connection signal="pressed" from="MainMenu/Systems" to="." method="_on_Systems_pressed"]
+[connection signal="pressed" from="MainMenu/Ships" to="." method="_on_Ships_pressed"]
+[connection signal="pressed" from="MainMenu/Agent" to="." method="_on_Agent_pressed"]
+[connection signal="pressed" from="Logout" to="." method="_on_Button_pressed"]

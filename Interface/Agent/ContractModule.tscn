@@ -1,0 +1,159 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=1]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Interface/Agent/ContractModuleScript.gd" type="Script" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxFlat" id=8]
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.254902, 0.411765, 0.882353, 1 )
+
+[sub_resource type="StyleBoxFlat" id=9]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="Theme" id=6]
+Button/styles/focus = SubResource( 7 )
+Button/styles/hover = SubResource( 8 )
+Button/styles/normal = SubResource( 5 )
+Button/styles/pressed = SubResource( 9 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 1, 97, 30, 30 )
+
+[node name="ContractModule" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -936.0
+margin_bottom = -548.0
+rect_min_size = Vector2( 344, 52 )
+size_flags_horizontal = 0
+script = ExtResource( 6 )
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+use_threads = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 344, 52 )
+size_flags_horizontal = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 344.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 344, 40 )
+size_flags_horizontal = 0
+
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_top = 4.0
+margin_right = 32.0
+margin_bottom = 36.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = SubResource( 6 )
+custom_fonts/font = ExtResource( 3 )
+icon = SubResource( 3 )
+align = 0
+icon_align = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 36.0
+margin_top = 5.0
+margin_right = 344.0
+margin_bottom = 35.0
+rect_min_size = Vector2( 304, 30 )
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 308.0
+margin_bottom = 8.0
+
+[node name="Type" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_right = 100.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 100, 8 )
+size_flags_vertical = 0
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]PROCUREMENT"
+text = "PROCUREMENT"
+scroll_active = false
+
+[node name="Faction" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 104.0
+margin_right = 204.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 100, 8 )
+size_flags_vertical = 0
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]COSMIC"
+text = "COSMIC"
+scroll_active = false
+
+[node name="Reward" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+margin_left = 208.0
+margin_right = 308.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 100, 8 )
+size_flags_vertical = 0
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[right]$999999999"
+text = "$999999999"
+scroll_active = false
+
+[node name="Deliverable" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+visible = false
+margin_top = 12.0
+margin_right = 308.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[b]MODULE_SHIELD_GENERATOR_II[/b][color=#949495](10000)"
+text = "MODULE_SHIELD_GENERATOR_II(10000)"
+scroll_active = false
+
+[node name="DeliverableList" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 12.0
+margin_right = 308.0
+margin_bottom = 12.0
+
+[node name="Deadline" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 44.0
+margin_right = 344.0
+margin_bottom = 52.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495][right]Due: tomorrow"
+text = "Due: tomorrow"
+scroll_active = false
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Button" to="." method="_on_Button_pressed"]

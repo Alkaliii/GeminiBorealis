@@ -130,9 +130,9 @@ scroll_active = false
 
 [node name="ContractList" type="VBoxContainer" parent="."]
 margin_left = 30.0
-margin_top = 200.0
+margin_top = 130.0
 margin_right = 330.0
-margin_bottom = 259.0
+margin_bottom = 189.0
 script = ExtResource( 6 )
 
 [node name="HTTPRequest" type="HTTPRequest" parent="ContractList"]

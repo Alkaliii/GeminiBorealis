@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Interface/Ships/ShipStatusBadge.gd" type="Script" id=2]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="ShipStatusBadge" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1160.0
+margin_bottom = -585.0
+rect_min_size = Vector2( 120, 15 )
+size_flags_vertical = 4
+script = ExtResource( 2 )
+sns = "IN_ORBIT"
+
+[node name="Panel" type="Panel" parent="."]
+self_modulate = Color( 0.776471, 0.168627, 0.411765, 1 )
+margin_right = 120.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 120, 15 )
+custom_styles/panel = SubResource( 1 )
+
+[node name="Status" type="RichTextLabel" parent="Panel"]
+self_modulate = Color( 0.929412, 0.956863, 1, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -50.0
+margin_top = -4.0
+margin_right = 50.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[center][b]IN_TRANSIT"
+text = "IN_TRANSIT"
+scroll_active = false

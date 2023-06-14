@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Interface/Systems/WaypointBadgeScript.gd" type="Script" id=3]
+
+[sub_resource type="Theme" id=1]
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="WaypointBadge" type="Control"]
+margin_right = 160.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 160, 20 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource( 3 )
+wpt = "NEBULA"
+
+[node name="Panel" type="Panel" parent="."]
+self_modulate = Color( 0.752941, 0.14902, 0.827451, 1 )
+margin_right = 160.0
+margin_bottom = 20.0
+theme = SubResource( 1 )
+custom_styles/panel = SubResource( 2 )
+
+[node name="Waypoint" type="RichTextLabel" parent="Panel"]
+self_modulate = Color( 0.992157, 0.956863, 1, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -60.0
+margin_top = -8.0
+margin_right = 60.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 120, 16 )
+custom_colors/default_color = Color( 1, 1, 1, 1 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[center][b]ORBITAL_STATION"
+text = "ORBITAL_STATION"
+scroll_active = false

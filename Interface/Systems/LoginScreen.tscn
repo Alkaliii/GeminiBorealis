@@ -1,0 +1,456 @@
+[gd_scene load_steps=19 format=2]
+
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=2]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=3]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Interface/Systems/LoginScreen.gd" type="Script" id=6]
+[ext_resource path="res://Interface/Systems/RegisterationModule.gd" type="Script" id=7]
+[ext_resource path="res://Interface/Systems/LoginMaster.gd" type="Script" id=8]
+
+[sub_resource type="StyleBoxEmpty" id=10]
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 3 )
+region = Rect2( 161, 161, 30, 30 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 1, 1, 1, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 3 )
+region = Rect2( 65, 34, 30, 30 )
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 3 )
+region = Rect2( 289, 130, 30, 30 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "Out"
+tracks/0/type = "value"
+tracks/0/path = NodePath("HBoxContainer:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 2, 4 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 1300, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Back:rect_position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.1, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( -1300, 0 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("HBoxContainer:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Back:rect_position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ) ]
+}
+
+[node name="Login" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 640, 300 )
+script = ExtResource( 8 )
+
+[node name="Back" type="ColorRect" parent="."]
+margin_right = 1280.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 1280, 600 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color( 0.156863, 0.156863, 0.168627, 1 )
+
+[node name="MenuBack" type="ColorRect" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -640.0
+margin_top = -50.0
+margin_right = 640.0
+color = Color( 0.109804, 0.109804, 0.117647, 1 )
+
+[node name="Swap" type="Button" parent="MenuBack"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -89.0
+margin_top = -45.0
+margin_right = -15.0
+margin_bottom = -5.0
+rect_min_size = Vector2( 74, 40 )
+rect_pivot_offset = Vector2( 74, 0 )
+custom_colors/font_color = Color( 0.411765, 0.411765, 0.419608, 1 )
+custom_colors/font_color_hover = Color( 1, 0.74902, 0, 1 )
+custom_fonts/font = ExtResource( 1 )
+custom_styles/focus = SubResource( 10 )
+text = "REGISTER"
+flat = true
+icon_align = 2
+expand_icon = true
+
+[node name="StatusBack" type="ColorRect" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -640.0
+margin_right = 640.0
+margin_bottom = 20.0
+color = Color( 0.243137, 0.243137, 0.25098, 1 )
+
+[node name="GB" type="RichTextLabel" parent="StatusBack"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_left = 15.0
+margin_top = -4.0
+margin_right = 215.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][b]GEMINI BOREALIS"
+text = "GEMINI BOREALIS"
+scroll_active = false
+
+[node name="Details" type="RichTextLabel" parent="StatusBack"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -515.0
+margin_top = -4.0
+margin_right = -15.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 500, 0 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[right][b]...[/b]"
+text = "..."
+scroll_active = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_right = 1280.0
+margin_bottom = 550.0
+custom_constants/separation = 0
+
+[node name="Login" type="CenterContainer" parent="HBoxContainer"]
+margin_right = 640.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 640, 0 )
+
+[node name="Register" type="VBoxContainer" parent="HBoxContainer/Login"]
+visible = false
+margin_left = 170.0
+margin_top = 203.0
+margin_right = 470.0
+margin_bottom = 346.0
+rect_min_size = Vector2( 300, 0 )
+script = ExtResource( 7 )
+control = NodePath("../../..")
+anim = NodePath("../../../AnimationPlayer")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="HBoxContainer/Login/Register"]
+use_threads = true
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Login/Register"]
+margin_left = 135.0
+margin_right = 165.0
+margin_bottom = 30.0
+size_flags_horizontal = 4
+texture = SubResource( 9 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Login/Register"]
+margin_top = 34.0
+margin_right = 300.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b][center]REGISTRATION"
+text = "REGISTRATION"
+scroll_active = false
+
+[node name="Symbol" type="LineEdit" parent="HBoxContainer/Login/Register"]
+margin_top = 53.0
+margin_right = 300.0
+margin_bottom = 77.0
+rect_min_size = Vector2( 0, 24 )
+custom_fonts/font = ExtResource( 5 )
+custom_styles/normal = SubResource( 1 )
+secret_character = "+"
+placeholder_text = "SYMBOL"
+caret_blink = true
+
+[node name="Faction" type="LineEdit" parent="HBoxContainer/Login/Register"]
+margin_top = 81.0
+margin_right = 300.0
+margin_bottom = 105.0
+rect_min_size = Vector2( 0, 24 )
+custom_fonts/font = ExtResource( 5 )
+custom_styles/normal = SubResource( 1 )
+secret_character = "+"
+placeholder_text = "FACTION"
+caret_blink = true
+
+[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Register"]
+margin_top = 109.0
+margin_right = 300.0
+margin_bottom = 117.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][b]COSMIC/VOID/ASTRO/AEGIS/OMEGA/ECHO/CULT"
+text = "COSMIC/VOID/ASTRO/AEGIS/OMEGA/ECHO/CULT"
+scroll_active = false
+
+[node name="Button" type="Button" parent="HBoxContainer/Login/Register"]
+margin_top = 121.0
+margin_right = 300.0
+margin_bottom = 143.0
+custom_fonts/font = ExtResource( 5 )
+text = "REGISTER"
+flat = true
+align = 2
+icon_align = 2
+expand_icon = true
+
+[node name="Login" type="VBoxContainer" parent="HBoxContainer/Login"]
+margin_left = 170.0
+margin_top = 156.0
+margin_right = 470.0
+margin_bottom = 393.0
+rect_min_size = Vector2( 300, 0 )
+script = ExtResource( 6 )
+control = NodePath("../../..")
+anim = NodePath("../../../AnimationPlayer")
+USER1TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiR0VNSU5JX1RIUkVFIiwidmVyc2lvbiI6InYyIiwicmVzZXRfZGF0ZSI6IjIwMjMtMDYtMTAiLCJpYXQiOjE2ODY0NzA3NzAsInN1YiI6ImFnZW50LXRva2VuIn0.S9y4Ja9nBxhsaNrRBRayDHz9HZHR_pu8eFGMgeP9Ob4XK6Ns2qG3pG3UmDmnbGhuyh5iRDN1qGoaIj-_dX2ash97uyCvdZqutrWOdsCfhzi8V2FHNKjd0GgZ2PiLc_-PusiV4ZGKJzRnwCSA8kzZVKKxYdxGTQphk900o2798snIYHQrYdqq2OLHstQxjjeWrr4IgHthRvS_NiNNEAtxaLML5nTyS0vyvxgdRBM4sn3Qf7wSm498qwS8SKX3XuAbtBgT9xCv7ee-jEq17DlhKtAOgW9FoM_8KAgyL_iAjQ3AlbGHzmLyV058PL_bBMbmEpbFVJ1jwlisdCdweqHB5Q"
+USER2TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiS0VMUFRPTUFOSUMiLCJ2ZXJzaW9uIjoidjIiLCJyZXNldF9kYXRlIjoiMjAyMy0wNi0xMCIsImlhdCI6MTY4NjYwNDQ1Mywic3ViIjoiYWdlbnQtdG9rZW4ifQ.WjaCzr6AecdWTn8lDA988kmMhABD674klrqymUU5jnw3TMu6905LiHtJPKdy9CQ_sLcRbxWsLiqivp9_7HEwlX5L2-WevgifgRtpgSRBZ6ZURfIz-t6oLe2nh3XKXfNHEK_WWE3ZSIV87Yd-1RkcxfnBPQ-YBBTC4uYWPHgSn5DeN7XSVluMfr86h2XiLPQ1mxaupIikkcn8eq2tKb5UZjl6zhrxqJX8htK2ZSJGYM72c6exb1yY8NMH3WU_Lyw8Klt1N3NFLsLi64B0EZBUctQ6XKJkrVcqyU8YyDIt42yJWIjWYLCJ311wALkrXf8-Vk590cSqBqGnFs44syAZqw"
+
+[node name="HTTPRequest" type="HTTPRequest" parent="HBoxContainer/Login/Login"]
+use_threads = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Login/Login"]
+margin_right = 300.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 0, 130 )
+alignment = 1
+
+[node name="Button" type="Button" parent="HBoxContainer/Login/Login/HBoxContainer"]
+margin_left = 68.0
+margin_right = 148.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 80, 100 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 5 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 5 )
+align = 2
+icon_align = 1
+
+[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Login/HBoxContainer/Button"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -35.0
+margin_top = -16.0
+margin_right = 35.0
+margin_bottom = -8.0
+rect_min_size = Vector2( 70, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[b][center]GEMINI"
+text = "GEMINI"
+scroll_active = false
+
+[node name="Button2" type="Button" parent="HBoxContainer/Login/Login/HBoxContainer"]
+margin_left = 152.0
+margin_right = 232.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 80, 100 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 5 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 8 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 5 )
+align = 2
+icon_align = 1
+
+[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Login/HBoxContainer/Button2"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -35.0
+margin_top = -16.0
+margin_right = 35.0
+margin_bottom = -8.0
+rect_min_size = Vector2( 70, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[b][center]KELPTO"
+text = "KELPTO"
+scroll_active = false
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Login/Login"]
+margin_left = 135.0
+margin_top = 134.0
+margin_right = 165.0
+margin_bottom = 164.0
+size_flags_horizontal = 4
+texture = SubResource( 2 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
+margin_top = 168.0
+margin_right = 300.0
+margin_bottom = 183.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]TOKEN"
+text = "TOKEN"
+scroll_active = false
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/Login/Login"]
+margin_top = 187.0
+margin_right = 300.0
+margin_bottom = 211.0
+rect_min_size = Vector2( 0, 24 )
+custom_fonts/font = ExtResource( 5 )
+custom_styles/normal = SubResource( 1 )
+secret = true
+secret_character = "+"
+caret_blink = true
+
+[node name="Button" type="Button" parent="HBoxContainer/Login/Login"]
+margin_top = 215.0
+margin_right = 300.0
+margin_bottom = 237.0
+custom_fonts/font = ExtResource( 5 )
+text = "LOGIN"
+flat = true
+align = 2
+icon_align = 2
+expand_icon = true
+
+[node name="User" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
+visible = false
+margin_top = 71.0
+margin_right = 300.0
+margin_bottom = 86.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b][User]:[/b]"
+text = "[User]:"
+scroll_active = false
+
+[node name="Faction" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
+visible = false
+margin_top = 90.0
+margin_right = 300.0
+margin_bottom = 105.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b][Credits]:[/b]"
+text = "[Credits]:"
+scroll_active = false
+
+[node name="Credits" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
+visible = false
+margin_top = 90.0
+margin_right = 300.0
+margin_bottom = 105.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b][Credits]:[/b]"
+text = "[Credits]:"
+scroll_active = false
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer"]
+margin_left = 640.0
+margin_right = 1280.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 640, 0 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Out = SubResource( 3 )
+anims/RESET = SubResource( 4 )
+
+[connection signal="pressed" from="MenuBack/Swap" to="." method="_on_Swap_pressed"]
+[connection signal="pressed" from="HBoxContainer/Login/Register/Button" to="HBoxContainer/Login/Register" method="_on_Button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Login/Login/HBoxContainer/Button" to="HBoxContainer/Login/Login" method="_on_USER1Button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Login/Login/HBoxContainer/Button2" to="HBoxContainer/Login/Login" method="_on_USER2Button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Login/Login/Button" to="HBoxContainer/Login/Login" method="_on_Button_pressed"]

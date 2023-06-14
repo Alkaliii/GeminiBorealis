@@ -1,0 +1,214 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Interface/ResourceMarket/MarketItemModuleScript.gd" type="Script" id=5]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=6]
+
+[sub_resource type="StreamTexture" id=7]
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 15.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+border_width_right = 16
+border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+
+[sub_resource type="StreamTexture" id=5]
+
+[sub_resource type="StreamTexture" id=10]
+
+[sub_resource type="StyleBoxFlat" id=4]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 5.0
+expand_margin_right = 5.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Theme" id=3]
+default_font = ExtResource( 4 )
+OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
+OptionButton/icons/arrow = SubResource( 7 )
+OptionButton/styles/focus = null
+OptionButton/styles/hover = SubResource( 2 )
+OptionButton/styles/normal = SubResource( 2 )
+OptionButton/styles/pressed = SubResource( 2 )
+PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+PopupMenu/icons/radio_checked = SubResource( 5 )
+PopupMenu/icons/radio_unchecked = SubResource( 10 )
+PopupMenu/styles/panel = SubResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=11]
+bg_color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=13]
+bg_color = Color( 0.25098, 0.709804, 0.678431, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=12]
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 1, 1, 1, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 225, 34, 30, 30 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 6 )
+region = Rect2( 449, 193, 30, 30 )
+
+[node name="MarketItemModule" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 300, 40 )
+script = ExtResource( 5 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 418.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 27 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_right = 250.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 27 )
+
+[node name="Supply" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_right = 250.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 250, 8 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[b]ABUNDANT"
+text = "ABUNDANT"
+scroll_active = false
+
+[node name="TradeGood" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
+margin_top = 12.0
+margin_right = 250.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "MODULE_MINERAL_PROCESSOR_I"
+text = "MODULE_MINERAL_PROCESSOR_I"
+scroll_active = false
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+margin_left = 254.0
+margin_right = 418.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 0, 20 )
+custom_constants/separation = 0
+alignment = 1
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+margin_top = 3.0
+margin_right = 90.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 90, 20 )
+size_flags_vertical = 4
+theme = SubResource( 3 )
+text = "Select"
+align = 1
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+margin_left = 90.0
+margin_top = 3.0
+margin_right = 144.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 54, 20 )
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 3 )
+custom_styles/normal = SubResource( 1 )
+align = 1
+placeholder_text = "10000"
+caret_blink = true
+
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+margin_left = 144.0
+margin_top = 3.0
+margin_right = 164.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 20, 20 )
+rect_pivot_offset = Vector2( -20, 0 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 11 )
+custom_styles/pressed = SubResource( 13 )
+custom_styles/focus = SubResource( 12 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 9 )
+align = 2
+icon_align = 2
+expand_icon = true
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer/HBoxContainer2"]
+visible = false
+margin_left = 74.0
+margin_top = 6.0
+margin_right = 89.0
+margin_bottom = 21.0
+rect_min_size = Vector2( 15, 15 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource( 8 )
+expand = true
+
+[node name="InventoryReport" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 31.0
+margin_right = 418.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[right]You have [b]300[/b] present, [b]5000[/b] total"
+text = "You have 300 present, 5000 total"
+scroll_active = false
+
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/HBoxContainer2/OptionButton" to="." method="_on_OptionButton_item_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/HBoxContainer2/Button" to="." method="_on_Button_pressed"]
