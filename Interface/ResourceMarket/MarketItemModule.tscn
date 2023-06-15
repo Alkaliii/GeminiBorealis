@@ -7,19 +7,19 @@
 [ext_resource path="res://Interface/ResourceMarket/MarketItemModuleScript.gd" type="Script" id=5]
 [ext_resource path="res://sprite-action-black.png" type="Texture" id=6]
 
-[sub_resource type="StreamTexture" id=7]
+[sub_resource type="StreamTexture" id=14]
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=15]
 content_margin_left = 15.0
 bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
 border_width_right = 16
 border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
 
-[sub_resource type="StreamTexture" id=5]
+[sub_resource type="StreamTexture" id=16]
 
-[sub_resource type="StreamTexture" id=10]
+[sub_resource type="StreamTexture" id=17]
 
-[sub_resource type="StyleBoxFlat" id=4]
+[sub_resource type="StyleBoxFlat" id=18]
 content_margin_left = 2.0
 content_margin_right = 2.0
 content_margin_top = 2.0
@@ -38,15 +38,15 @@ expand_margin_bottom = 2.0
 default_font = ExtResource( 4 )
 OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
 OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
-OptionButton/icons/arrow = SubResource( 7 )
+OptionButton/icons/arrow = SubResource( 14 )
 OptionButton/styles/focus = null
-OptionButton/styles/hover = SubResource( 2 )
-OptionButton/styles/normal = SubResource( 2 )
-OptionButton/styles/pressed = SubResource( 2 )
+OptionButton/styles/hover = SubResource( 15 )
+OptionButton/styles/normal = SubResource( 15 )
+OptionButton/styles/pressed = SubResource( 15 )
 PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
-PopupMenu/icons/radio_checked = SubResource( 5 )
-PopupMenu/icons/radio_unchecked = SubResource( 10 )
-PopupMenu/styles/panel = SubResource( 4 )
+PopupMenu/icons/radio_checked = SubResource( 16 )
+PopupMenu/icons/radio_unchecked = SubResource( 17 )
+PopupMenu/styles/panel = SubResource( 18 )
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 5.0

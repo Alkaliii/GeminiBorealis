@@ -16,12 +16,13 @@ border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="StyleBoxFlat" id=4]
-bg_color = Color( 0.752941, 0.14902, 0.827451, 1 )
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
 
 [sub_resource type="StyleBoxFlat" id=6]
 bg_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="Theme" id=5]
+Button/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
 Button/fonts/font = ExtResource( 4 )
 Button/styles/focus = SubResource( 3 )
 Button/styles/hover = SubResource( 3 )

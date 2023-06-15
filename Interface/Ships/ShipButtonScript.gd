@@ -23,3 +23,11 @@ func setdat(data):
 	Status.sns = data["nav"]["status"]
 	Status.setdat()
 	Waypoint.bbcode_text = str("[right][color=#949495][b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["route"]["destination"]["symbol"])
+
+func refresh():
+	Agent.call_deferred("emit_signal","shipfocused",ShipDat)
+	#Agent.emit_signal("shipfocused",ShipDat)
+
+func _on_Button_pressed():
+	Agent.emit_signal("shipfocused",ShipDat)
+	Agent.focusShip = ShipDat["symbol"]

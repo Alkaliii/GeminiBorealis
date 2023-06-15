@@ -8,9 +8,9 @@ const line = preload("res://300line.tscn")
 func _ready():
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
-func _process(delta):
-	if Input.is_action_just_pressed("Key1"):
-		accept()
+#func _process(delta):
+#	if Input.is_action_just_pressed("Key1"):
+#		accept()
 
 func _on_request_completed(result, response_code, headers, body):
 	if result == 4:

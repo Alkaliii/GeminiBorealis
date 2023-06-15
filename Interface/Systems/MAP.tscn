@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://Interface/Systems/MAP.gd" type="Script" id=3]
+
+[node name="MAP" type="Control"]
+margin_left = -500.0
+margin_top = -500.0
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 1000, 1000 )
+script = ExtResource( 3 )
+
+[node name="TextureRect" type="TextureRect" parent="."]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -448.0
+margin_top = -448.0
+margin_right = 448.0
+margin_bottom = 448.0
+texture = ExtResource( 2 )
+expand = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 500, 500 )
+current = true
+zoom = Vector2( 0.1, 0.1 )
+limit_left = -500
+limit_top = -500
+limit_right = 500
+limit_bottom = 500
+limit_smoothed = true
+smoothing_enabled = true
+smoothing_speed = 20.0
+editor_draw_limits = true

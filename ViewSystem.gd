@@ -19,6 +19,8 @@ func _on_request_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		setdat(cleanbody)
+		Agent.emit_signal("systemFetch",cleanbody)
+		fetchSysWay()
 #	else:
 #		getfail()
 	print(json.result)
@@ -115,8 +117,27 @@ func show():
 	for c in $Actions.get_children():
 		c.queue_free()
 
+#change system lets you go to any system you have a ship in
+#or and system that can be found using get jump gate (select if multiple) for the current system
+
 func setSystem():
 	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem)
 	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
 	var header = [headerstring]
 	$HTTPRequest.request(url, header)
+
+func fetchSysWay():
+	var HTTP = HTTPRequest.new()
+	HTTP.use_threads = true
+	HTTP.connect("request_completed",self,"_on_WAYrequest_completed")
+	self.add_child(HTTP)
+	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem,"/waypoints")
+	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+	var header = [headerstring]
+	HTTP.request(url, header)
+
+func _on_WAYrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("data"):
+		Agent.emit_signal("systemWayFetch",cleanbody)

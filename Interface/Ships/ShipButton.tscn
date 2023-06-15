@@ -74,3 +74,5 @@ bbcode_enabled = true
 bbcode_text = "[right][color=#949495][b]PLANET[/b] X"
 text = "PLANET X"
 scroll_active = false
+
+[connection signal="pressed" from="VBoxContainer/ButtonStatus/Button" to="." method="_on_Button_pressed"]

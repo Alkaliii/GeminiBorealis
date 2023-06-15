@@ -10,8 +10,11 @@ export var USERTOKEN : String
 
 export var _FleetData : Dictionary
 export var interfaceShip : String
+export var focusShip : String
 
 signal login
+signal systemFetch(cleanbody)
+signal systemWayFetch(cleanbody)
 signal chart(cleanbody)
 signal shipyard(cleanbody)
 signal visitmarket(cleanbody)
@@ -21,9 +24,18 @@ signal AcceptContract
 signal PurchaseShip
 signal PurchaseCargo
 signal SellCargo
+signal JettisonCargo
+
+#SHIP ACTIONS
+signal NavigationFinished
 
 signal query_Ship(shipArr)
 signal interfaceShipSet
+
+signal query_Waypoint(waypointArr)
+signal selectedWaypoint(waypointSym)
+
+signal shipfocused(data)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -61,6 +73,25 @@ func queryUser_Ship(waypoint = null):
 		setInterfaceShip(Ships[0]["symbol"])
 		return
 	emit_signal("query_Ship", Ships)
+
+func queryWaypoint(system):
+	var HTTP = HTTPRequest.new()
+	self.add_child(HTTP)
+	HTTP.use_threads = true
+	HTTP.connect("request_completed", self, "_on_SYSrequest_completed")
+	var url = str("https://api.spacetraders.io/v2/systems/",system)
+	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+	var header = [headerstring]
+	HTTP.request(url, header)
+
+func _on_SYSrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("data"):
+		emit_signal("query_Waypoint",cleanbody)
+#	else:
+#		getfail()
+	print(json.result)
 
 func setInterfaceShip(symbol):
 	interfaceShip = symbol
@@ -119,6 +150,22 @@ func sellCargo(Good, Amt, node):
 	HTTP.use_threads = true
 	HTTP.connect("request_completed", node, "_on_SELLrequest_completed")
 	var url = str("https://api.spacetraders.io/v2/my/ships/",interfaceShip,"/sell")
+	var headerstring = str("Authorization: Bearer ", USERTOKEN)
+	var data = JSON.print({"symbol": Good, "units": Amt})
+	var header = ["Content-Type: application/json",headerstring]
+	print(Good,Amt)
+	
+	HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
+	yield(HTTP,"request_completed")
+	HTTP.queue_free()
+
+#https://api.spacetraders.io/v2/my/ships/{shipSymbol}/jettison
+func jettisonCargo(Good, Amt, node):
+	var HTTP = HTTPRequest.new()
+	self.add_child(HTTP)
+	HTTP.use_threads = true
+	HTTP.connect("request_completed", node, "_on_JETrequest_completed")
+	var url = str("https://api.spacetraders.io/v2/my/ships/",focusShip,"/jettison")
 	var headerstring = str("Authorization: Bearer ", USERTOKEN)
 	var data = JSON.print({"symbol": Good, "units": Amt})
 	var header = ["Content-Type: application/json",headerstring]

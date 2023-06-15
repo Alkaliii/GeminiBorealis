@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=52 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Interface/Theme.tres" type="Theme" id=2]
@@ -20,8 +20,10 @@
 [ext_resource path="res://Interface/ContractListScript.gd" type="Script" id=18]
 [ext_resource path="res://Interface/Ships/ViewShips.gd" type="Script" id=19]
 [ext_resource path="res://Interface/Ships/ShipStatusBadge.tscn" type="PackedScene" id=20]
-[ext_resource path="res://300line.tscn" type="PackedScene" id=21]
+[ext_resource path="res://Interface/Systems/MAP.tscn" type="PackedScene" id=21]
 [ext_resource path="res://Interface/Ships/ShipButton.tscn" type="PackedScene" id=22]
+[ext_resource path="res://Interface/Ships/CargoListing.tscn" type="PackedScene" id=23]
+[ext_resource path="res://Interface/Ships/ShipInfoModule.gd" type="Script" id=24]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
@@ -95,6 +97,102 @@ VScrollBar/styles/grabber_highlight = SubResource( 2 )
 VScrollBar/styles/grabber_pressed = SubResource( 3 )
 VScrollBar/styles/scroll = SubResource( 10 )
 
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 0.109804, 0.109804, 0.117647, 1 )
+
+[sub_resource type="StyleBoxFlat" id=23]
+bg_color = Color( 0.686275, 0.882353, 0.686275, 1 )
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+
+[sub_resource type="Theme" id=24]
+ProgressBar/styles/bg = SubResource( 22 )
+ProgressBar/styles/fg = SubResource( 23 )
+
+[sub_resource type="StreamTexture" id=25]
+
+[sub_resource type="StyleBoxFlat" id=26]
+content_margin_left = 15.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+border_width_right = 16
+border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+
+[sub_resource type="StreamTexture" id=19]
+
+[sub_resource type="StreamTexture" id=27]
+
+[sub_resource type="StreamTexture" id=28]
+
+[sub_resource type="StreamTexture" id=20]
+
+[sub_resource type="StreamTexture" id=21]
+
+[sub_resource type="StyleBoxFlat" id=29]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 5.0
+expand_margin_right = 5.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Theme" id=30]
+default_font = ExtResource( 1 )
+OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
+OptionButton/icons/arrow = SubResource( 25 )
+OptionButton/styles/focus = null
+OptionButton/styles/hover = SubResource( 26 )
+OptionButton/styles/normal = SubResource( 26 )
+OptionButton/styles/pressed = SubResource( 26 )
+PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+PopupMenu/icons/checked = SubResource( 19 )
+PopupMenu/icons/radio_checked = SubResource( 27 )
+PopupMenu/icons/radio_unchecked = SubResource( 28 )
+PopupMenu/icons/submenu = SubResource( 20 )
+PopupMenu/icons/unchecked = SubResource( 21 )
+PopupMenu/styles/panel = SubResource( 29 )
+
+[sub_resource type="StyleBoxFlat" id=31]
+bg_color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=32]
+bg_color = Color( 0.25098, 0.709804, 0.678431, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=33]
+
+[sub_resource type="StyleBoxFlat" id=34]
+bg_color = Color( 1, 1, 1, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="AtlasTexture" id=35]
+flags = 4
+atlas = ExtResource( 13 )
+region = Rect2( 225, 34, 30, 30 )
+
 [node name="Node" type="Node"]
 script = ExtResource( 11 )
 
@@ -124,6 +222,21 @@ visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 texture = ExtResource( 16 )
+
+[node name="ViewportContainer" type="ViewportContainer" parent="Back"]
+margin_right = 1280.0
+margin_bottom = 600.0
+
+[node name="Viewport" type="Viewport" parent="Back/ViewportContainer"]
+size = Vector2( 1280, 600 )
+transparent_bg = true
+handle_input_locally = false
+hdr = false
+usage = 0
+render_target_update_mode = 3
+gui_disable_input = true
+
+[node name="MAP" parent="Back/ViewportContainer/Viewport" instance=ExtResource( 21 )]
 
 [node name="MenuBack" type="ColorRect" parent="."]
 anchor_left = 0.5
@@ -232,6 +345,7 @@ margin_right = 1220.0
 margin_bottom = 73.0
 rect_min_size = Vector2( 0, 50 )
 theme = SubResource( 5 )
+scroll_vertical_enabled = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Systems/ViewSystem/ScrollContainer"]
 
@@ -504,22 +618,146 @@ margin_left = 1216.0
 margin_right = 1516.0
 margin_bottom = 40.0
 
-[node name="Control" type="Control" parent="MainWindow/Ships"]
+[node name="ShipInfoModule" type="Control" parent="MainWindow/Ships"]
 anchor_top = 0.5
 anchor_bottom = 0.5
 margin_left = 30.0
-margin_top = -20.5
+margin_top = -252.5
 margin_right = 70.0
-margin_bottom = 19.5
+margin_bottom = -212.5
+rect_min_size = Vector2( 424, 420 )
+script = ExtResource( 24 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Ships/Control"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Ships/ShipInfoModule"]
 margin_right = 40.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 250, 92 )
 
-[node name="ShipType" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
 margin_right = 424.0
-margin_bottom = 30.0
+margin_bottom = 300.0
+rect_min_size = Vector2( 0, 300 )
+theme = SubResource( 9 )
+
+[node name="Inventory" type="VBoxContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer"]
+margin_right = 398.0
+margin_bottom = 380.0
+
+[node name="CargoListing" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 398.0
+margin_bottom = 20.0
+
+[node name="CargoListing2" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 24.0
+margin_right = 398.0
+margin_bottom = 44.0
+
+[node name="CargoListing3" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 48.0
+margin_right = 398.0
+margin_bottom = 68.0
+
+[node name="CargoListing4" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 72.0
+margin_right = 398.0
+margin_bottom = 92.0
+
+[node name="CargoListing5" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 96.0
+margin_right = 398.0
+margin_bottom = 116.0
+
+[node name="CargoListing6" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 120.0
+margin_right = 398.0
+margin_bottom = 140.0
+
+[node name="CargoListing7" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 144.0
+margin_right = 398.0
+margin_bottom = 164.0
+
+[node name="CargoListing8" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 168.0
+margin_right = 398.0
+margin_bottom = 188.0
+
+[node name="CargoListing9" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 192.0
+margin_right = 398.0
+margin_bottom = 212.0
+
+[node name="CargoListing10" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 216.0
+margin_right = 398.0
+margin_bottom = 236.0
+
+[node name="CargoListing11" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 240.0
+margin_right = 398.0
+margin_bottom = 260.0
+
+[node name="CargoListing12" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 264.0
+margin_right = 398.0
+margin_bottom = 284.0
+
+[node name="CargoListing13" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 288.0
+margin_right = 398.0
+margin_bottom = 308.0
+
+[node name="CargoListing14" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 312.0
+margin_right = 398.0
+margin_bottom = 332.0
+
+[node name="CargoListing15" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 336.0
+margin_right = 398.0
+margin_bottom = 356.0
+
+[node name="CargoListing16" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer/Inventory" instance=ExtResource( 23 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 360.0
+margin_right = 398.0
+margin_bottom = 380.0
+
+[node name="ShipType" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 304.0
+margin_right = 424.0
+margin_bottom = 334.0
 rect_min_size = Vector2( 0, 30 )
 custom_fonts/bold_font = ExtResource( 7 )
 custom_fonts/normal_font = ExtResource( 5 )
@@ -528,10 +766,10 @@ bbcode_text = "INTERCEPTOR"
 text = "INTERCEPTOR"
 scroll_active = false
 
-[node name="ShipName" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
-margin_top = 34.0
+[node name="ShipName" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 338.0
 margin_right = 424.0
-margin_bottom = 42.0
+margin_bottom = 346.0
 rect_min_size = Vector2( 0, 8 )
 custom_fonts/bold_font = ExtResource( 1 )
 custom_fonts/normal_font = ExtResource( 6 )
@@ -540,18 +778,18 @@ bbcode_text = "GEMINI_THREE-3"
 text = "GEMINI_THREE-3"
 scroll_active = false
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Ships/Control/VBoxContainer"]
-margin_top = 46.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 350.0
 margin_right = 424.0
-margin_bottom = 61.0
+margin_bottom = 365.0
 
-[node name="ShipStatusBadge" parent="MainWindow/Ships/Control/VBoxContainer/HBoxContainer" instance=ExtResource( 20 )]
+[node name="ShipStatusBadge" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/HBoxContainer" instance=ExtResource( 20 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_right = 120.0
 margin_bottom = 15.0
 
-[node name="300line" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer/HBoxContainer"]
+[node name="Location" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/HBoxContainer"]
 margin_left = 124.0
 margin_right = 424.0
 margin_bottom = 15.0
@@ -563,24 +801,88 @@ bbcode_text = "-> PLANET X"
 text = "-> PLANET X"
 scroll_active = false
 
-[node name="300line" type="RichTextLabel" parent="MainWindow/Ships/Control/VBoxContainer"]
-margin_top = 65.0
+[node name="FlightInfo" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 369.0
 margin_right = 424.0
-margin_bottom = 73.0
+margin_bottom = 377.0
 rect_min_size = Vector2( 0, 8 )
 custom_fonts/bold_font = ExtResource( 1 )
 custom_fonts/normal_font = ExtResource( 6 )
 bbcode_enabled = true
-bbcode_text = "[color=#949495]/// FLIGHT MODE: [b]CRUISE"
+bbcode_text = "[color=#949495]/// FLIGHT MODE: [b]CRUISE[/b]"
 text = "/// FLIGHT MODE: CRUISE"
 scroll_active = false
 
-[node name="300line2" parent="MainWindow/Ships/Control/VBoxContainer" instance=ExtResource( 21 )]
-margin_top = 77.0
+[node name="HBoxContainer3" type="HBoxContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 381.0
 margin_right = 424.0
-margin_bottom = 92.0
-bbcode_text = "TRANSIT TIME: 00:00"
-text = "TRANSIT TIME: 00:00"
+margin_bottom = 396.0
+
+[node name="FuelLabel" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/HBoxContainer3"]
+margin_right = 80.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 80, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[b]FUEL:[b] 100%"
+text = "FUEL: 100%"
+scroll_active = false
+
+[node name="ProgressBar" type="ProgressBar" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/HBoxContainer3"]
+margin_left = 84.0
+margin_right = 364.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 280, 14 )
+size_flags_vertical = 4
+theme = SubResource( 24 )
+value = 50.0
+percent_visible = false
+
+[node name="TransitTime" type="RichTextLabel" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 400.0
+margin_right = 424.0
+margin_bottom = 415.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "ETA: 00:00"
+text = "ETA: 00:00"
+scroll_active = false
+
+[node name="Actions" type="HBoxContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer"]
+margin_top = 419.0
+margin_right = 424.0
+margin_bottom = 439.0
+
+[node name="OptionButton" type="OptionButton" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/Actions"]
+margin_right = 340.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 340, 20 )
+size_flags_vertical = 4
+theme = SubResource( 30 )
+align = 1
+icon_align = 2
+expand_icon = true
+
+[node name="Button" type="Button" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/Actions"]
+margin_left = 344.0
+margin_right = 364.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+rect_pivot_offset = Vector2( -20, 0 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 31 )
+custom_styles/pressed = SubResource( 32 )
+custom_styles/focus = SubResource( 33 )
+custom_styles/normal = SubResource( 34 )
+icon = SubResource( 35 )
+align = 2
+icon_align = 2
+expand_icon = true
 
 [node name="Agent" type="Control" parent="MainWindow"]
 margin_left = 2560.0
@@ -705,6 +1007,7 @@ flat = true
 icon_align = 2
 expand_icon = true
 
+[connection signal="pressed" from="MainWindow/Ships/ShipInfoModule/VBoxContainer/Actions/Button" to="MainWindow/Ships/ShipInfoModule" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainWindow/Agent/Contracts/Button" to="MainWindow/Agent/Contracts" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainMenu/Systems" to="." method="_on_Systems_pressed"]
 [connection signal="pressed" from="MainMenu/Ships" to="." method="_on_Ships_pressed"]

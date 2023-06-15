@@ -3,11 +3,20 @@ extends Node
 
 signal agentFetched
 const shipQuery = preload("res://Interface/Ships/SelectShipPopUp.tscn")
+const waypointQuery = preload("res://Interface/Systems/SelectWaypointPopUp.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	
+	OS.window_size.x = 1280
+	OS.window_size.y = 600
+	OS.set_window_position(OS.get_screen_position(OS.get_current_screen()) + OS.get_screen_size()*0.5 - OS.get_window_size()*0.5)
+	
+	$Back/ViewportContainer/Viewport.handle_input_locally = true
+	
 	$CanvasLayer.show()
 	Agent.connect("login", self, "setStatus")
+	Agent.connect("login", self, "_on_Systems_pressed")
 	Agent.connect("login", self, "resetWindow")
 	Agent.connect("chart", self, "setWayArt")
 	Agent.connect("AcceptContract", self, "updateStatus")
@@ -16,13 +25,20 @@ func _ready():
 	Agent.connect("PurchaseCargo",self,"updateStatus")
 	
 	Agent.connect("query_Ship",self,"queryShip")
+	Agent.connect("query_Waypoint",self,"queryWaypoint")
 
 func queryShip(Arr):
 	var query = shipQuery.instance()
 	query.setdat(Arr)
 	$CanvasLayer.add_child(query)
 
+func queryWaypoint(data):
+	var query = waypointQuery.instance()
+	query.setdat(data)
+	$CanvasLayer.add_child(query)
+
 func setStatus():
+	$Back/ViewportContainer/Viewport.handle_input_locally = true
 	var details = $StatusBack/Details
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
 
@@ -116,6 +132,9 @@ func _on_Agent_pressed():
 	var twee = get_tree().create_tween()
 	twee.tween_property(Window, "rect_position", Vector2(-2560,0), 1).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CIRC)
 	twee.parallel().tween_property(SysArt, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Systems, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Ships, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Agent, "modulate", Color(1,1,1,1),0.5)
 
 
 func _on_Systems_pressed():
@@ -124,6 +143,9 @@ func _on_Systems_pressed():
 	var twee = get_tree().create_tween()
 	twee.tween_property(Window, "rect_position", Vector2(0,0), 1).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CIRC)
 	twee.parallel().tween_property(SysArt, "modulate", Color(1,1,1,1),0.5)
+	twee.parallel().tween_property($MainWindow/Systems, "modulate", Color(1,1,1,1),0.5)
+	twee.parallel().tween_property($MainWindow/Ships, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Agent, "modulate", Color(1,1,1,0),0.5)
 
 
 func _on_Ships_pressed():
@@ -132,5 +154,8 @@ func _on_Ships_pressed():
 	var twee = get_tree().create_tween()
 	twee.tween_property(Window, "rect_position", Vector2(-1280,0), 1).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_CIRC)
 	twee.parallel().tween_property(SysArt, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Systems, "modulate", Color(1,1,1,0),0.5)
+	twee.parallel().tween_property($MainWindow/Ships, "modulate", Color(1,1,1,1),0.5)
+	twee.parallel().tween_property($MainWindow/Agent, "modulate", Color(1,1,1,0),0.5)
 	yield(twee,"finished")
 	$MainWindow/Ships/ViewShips.show()

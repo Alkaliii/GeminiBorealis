@@ -7,7 +7,9 @@ const shipline = preload("res://Interface/Ships/ShipButton.tscn")
 func _ready():
 	Agent.connect("login", self, "show")
 	Agent.connect("PurchaseCargo",self,"show")
+	Agent.connect("JettisonCargo",self,"show")
 	Agent.connect("SellCargo",self,"show")
+	Agent.connect("NavigationFinished",self,"show")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
 func _on_request_completed(result, response_code, headers, body):
@@ -21,7 +23,7 @@ func _on_request_completed(result, response_code, headers, body):
 #		getfail()
 	#print(json.result)
 
-func show():
+func show(arg = null):
 	self.modulate = Color(1,1,1,0)
 	self.visible = true
 	var twee = get_tree().create_tween()
