@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Font/Small.tres" type="DynamicFont" id=2]
@@ -24,7 +24,57 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 
-[sub_resource type="StyleBoxFlat" id=6]
+[sub_resource type="StreamTexture" id=25]
+
+[sub_resource type="StyleBoxFlat" id=26]
+content_margin_left = 15.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+border_width_right = 16
+border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+
+[sub_resource type="StreamTexture" id=19]
+
+[sub_resource type="StreamTexture" id=27]
+
+[sub_resource type="StreamTexture" id=28]
+
+[sub_resource type="StreamTexture" id=20]
+
+[sub_resource type="StreamTexture" id=21]
+
+[sub_resource type="StyleBoxFlat" id=29]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 5.0
+expand_margin_right = 5.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Theme" id=30]
+default_font = ExtResource( 1 )
+OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
+OptionButton/icons/arrow = SubResource( 25 )
+OptionButton/styles/focus = null
+OptionButton/styles/hover = SubResource( 26 )
+OptionButton/styles/normal = SubResource( 26 )
+OptionButton/styles/pressed = SubResource( 26 )
+PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+PopupMenu/icons/checked = SubResource( 19 )
+PopupMenu/icons/radio_checked = SubResource( 27 )
+PopupMenu/icons/radio_unchecked = SubResource( 28 )
+PopupMenu/icons/submenu = SubResource( 20 )
+PopupMenu/icons/unchecked = SubResource( 21 )
+PopupMenu/styles/panel = SubResource( 29 )
+
+[sub_resource type="StyleBoxFlat" id=13]
 bg_color = Color( 1, 1, 1, 0 )
 border_width_left = 1
 border_width_top = 1
@@ -32,22 +82,21 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxEmpty" id=7]
+[sub_resource type="StyleBoxEmpty" id=14]
 
-[sub_resource type="AtlasTexture" id=5]
+[sub_resource type="AtlasTexture" id=15]
 flags = 4
 atlas = ExtResource( 3 )
 region = Rect2( 65, 34, 30, 30 )
 
 [sub_resource type="StyleBoxEmpty" id=8]
 
-[sub_resource type="AtlasTexture" id=2]
+[sub_resource type="AtlasTexture" id=16]
 flags = 4
 atlas = ExtResource( 3 )
 region = Rect2( 289, 130, 30, 30 )
 
-[sub_resource type="Animation" id=3]
-resource_name = "Out"
+[sub_resource type="Animation" id=17]
 tracks/0/type = "value"
 tracks/0/path = NodePath("HBoxContainer:rect_position")
 tracks/0/interp = 1
@@ -73,7 +122,7 @@ tracks/1/keys = {
 "values": [ Vector2( 0, 0 ), Vector2( -1300, 0 ) ]
 }
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=18]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/path = NodePath("HBoxContainer:rect_position")
@@ -191,18 +240,19 @@ scroll_active = false
 margin_right = 1280.0
 margin_bottom = 550.0
 custom_constants/separation = 0
+alignment = 1
 
 [node name="Login" type="CenterContainer" parent="HBoxContainer"]
-margin_right = 640.0
+margin_left = 320.0
+margin_right = 960.0
 margin_bottom = 550.0
 rect_min_size = Vector2( 640, 0 )
 
 [node name="Register" type="VBoxContainer" parent="HBoxContainer/Login"]
-visible = false
 margin_left = 170.0
-margin_top = 203.0
+margin_top = 208.0
 margin_right = 470.0
-margin_bottom = 346.0
+margin_bottom = 342.0
 rect_min_size = Vector2( 300, 0 )
 script = ExtResource( 7 )
 control = NodePath("../../..")
@@ -241,10 +291,30 @@ secret_character = "+"
 placeholder_text = "SYMBOL"
 caret_blink = true
 
-[node name="Faction" type="LineEdit" parent="HBoxContainer/Login/Register"]
+[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Register"]
 margin_top = 81.0
 margin_right = 300.0
-margin_bottom = 105.0
+margin_bottom = 89.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][b]Select a Faction"
+text = "Select a Faction"
+scroll_active = false
+
+[node name="OptionButton" type="OptionButton" parent="HBoxContainer/Login/Register"]
+margin_top = 93.0
+margin_right = 300.0
+margin_bottom = 108.0
+rect_min_size = Vector2( 300, 15 )
+theme = SubResource( 30 )
+
+[node name="Faction" type="LineEdit" parent="HBoxContainer/Login/Register"]
+visible = false
+margin_top = 100.0
+margin_right = 300.0
+margin_bottom = 124.0
 rect_min_size = Vector2( 0, 24 )
 custom_fonts/font = ExtResource( 5 )
 custom_styles/normal = SubResource( 1 )
@@ -252,22 +322,10 @@ secret_character = "+"
 placeholder_text = "FACTION"
 caret_blink = true
 
-[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Register"]
-margin_top = 109.0
-margin_right = 300.0
-margin_bottom = 117.0
-rect_min_size = Vector2( 0, 8 )
-custom_fonts/bold_font = ExtResource( 1 )
-custom_fonts/normal_font = ExtResource( 2 )
-bbcode_enabled = true
-bbcode_text = "[color=#69696b][b]COSMIC/VOID/ASTRO/AEGIS/OMEGA/ECHO/CULT"
-text = "COSMIC/VOID/ASTRO/AEGIS/OMEGA/ECHO/CULT"
-scroll_active = false
-
 [node name="Button" type="Button" parent="HBoxContainer/Login/Register"]
-margin_top = 121.0
+margin_top = 112.0
 margin_right = 300.0
-margin_bottom = 143.0
+margin_bottom = 134.0
 custom_fonts/font = ExtResource( 5 )
 text = "REGISTER"
 flat = true
@@ -276,6 +334,7 @@ icon_align = 2
 expand_icon = true
 
 [node name="Login" type="VBoxContainer" parent="HBoxContainer/Login"]
+visible = false
 margin_left = 170.0
 margin_top = 156.0
 margin_right = 470.0
@@ -303,10 +362,10 @@ margin_bottom = 100.0
 rect_min_size = Vector2( 80, 100 )
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 5 )
-custom_styles/hover = SubResource( 6 )
-custom_styles/pressed = SubResource( 7 )
-custom_styles/normal = SubResource( 6 )
-icon = SubResource( 5 )
+custom_styles/hover = SubResource( 13 )
+custom_styles/pressed = SubResource( 14 )
+custom_styles/normal = SubResource( 13 )
+icon = SubResource( 15 )
 align = 2
 icon_align = 1
 
@@ -334,10 +393,10 @@ margin_bottom = 100.0
 rect_min_size = Vector2( 80, 100 )
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 5 )
-custom_styles/hover = SubResource( 6 )
+custom_styles/hover = SubResource( 13 )
 custom_styles/pressed = SubResource( 8 )
-custom_styles/normal = SubResource( 6 )
-icon = SubResource( 5 )
+custom_styles/normal = SubResource( 13 )
+icon = SubResource( 15 )
 align = 2
 icon_align = 1
 
@@ -364,7 +423,7 @@ margin_top = 134.0
 margin_right = 165.0
 margin_bottom = 164.0
 size_flags_horizontal = 4
-texture = SubResource( 2 )
+texture = SubResource( 16 )
 
 [node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
 margin_top = 168.0
@@ -440,14 +499,15 @@ text = "[Credits]:"
 scroll_active = false
 
 [node name="ColorRect" type="ColorRect" parent="HBoxContainer"]
+visible = false
 margin_left = 640.0
 margin_right = 1280.0
 margin_bottom = 550.0
 rect_min_size = Vector2( 640, 0 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/Out = SubResource( 3 )
-anims/RESET = SubResource( 4 )
+anims/Out = SubResource( 17 )
+anims/RESET = SubResource( 18 )
 
 [connection signal="pressed" from="MenuBack/Swap" to="." method="_on_Swap_pressed"]
 [connection signal="pressed" from="HBoxContainer/Login/Register/Button" to="HBoxContainer/Login/Register" method="_on_Button_pressed"]

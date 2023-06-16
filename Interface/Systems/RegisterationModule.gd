@@ -3,8 +3,32 @@ extends VBoxContainer
 export var control : NodePath
 export var anim: NodePath
 
+var factions : Dictionary
+
 func _ready():
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
+	getFactions()
+
+func getFactions():
+	var HTTP = HTTPRequest.new()
+	HTTP.use_threads = true
+	HTTP.connect("request_completed",self,"_on_FACrequest_completed")
+	self.add_child(HTTP)
+	var url = str("https://api.spacetraders.io/v2/factions")
+	#var headerstring = str("Authorization: Bearer ", testtoken)
+	var header = []#headerstring]
+	HTTP.request(url, header)
+	
+	yield(HTTP,"request_completed")
+	HTTP.queue_free()
+
+func _on_FACrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("data"):
+		for f in cleanbody["data"]:
+			factions[f["name"]] = f["symbol"]
+			$OptionButton.add_item(f["name"])
 
 func _on_request_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
@@ -56,7 +80,7 @@ func Register(data):
 
 func _on_Button_pressed():
 	var symbol = $Symbol.text
-	var faction = $Faction.text
+	var faction = factions[$OptionButton.get_item_text($OptionButton.selected)]
 	var url = "https://api.spacetraders.io/v2/register"
 	var header = ["Accept: application/json","Content-Type: application/json"]
 	var data = JSON.print({"symbol": symbol, "faction": faction})

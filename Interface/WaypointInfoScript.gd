@@ -9,6 +9,7 @@ extends VBoxContainer
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Agent.connect("login",self,"hide")
+	Agent.connect("mapHOME",self,"hide")
 
 func setdat(data):
 	var Title = $HBoxContainer/Title

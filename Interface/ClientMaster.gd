@@ -18,7 +18,8 @@ func _ready():
 	Agent.connect("login", self, "setStatus")
 	Agent.connect("login", self, "_on_Systems_pressed")
 	Agent.connect("login", self, "resetWindow")
-	Agent.connect("chart", self, "setWayArt")
+	Agent.connect("chart", self, "showPanel")
+	Agent.connect("mapHOME",self,"hidePanel")
 	Agent.connect("AcceptContract", self, "updateStatus")
 	Agent.connect("PurchaseShip",self,"updateStatus")
 	Agent.connect("PurchaseShip",self,"_on_Ships_pressed")
@@ -32,13 +33,13 @@ func queryShip(Arr):
 	query.setdat(Arr)
 	$CanvasLayer.add_child(query)
 
-func queryWaypoint(data):
+func queryWaypoint(data, prompt = null):
 	var query = waypointQuery.instance()
-	query.setdat(data)
+	query.setdat(data, prompt)
 	$CanvasLayer.add_child(query)
 
 func setStatus():
-	$Back/ViewportContainer/Viewport.handle_input_locally = true
+	#$Back/ViewportContainer/Viewport.handle_input_locally = true
 	var details = $StatusBack/Details
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
 
@@ -83,38 +84,18 @@ func _on_fetchAgentrequest_completed(result, response_code, headers, body):
 func getfail():
 	pass
 
-func setWayArt(data):
+func showPanel(data):
+	#$Back/Panel.modulate = Color(1,1,1,0)
+	$Back/Panel.show()
 	var twee = get_tree().create_tween()
-	#twee.tween_property($Back/Control/WayArt, "rect_scale", Vector2(2,2),5).set_trans(Tween.TRANS_CIRC)
-	twee.tween_property($Back/SystemArt/WayArt, "rect_position", Vector2(3580, 0),0.3).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,1),1).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 	yield(twee,"finished")
-	var wpt = data["data"]["type"]
-	match wpt:
-		"MOON":
-			$Back/SystemArt/WayArt.texture = preload("res://WaypointArt/Moon.png")
-		"GAS_GIANT":
-			$Back/SystemArt/WayArt.texture = preload("res://WaypointArt/GasGiant.png")
-		"NEBULA":
-			pass
-		"ASTEROID_FIELD":
-			pass
-		"PLANET":
-			$Back/SystemArt/WayArt.texture = preload("res://WaypointArt/Planet.png")
-		"DEBRIS_FIELD":
-			pass
-		"ORBITAL_STATION":
-			pass
-		"JUMP_GATE":
-			pass
-		"GRAVITY_WELL":
-			pass
-	
-	yield(get_tree().create_timer(1),"timeout")
-	#$Back/Control/WayArt.rect_position = Vector2(1280, 0)
-	$Back/SystemArt/WayArt.rect_scale = Vector2(1, 1)
-	twee = get_tree().create_tween()
-	twee.tween_property($Back/SystemArt/WayArt, "rect_position", Vector2(680,0),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
 
+func hidePanel():
+	var twee = get_tree().create_tween()
+	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,0),1).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	yield(twee,"finished")
+	$Back/Panel.hide()
 
 func _on_Button_pressed():
 	logout()

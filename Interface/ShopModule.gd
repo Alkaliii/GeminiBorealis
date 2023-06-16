@@ -17,8 +17,12 @@ func _ready():
 	Agent.connect("PurchaseCargo",self,"reloadMarket")
 	Agent.connect("SellCargo",self,"reloadMarket")
 	Agent.connect("closeShop", self,"updateVis")
+	Agent.connect("mapHOME",self,"fauxClose")
 	
 	#$ScrollContainer.get_v_scrollbar().rect_position += Vector2($ScrollContainer.rect_min_size.x, 0)
+
+func fauxClose():
+	updateVis({"data":{"null":null}})
 
 func updateVis(data):
 	for r in $ScrollContainer/Items.get_children():

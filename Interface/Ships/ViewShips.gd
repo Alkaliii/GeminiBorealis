@@ -6,10 +6,13 @@ const shipline = preload("res://Interface/Ships/ShipButton.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Agent.connect("login", self, "show")
+	Agent.connect("requestFleetUpdate",self,"show")
 	Agent.connect("PurchaseCargo",self,"show")
 	Agent.connect("JettisonCargo",self,"show")
 	Agent.connect("SellCargo",self,"show")
 	Agent.connect("NavigationFinished",self,"show")
+	Agent.connect("DockFinished",self,"show")
+	Agent.connect("OrbitFinished",self,"show")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
 func _on_request_completed(result, response_code, headers, body):

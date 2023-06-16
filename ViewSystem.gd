@@ -12,7 +12,15 @@ func _ready():
 	get_node(waypointInfo).hide()
 	Agent.connect("login", self, "show")
 	Agent.connect("chart", self, "setWaypointDat")
+	Agent.connect("mapHOME",self,"unFocus")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
+
+func unFocus():
+	for r in $Actions.get_children():
+		r.queue_free()
+	
+	for b in $ScrollContainer/HBoxContainer.get_children():
+		b.release_focus()
 
 func _on_request_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
@@ -141,3 +149,4 @@ func _on_WAYrequest_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		Agent.emit_signal("systemWayFetch",cleanbody)
+		Agent.systemData = cleanbody

@@ -8,6 +8,8 @@ export var AgentFaction : String
 export var AgentSymbol : String
 export var USERTOKEN : String
 
+var systemData
+
 export var _FleetData : Dictionary
 export var interfaceShip : String
 export var focusShip : String
@@ -20,15 +22,23 @@ signal shipyard(cleanbody)
 signal visitmarket(cleanbody)
 signal closeShop
 signal fleetUpdated
+signal requestFleetUpdate
 signal AcceptContract
 signal PurchaseShip
 signal PurchaseCargo
 signal SellCargo
 signal JettisonCargo
 
+signal mapHOME
+signal mapSEL(sym)
+signal mapGenLine(one,two)
+
 #SHIP ACTIONS
 signal NavigationFinished
+signal DockFinished
+signal OrbitFinished
 
+var QueryPrompt = null
 signal query_Ship(shipArr)
 signal interfaceShipSet
 
@@ -74,7 +84,8 @@ func queryUser_Ship(waypoint = null):
 		return
 	emit_signal("query_Ship", Ships)
 
-func queryWaypoint(system):
+func queryWaypoint(system, prompt = null):
+	QueryPrompt = null
 	var HTTP = HTTPRequest.new()
 	self.add_child(HTTP)
 	HTTP.use_threads = true
@@ -83,12 +94,15 @@ func queryWaypoint(system):
 	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
 	var header = [headerstring]
 	HTTP.request(url, header)
+	
+	if prompt != null:
+		QueryPrompt = prompt
 
 func _on_SYSrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
-		emit_signal("query_Waypoint",cleanbody)
+		emit_signal("query_Waypoint",cleanbody,QueryPrompt)
 #	else:
 #		getfail()
 	print(json.result)

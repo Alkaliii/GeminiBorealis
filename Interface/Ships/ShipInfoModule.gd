@@ -24,6 +24,7 @@ func updateTransit():
 		if present > future:
 			$VBoxContainer/TransitTime.bbcode_text = "ARRIVED [color=#949495]MANUALLY REFRESH"
 			ArrivalTime = null
+			Agent.emit_signal("requestFleetUpdate")
 			return
 		
 		var difference = int(future-present)
@@ -117,7 +118,7 @@ func setdat(data):
 	#Check Jump
 	if data["nav"]["route"]["destination"]["type"] == "JUMP_GATE" and data["nav"]["status"] == "IN_ORBIT":
 		actions.add_item("JUMP")
-	elif data["nav"]["status"] != "IN_TRANSIT":
+	elif data["nav"]["status"] == "IN_ORBIT":
 		for m in data["modules"]:
 			if m["symbol"] in ["MODULE_JUMP_DRIVE_I","MODULE_JUMP_DRIVE_II","MODULE_JUMP_DRIVE_III"]:
 				actions.add_item("JUMP")
@@ -146,8 +147,10 @@ func _on_Button_pressed():
 	match $VBoxContainer/Actions/OptionButton.get_item_text($VBoxContainer/Actions/OptionButton.selected):
 		"ASSIGN GROUP": pass
 		"RENAME": pass
-		"DOCK": pass
-		"ORBIT": pass
+		"DOCK":
+			Dock()
+		"ORBIT":
+			Orbit()
 		"REFUEL": pass
 		"NAVIGATE":
 			Navigate()
@@ -243,5 +246,143 @@ func refreshONNAV(data):
 	else: ArrivalTime = null
 	
 	actions.add_separator()
+	if data["nav"]["status"] in ["IN_TRANSIT","IN_ORBIT"]:
+		actions.add_item("CHANGE FLIGHT MODE")
+
+#https://api.spacetraders.io/v2/my/ships/{shipSymbol}/dock
+func Dock():
+	var HTTP = HTTPRequest.new()
+	self.add_child(HTTP)
+	HTTP.use_threads = true
+	HTTP.connect("request_completed", self, "_on_DOCKrequest_completed")
+	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/dock")
+	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+	
+	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+	yield(HTTP,"request_completed")
+	HTTP.queue_free()
+
+func _on_DOCKrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("data"):
+		Agent.emit_signal("DockFinished",cleanbody)
+		refreshONDOCK(cleanbody)
+#	else:
+#		getfail()
+	print(json.result)
+
+func refreshONDOCK(data):
+	data = data["data"]
+	
+	var status = $VBoxContainer/HBoxContainer/ShipStatusBadge
+	var location = $VBoxContainer/HBoxContainer/Location
+	var flight = $VBoxContainer/FlightInfo
+	var transit = $VBoxContainer/TransitTime
+	
+	var actions = $VBoxContainer/Actions/OptionButton
+	
+	actions.clear()
+	actions.add_item("ASSIGN GROUP")
+	actions.add_item("RENAME")
+	
+	status.sns = data["nav"]["status"]
+	status.setdat()
+	match data["nav"]["status"]:
+		"IN_TRANSIT":
+			location.bbcode_text = str("-> [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["route"]["destination"]["symbol"])
+			flight.bbcode_text = str("[color=#949495]/// FLIGHT MODE: [b]",data["nav"]["flightMode"])
+			transit.show()
+		"IN_ORBIT":
+			location.bbcode_text = str("@ [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["waypointSymbol"])
+			flight.bbcode_text = str("[color=#949495]/// FLIGHT MODE: [b]",data["nav"]["flightMode"])
+			transit.hide()
+			actions.add_item("DOCK")
+		"DOCKED":
+			location.bbcode_text = str("@ [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["waypointSymbol"])
+			flight.bbcode_text = ""
+			transit.hide()
+			actions.add_item("ORBIT")
+			actions.add_item("REFUEL")
+	
+	#Check Refinery
+	for m in SHIPDATA["modules"]:
+		if m["symbol"] in ["MODULE_MICRO_REFINERY_I","MODULE_ORE_REFINERY_I","MODULE_FUEL_REFINERY_I"]:
+			actions.add_item("REFINE")
+			break
+	actions.add_separator()
+	if data["nav"]["status"] == "DOCKED":
+		actions.add_item("INSTALL HARDWARE")
+		actions.add_item("REMOVE HARDWARE")
+	if data["nav"]["status"] in ["IN_TRANSIT","IN_ORBIT"]:
+		actions.add_item("CHANGE FLIGHT MODE")
+
+#https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit
+func Orbit():
+	var HTTP = HTTPRequest.new()
+	self.add_child(HTTP)
+	HTTP.use_threads = true
+	HTTP.connect("request_completed", self, "_on_ORBITrequest_completed")
+	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/orbit")
+	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+	
+	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+	yield(HTTP,"request_completed")
+	HTTP.queue_free()
+
+func _on_ORBITrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("data"):
+		Agent.emit_signal("OrbitFinished",cleanbody)
+		refreshONORBIT(cleanbody)
+#	else:
+#		getfail()
+	print(json.result)
+
+func refreshONORBIT(data):
+	data = data["data"]
+	
+	var status = $VBoxContainer/HBoxContainer/ShipStatusBadge
+	var location = $VBoxContainer/HBoxContainer/Location
+	var flight = $VBoxContainer/FlightInfo
+	var transit = $VBoxContainer/TransitTime
+	
+	var actions = $VBoxContainer/Actions/OptionButton
+	
+	actions.clear()
+	actions.add_item("ASSIGN GROUP")
+	actions.add_item("RENAME")
+	
+	status.sns = data["nav"]["status"]
+	status.setdat()
+	match data["nav"]["status"]:
+		"IN_TRANSIT":
+			location.bbcode_text = str("-> [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["route"]["destination"]["symbol"])
+			flight.bbcode_text = str("[color=#949495]/// FLIGHT MODE: [b]",data["nav"]["flightMode"])
+			transit.show()
+		"IN_ORBIT":
+			location.bbcode_text = str("@ [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["waypointSymbol"])
+			flight.bbcode_text = str("[color=#949495]/// FLIGHT MODE: [b]",data["nav"]["flightMode"])
+			transit.hide()
+			actions.add_item("DOCK")
+		"DOCKED":
+			location.bbcode_text = str("@ [b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["waypointSymbol"])
+			flight.bbcode_text = ""
+			transit.hide()
+			actions.add_item("ORBIT")
+			actions.add_item("REFUEL")
+	
+	#Check Refinery
+	for m in SHIPDATA["modules"]:
+		if m["symbol"] in ["MODULE_MICRO_REFINERY_I","MODULE_ORE_REFINERY_I","MODULE_FUEL_REFINERY_I"]:
+			actions.add_item("REFINE")
+			break
+	actions.add_separator()
+	if data["nav"]["status"] == "DOCKED":
+		actions.add_item("INSTALL HARDWARE")
+		actions.add_item("REMOVE HARDWARE")
 	if data["nav"]["status"] in ["IN_TRANSIT","IN_ORBIT"]:
 		actions.add_item("CHANGE FLIGHT MODE")

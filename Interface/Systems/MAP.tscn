@@ -1,7 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=7 format=2]
 
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://Interface/Systems/MAP.gd" type="Script" id=3]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=5]
+
+[sub_resource type="AtlasTexture" id=1]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 161, 161, 30, 30 )
 
 [node name="MAP" type="Control"]
 margin_left = -500.0
@@ -9,6 +17,7 @@ margin_top = -500.0
 margin_right = 500.0
 margin_bottom = 500.0
 rect_min_size = Vector2( 1000, 1000 )
+rect_pivot_offset = Vector2( 500, 500 )
 script = ExtResource( 3 )
 
 [node name="TextureRect" type="TextureRect" parent="."]
@@ -34,5 +43,106 @@ limit_right = 500
 limit_bottom = 500
 limit_smoothed = true
 smoothing_enabled = true
-smoothing_speed = 20.0
+smoothing_speed = 2.0
 editor_draw_limits = true
+
+[node name="Lines" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -500.0
+margin_top = -500.0
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 1000, 1000 )
+rect_pivot_offset = Vector2( 500, 500 )
+
+[node name="Orbits" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -500.0
+margin_top = -500.0
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 1000, 1000 )
+rect_pivot_offset = Vector2( 500, 500 )
+
+[node name="Planets" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -500.0
+margin_top = -500.0
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 1000, 1000 )
+rect_pivot_offset = Vector2( 500, 500 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+modulate = Color( 1, 1, 1, 0.498039 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -15.0
+margin_top = -15.0
+margin_right = 15.0
+margin_bottom = 15.0
+rect_pivot_offset = Vector2( 15, 15 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -2.0
+margin_top = 16.0
+margin_right = 98.0
+margin_bottom = 56.0
+
+[node name="WAYPOINT" type="RichTextLabel" parent="CanvasLayer/VBoxContainer"]
+visible = false
+margin_right = 100.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 100, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]WAYPOINT"
+text = "WAYPOINT"
+scroll_active = false
+
+[node name="DISTANCE" type="RichTextLabel" parent="CanvasLayer/VBoxContainer"]
+visible = false
+margin_top = 12.0
+margin_right = 100.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495][b]D:"
+text = "D:"
+scroll_active = false
+
+[node name="SHIPS" type="RichTextLabel" parent="CanvasLayer/VBoxContainer"]
+visible = false
+margin_top = 12.0
+margin_right = 100.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]2 SHIPS"
+text = "2 SHIPS"
+scroll_active = false

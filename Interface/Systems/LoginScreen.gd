@@ -26,7 +26,7 @@ func logfail(data):
 	$RichTextLabel.percent_visible = 0
 	$RichTextLabel.bbcode_text = "[b]TOKEN"
 	var tweeRTL = get_tree().create_tween()
-	tweeRTL.tween_property($RichTextLabel, "percent_visible", 1, 1)
+	tweeRTL.tween_property($RichTextLabel, "percent_visible", 1.0, 1)
 	yield(tweeRTL,"finished")
 	$Button.show()
 

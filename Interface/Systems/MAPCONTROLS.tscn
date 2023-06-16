@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=1]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=2]
+[ext_resource path="res://Interface/Systems/MAPCONTROLS.gd" type="Script" id=3]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=5]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=2]
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 385, 129, 30, 30 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 33, 417, 30, 30 )
+
+[node name="MAPCONTROLS" type="Control"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -100.0
+margin_bottom = 100.0
+script = ExtResource( 3 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -68.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+alignment = 2
+
+[node name="FocusMap" type="Button" parent="HBoxContainer"]
+margin_right = 32.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/normal = SubResource( 1 )
+icon = SubResource( 4 )
+flat = true
+align = 2
+icon_align = 1
+
+[node name="CalculateDistance" type="Button" parent="HBoxContainer"]
+margin_left = 36.0
+margin_right = 68.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/normal = SubResource( 1 )
+icon = SubResource( 5 )
+flat = true
+align = 2
+icon_align = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_top = 35.0
+margin_right = 40.0
+margin_bottom = 75.0
+
+[node name="PreviousLocation" type="RichTextLabel" parent="VBoxContainer"]
+margin_right = 100.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 100, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[right][color=#949495]..."
+text = "..."
+scroll_active = false
+
+[node name="CameraNear" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 12.0
+margin_right = 100.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[right]..."
+text = "..."
+scroll_active = false
+
+[connection signal="pressed" from="HBoxContainer/FocusMap" to="." method="_on_FocusMap_pressed"]
+[connection signal="pressed" from="HBoxContainer/CalculateDistance" to="." method="_on_CalculateDistance_pressed"]

@@ -7,7 +7,7 @@ var symbols : Array
 func _ready():
 	pass # Replace with function body.
 
-func setdat(data):
+func setdat(data, prompt = null):
 	for s in data["data"]["waypoints"]:
 		var shiphereindi = ""
 		var mylocal = false
@@ -21,6 +21,9 @@ func setdat(data):
 			continue
 		$VBoxContainer/OptionButton.add_item(str(shiphereindi,s["type"]," ",s["symbol"]))
 		symbols.push_back(s["symbol"])
+	
+	if prompt != null:
+		$VBoxContainer/Label.bbcode_text = prompt
 
 func _on_CONFIRM_pressed():
 	Agent.emit_signal("selectedWaypoint", symbols[$VBoxContainer/OptionButton.selected])

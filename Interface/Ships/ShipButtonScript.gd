@@ -5,7 +5,13 @@ var ShipDat
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	Agent.connect("fleetUpdated",self,"refreshSelf")
 	pass # Replace with function body.
+
+func refreshSelf():
+	if ShipDat == null: return
+	if Agent.focusShip == ShipDat["symbol"]:
+		_on_Button_pressed()
 
 func setdat(data):
 	ShipDat = data
