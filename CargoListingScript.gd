@@ -66,7 +66,8 @@ func _on_JETrequest_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		Agent.emit_signal("JettisonCargo",cleanbody)
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():

@@ -58,6 +58,18 @@ margin_bottom = 500.0
 rect_min_size = Vector2( 1000, 1000 )
 rect_pivot_offset = Vector2( 500, 500 )
 
+[node name="Transit" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -500.0
+margin_top = -500.0
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 1000, 1000 )
+rect_pivot_offset = Vector2( 500, 500 )
+
 [node name="Orbits" type="Control" parent="."]
 anchor_left = 0.5
 anchor_top = 0.5

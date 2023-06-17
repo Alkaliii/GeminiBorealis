@@ -17,6 +17,7 @@ var nearNode
 var nearNodeName
 var nearFocus
 var nearTwee
+var nearLine = null
 
 var olddata = null
 var tweeC
@@ -50,6 +51,7 @@ func _ready():
 	Agent.connect("systemWayFetch",self,"generateORBITALLIST")
 	Agent.connect("login",self,"clearAll")
 	Agent.connect("chart",self,"tweenCam")
+	Agent.connect("FocusMapNav",self,"tweenCam")
 	Agent.connect("mapGenLine",self,"genLine")
 	self.hide()
 	
@@ -132,16 +134,17 @@ func tweenCam(data):
 	if quickChart: 
 		quickChart = false
 		return
-	if $Camera2D.position == (Vector2(485,500)+Vector2(data["data"]["x"],data["data"]["y"])): return
-	
+	if $Camera2D.position == (Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])): return
+	#485
 	tweeC = get_tree().create_tween()
 	tweeC.tween_property($Camera2D,"zoom",Vector2(0.1,0.1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tweeC.parallel().tween_property($Camera2D,"position",(Vector2(485,500)+Vector2(data["data"]["x"],data["data"]["y"])),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	tweeC.parallel().tween_property($Camera2D,"position",(Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	yield(tweeC,"finished")
 	tweeC = get_tree().create_tween()
 	tweeC.tween_property($Camera2D,"zoom",Vector2(0.05,0.05),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
 func focusWPT(data):
+	if !data["data"].has("symbol"): return
 	resetWPTcol()
 	yield(get_tree().create_timer(0.3),"timeout")
 	PlanetNdList[data["data"]["symbol"]].modulate = Color(WPCM[data["data"]["type"]]["bg"])
@@ -167,6 +170,7 @@ func mapHome():
 		mhtwee.tween_property($Camera2D,"zoom",Vector2(0.1,0.1),4).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 		mhtwee.parallel().tween_property($Camera2D,"position",Vector2(500,500),1).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 		resetWPTcol()
+		nearLine = null
 		for r in $Lines.get_children():
 			r.queue_free()
 		$CanvasLayer/VBoxContainer/DISTANCE.hide()
@@ -198,12 +202,13 @@ func calc_nearNode():
 			if w["symbol"] == nearNodeName:
 				$CanvasLayer/VBoxContainer/WAYPOINT.show()
 				$CanvasLayer/VBoxContainer/WAYPOINT.bbcode_text = str("[color=#949495]",w["type"])
+				Agent.emit_signal("mapSEL",nearNodeName)
 				
 				var shipCount = 0
 				for s in Agent._FleetData["data"]:
 					if s["nav"]["waypointSymbol"] == nearNodeName and s["nav"]["status"] != "IN_TRANSIT":
 						shipCount += 1
-					elif Vector2(s["nav"]["route"]["destination"]["x"],s["nav"]["route"]["destination"]["y"]) == nearNode.rect_position-Vector2(500,500):
+					elif Vector2(s["nav"]["route"]["destination"]["x"],s["nav"]["route"]["destination"]["y"]) == nearNode.rect_position-Vector2(500,500) and s["nav"]["status"] != "IN_TRANSIT":
 						shipCount += 1
 				
 				if shipCount > 0:
@@ -223,23 +228,36 @@ func calc_nearNode():
 			
 			
 			#print(nd)
-			Agent.emit_signal("mapSEL",nd)
+			#Agent.emit_signal("mapSEL",nd)
 			
+	if nearTwee == SceneTreeTween:
+		yield(nearTwee,"finished")
 			
-			if nearTwee == SceneTreeTween:
-				yield(nearTwee,"finished")
-			
-			nearTwee = get_tree().create_tween()
-			nearTwee.tween_property(nearFocus,"rect_position",PlanetNdList[nd].rect_position,0.2)
+	if nearNode.rect_position.distance_to($Camera2D.position) < 8:
+		nearTwee = get_tree().create_tween()
+		nearTwee.tween_property(nearFocus,"rect_position",nearNode.rect_position,0.2)
+	else:
+		#nearFocus.rect_position = $Camera2D.position
+		nearTwee = get_tree().create_tween()
+		nearTwee.tween_property(nearFocus,"rect_position",$Camera2D.position,0.7).set_ease(Tween.EASE_OUT)
 	
-	for l in $Lines.get_children():
-		if l.get_point_count() == 2:
-			if l.get_point_position(0).distance_to($Camera2D.position) < 12 or l.get_point_position(1).distance_to($Camera2D.position) < 12:
-				$CanvasLayer/VBoxContainer/DISTANCE.show()
-				$CanvasLayer/VBoxContainer/DISTANCE.bbcode_text = str("[color=#949495][b]D: ", l.name)
-				break
-			else:
-				$CanvasLayer/VBoxContainer/DISTANCE.hide()
+	if nearLine != null:
+		for l in $Lines.get_children():
+			l.width = 0.05
+			if l.get_point_count() == 2:
+				if l.get_point_position(0).distance_to($Camera2D.position) < nearLine.get_point_position(0).distance_to($Camera2D.position) or l.get_point_position(1).distance_to($Camera2D.position) < nearLine.get_point_position(1).distance_to($Camera2D.position):
+					nearLine = l
+				elif ((l.get_point_position(0)+l.get_point_position(1))/2).distance_to($Camera2D.position) < ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2).distance_to($Camera2D.position):
+					nearLine = l
+		if nearLine.get_point_position(0).distance_to($Camera2D.position) < 12 or nearLine.get_point_position(1).distance_to($Camera2D.position) < 12:
+			$CanvasLayer/VBoxContainer/DISTANCE.show()
+			$CanvasLayer/VBoxContainer/DISTANCE.bbcode_text = str("[color=#949495][b]D: ", nearLine.name)
+		elif ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2).distance_to($Camera2D.position) < 12:
+			$CanvasLayer/VBoxContainer/DISTANCE.show()
+			$CanvasLayer/VBoxContainer/DISTANCE.bbcode_text = str("[color=#949495][b]D: ", nearLine.name)
+			nearLine.width = 0.3
+		else:
+			$CanvasLayer/VBoxContainer/DISTANCE.hide()
 
 func mapZoom():
 	if Input.is_action_just_pressed("MAPzoom_out"): #OUT
@@ -355,7 +373,7 @@ func generateSYSTEM(data):
 					OrbitNdList[w["symbol"]] = circ
 				else:
 					genOrbitals(Vector2(w["x"],w["y"]))
-	nearNode = PlanetNdList[PlanetNdList.keys()[0]]
+	nearNode = PlanetNdList[PlanetNdList.keys()[PlanetNdList.keys().size()-1]]
 	calc_nearNode()
 
 func genOrbitals(pos):
@@ -384,8 +402,16 @@ func genOrbitals(pos):
 		onum += 1.3
 		idx += 1
 
-func genLine(one,two):
+func genLine(one,two, col = null, transit = false, arrival = null):
+	if one == two: return
+	
 	for l in $Lines.get_children():
+		if (l.get_point_position(0) == one+Vector2(500,500)) and (l.get_point_position(1) == two+Vector2(500,500)):
+			return
+		if (l.get_point_position(0) == two+Vector2(500,500)) and (l.get_point_position(1) == one+Vector2(500,500)):
+			return
+	
+	for l in $Transit.get_children():
 		if (l.get_point_position(0) == one+Vector2(500,500)) and (l.get_point_position(1) == two+Vector2(500,500)):
 			return
 		if (l.get_point_position(0) == two+Vector2(500,500)) and (l.get_point_position(1) == one+Vector2(500,500)):
@@ -393,9 +419,28 @@ func genLine(one,two):
 	
 	var line = Line2D.new()
 	line.width = 0.05
-	line.default_color = Color(1,1,1)
+	if col != null:
+		line.default_color = col
+	else: line.default_color = Color(1,1,1)
 	line.add_point((one+Vector2(500,500)),0)
 	line.add_point((two+Vector2(500,500)),1)
 	line.name = str(round((one-two).length()))
-	$Lines.add_child(line)
-	print(line.global_position)
+	if transit:
+		line.name = str(round((one-two).length()),"TRANSIT")
+		$Transit.add_child(line)
+		var transitTwee = get_tree().create_tween()
+		transitTwee.set_loops()
+		transitTwee.bind_node(line)
+		transitTwee.tween_property(line,"modulate",Color(1,1,1,1),1)
+		transitTwee.tween_interval(0.2)
+		transitTwee.tween_property(line,"modulate",Color(1,1,1,0),1)
+		if arrival != null:
+			var expiry = (Time.get_unix_time_from_datetime_string(arrival) - Time.get_unix_time_from_system())
+			var terminate = get_tree().create_timer(expiry)
+			terminate.connect("timeout",line,"queue_free")
+			#line.add_child(terminate)
+	else: $Lines.add_child(line)
+	
+	if $Lines.get_child_count() == 1:
+		nearLine = line
+	#print(line.global_position)

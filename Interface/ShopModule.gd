@@ -109,7 +109,8 @@ func _on_request_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		reloadData = cleanbody
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():

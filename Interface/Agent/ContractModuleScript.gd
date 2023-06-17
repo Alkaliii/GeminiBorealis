@@ -26,7 +26,8 @@ func _on_request_completed(result, response_code, headers, body):
 		fastreturn()
 		Agent.emit_signal("AcceptContract")
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():

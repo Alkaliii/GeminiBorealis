@@ -309,8 +309,7 @@ scroll_active = false
 [node name="MainWindow" type="HBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -1280.0
-margin_right = 1280.0
+margin_right = 2560.0
 margin_bottom = -50.0
 rect_min_size = Vector2( 0, 550 )
 custom_constants/separation = 0
@@ -320,6 +319,7 @@ margin_top = 25.0
 margin_right = 1280.0
 margin_bottom = 550.0
 rect_min_size = Vector2( 1280, 525 )
+mouse_filter = 1
 size_flags_vertical = 8
 
 [node name="ViewSystem" type="VBoxContainer" parent="MainWindow/Systems"]
@@ -328,7 +328,7 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 margin_left = -610.0
-margin_top = -69.0
+margin_top = -73.0
 margin_right = 610.0
 grow_vertical = 0
 rect_min_size = Vector2( 1220, 0 )
@@ -1002,6 +1002,13 @@ text = "AGENT"
 flat = true
 expand_icon = true
 
+[node name="MAPCONTROLS" parent="." instance=ExtResource( 25 )]
+margin_left = -130.0
+margin_top = 45.0
+margin_right = -30.0
+margin_bottom = 145.0
+rect_pivot_offset = Vector2( 100, 0 )
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 visible = false
 
@@ -1023,13 +1030,6 @@ text = "LOGOUT"
 flat = true
 icon_align = 2
 expand_icon = true
-
-[node name="MAPCONTROLS" parent="." instance=ExtResource( 25 )]
-margin_left = -130.0
-margin_top = 45.0
-margin_right = -30.0
-margin_bottom = 145.0
-rect_pivot_offset = Vector2( 100, 0 )
 
 [connection signal="pressed" from="MainWindow/Ships/ShipInfoModule/VBoxContainer/Actions/Button" to="MainWindow/Ships/ShipInfoModule" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainWindow/Agent/Contracts/Button" to="MainWindow/Agent/Contracts" method="_on_Button_pressed"]

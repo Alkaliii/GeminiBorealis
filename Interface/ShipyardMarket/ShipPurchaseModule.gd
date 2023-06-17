@@ -96,7 +96,8 @@ func _on_request_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		Agent.emit_signal("PurchaseShip")
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():

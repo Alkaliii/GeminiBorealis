@@ -13,6 +13,7 @@ func _ready():
 	Agent.connect("NavigationFinished",self,"show")
 	Agent.connect("DockFinished",self,"show")
 	Agent.connect("OrbitFinished",self,"show")
+	Agent.connect("RefuelFinished",self,"show")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
 func _on_request_completed(result, response_code, headers, body):
@@ -22,7 +23,8 @@ func _on_request_completed(result, response_code, headers, body):
 		setdat(cleanbody)
 		Agent._FleetData = cleanbody
 		Agent.emit_signal("fleetUpdated")
-#	else:
+	else:
+		Agent.dispError(cleanbody)
 #		getfail()
 	#print(json.result)
 

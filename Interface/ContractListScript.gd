@@ -14,7 +14,8 @@ func _on_request_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		contractDat = cleanbody
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():

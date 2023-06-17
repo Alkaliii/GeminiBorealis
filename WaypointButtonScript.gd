@@ -2,6 +2,7 @@ extends Button
 
 export var symbol : String
 export var type : String
+#export var trait : String
 export var xpos : int
 export var ypos : int
 
@@ -12,6 +13,14 @@ func _ready():
 
 func setXY(string):
 	$"300line".bbcode_text = string
+
+func setIcon(new):
+	if new == null: return
+	match new:
+		"SHIPYARD":
+			icon = preload("res://Interface/Systems/Icons/SHIPYARDWaypointButtonIcon.png")
+		"MARKETPLACE":
+			icon = preload("res://Interface/Systems/Icons/MARKETWaypointButtonIcon.tres")
 
 func _on_request_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())

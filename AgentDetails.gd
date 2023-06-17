@@ -9,10 +9,27 @@ export var AgentSymbol : String
 export var USERTOKEN : String
 
 var systemData
+var surveys : Dictionary = {
+	"X1-SS23-49325D-FAB7F2": {
+		"signature": "X1-SS23-49325D-FAB7F2",
+		"symbol": "X1-SS23-49325D",
+		"deposit": [
+			{
+			"symbol": "PRECIOUS_STONES"
+			},{
+			"symbol": "ICE_WATER"
+			}
+		],
+		"expiration":"2023-06-17T07:25:06.984Z",
+		"size":"SMALL"
+	}
+}
 
 export var _FleetData : Dictionary
 export var interfaceShip : String
 export var focusShip : String
+
+var menu
 
 signal login
 signal systemFetch(cleanbody)
@@ -29,14 +46,18 @@ signal PurchaseCargo
 signal SellCargo
 signal JettisonCargo
 
+signal showFMAPbut
+
 signal mapHOME
 signal mapSEL(sym)
 signal mapGenLine(one,two)
 
 #SHIP ACTIONS
 signal NavigationFinished
+signal FocusMapNav
 signal DockFinished
 signal OrbitFinished
+signal RefuelFinished
 
 var QueryPrompt = null
 signal query_Ship(shipArr)
@@ -45,10 +66,22 @@ signal interfaceShipSet
 signal query_Waypoint(waypointArr)
 signal selectedWaypoint(waypointSym)
 
+signal query_Survey(symbol)
+signal selectedSurvey(signature)
+
 signal shipfocused(data)
+
+signal error2disp(inst)
+const error = preload("res://Interface/ErrorPanel.tscn")
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
+
+func dispError(data):
+	var disp = error.instance()
+	disp.setdat(data)
+	emit_signal("error2disp",disp)
 
 func cleanHQ():
 	var delete = true
@@ -103,7 +136,8 @@ func _on_SYSrequest_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		emit_signal("query_Waypoint",cleanbody,QueryPrompt)
-#	else:
+	else:
+		dispError(cleanbody)
 #		getfail()
 	print(json.result)
 

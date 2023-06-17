@@ -6,6 +6,8 @@ const wayaction = preload("res://WaypointFunctionButton.tscn")
 export var waypointInfo : NodePath
 var selected : int = 0
 
+var scrollTwee
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.hide()
@@ -13,6 +15,7 @@ func _ready():
 	Agent.connect("login", self, "show")
 	Agent.connect("chart", self, "setWaypointDat")
 	Agent.connect("mapHOME",self,"unFocus")
+	Agent.connect("mapSEL",self,"setCamNear")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
 func unFocus():
@@ -29,7 +32,8 @@ func _on_request_completed(result, response_code, headers, body):
 		setdat(cleanbody)
 		Agent.emit_signal("systemFetch",cleanbody)
 		fetchSysWay()
-#	else:
+	else:
+		Agent.dispError(cleanbody)
 #		getfail()
 	print(json.result)
 
@@ -113,6 +117,16 @@ func setdat(data):
 		new.setXY(str("[color=#71797E]x:[b]",w["x"],"[/b]/y:[b]",w["y"]))
 		$ScrollContainer/HBoxContainer.add_child(new)
 
+func setCamNear(data):
+	for b in $ScrollContainer/HBoxContainer.get_children():
+		if b.symbol == data and Agent.menu == "SYSTEM":
+			if scrollTwee == SceneTreeTween:
+				yield(scrollTwee,"finished")
+			
+			scrollTwee = get_tree().create_tween()
+			var pos = ($ScrollContainer.get_h_scrollbar().max_value) * (float($ScrollContainer/HBoxContainer.get_children().find(b))/float($ScrollContainer/HBoxContainer.get_child_count()))
+			scrollTwee.tween_property($ScrollContainer,"scroll_horizontal",int(pos),0.8).set_ease(Tween.EASE_IN_OUT)
+
 func show():
 	self.modulate = Color(1,1,1,0)
 	self.visible = true
@@ -139,7 +153,7 @@ func fetchSysWay():
 	HTTP.use_threads = true
 	HTTP.connect("request_completed",self,"_on_WAYrequest_completed")
 	self.add_child(HTTP)
-	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem,"/waypoints")
+	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem,"/waypoints?limt=20")
 	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
 	var header = [headerstring]
 	HTTP.request(url, header)
@@ -150,3 +164,17 @@ func _on_WAYrequest_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		Agent.emit_signal("systemWayFetch",cleanbody)
 		Agent.systemData = cleanbody
+		for w in cleanbody["data"]:
+			for b in $ScrollContainer/HBoxContainer.get_children():
+				if w["symbol"] == b.symbol:
+					for t in w["traits"]:
+						if t["symbol"] == "SHIPYARD":
+							b.setIcon(t["symbol"])
+							break
+						elif t["symbol"] == "MARKETPLACE":
+							b.setIcon(t["symbol"])
+							continue
+						else:
+							continue
+	else:
+		Agent.dispError(cleanbody)

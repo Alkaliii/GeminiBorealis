@@ -28,6 +28,12 @@ func setdat(data):
 	Inspect.text = str(data["registration"]["role"])
 	Status.sns = data["nav"]["status"]
 	Status.setdat()
+	
+	if data["nav"]["status"] == "IN_TRANSIT":
+		Agent.emit_signal("mapGenLine",
+		Vector2(data["nav"]["route"]["departure"]["x"],data["nav"]["route"]["departure"]["y"]),
+		Vector2(data["nav"]["route"]["destination"]["x"],data["nav"]["route"]["destination"]["y"]), Color(1,1,0,0.5), true, data["nav"]["route"]["arrival"])
+	
 	Waypoint.bbcode_text = str("[right][color=#949495][b]",data["nav"]["route"]["destination"]["type"],"[/b] ",data["nav"]["route"]["destination"]["symbol"])
 
 func refresh():

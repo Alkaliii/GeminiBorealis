@@ -1,7 +1,7 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Font/Default.tres" type="DynamicFont" id=1]
-[ext_resource path="res://sprite-action-black.png" type="Texture" id=2]
+[ext_resource path="res://Interface/Systems/Icons/DefaultWaypointButtonIcon.tres" type="Texture" id=2]
 [ext_resource path="res://300linesmall.tscn" type="PackedScene" id=3]
 [ext_resource path="res://WaypointButtonScript.gd" type="Script" id=4]
 
@@ -10,11 +10,6 @@ bg_color = Color( 0.6, 0.6, 0.6, 0 )
 border_width_top = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="AtlasTexture" id=1]
-flags = 4
-atlas = ExtResource( 2 )
-region = Rect2( 65, 225, 30, 30 )
-
 [node name="WaypointButton" type="Button"]
 margin_right = 300.0
 margin_bottom = 22.0
@@ -22,7 +17,7 @@ rect_min_size = Vector2( 300, 0 )
 custom_fonts/font = ExtResource( 1 )
 custom_styles/focus = SubResource( 2 )
 text = "text here"
-icon = SubResource( 1 )
+icon = ExtResource( 2 )
 flat = true
 align = 0
 expand_icon = true

@@ -56,9 +56,9 @@ PopupMenu/icons/submenu = SubResource( 28 )
 PopupMenu/icons/unchecked = SubResource( 29 )
 PopupMenu/styles/panel = SubResource( 30 )
 
-[sub_resource type="StyleBoxEmpty" id=10]
+[sub_resource type="StyleBoxEmpty" id=31]
 
-[sub_resource type="StyleBoxFlat" id=11]
+[sub_resource type="StyleBoxFlat" id=32]
 bg_color = Color( 0.6, 0.6, 0.6, 0 )
 border_width_left = 1
 border_width_top = 1
@@ -67,9 +67,9 @@ border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="Theme" id=13]
-Button/styles/hover = SubResource( 10 )
-Button/styles/normal = SubResource( 11 )
-Button/styles/pressed = SubResource( 11 )
+Button/styles/hover = SubResource( 31 )
+Button/styles/normal = SubResource( 32 )
+Button/styles/pressed = SubResource( 32 )
 
 [sub_resource type="StyleBoxEmpty" id=9]
 

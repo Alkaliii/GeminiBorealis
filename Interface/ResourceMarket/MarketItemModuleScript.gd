@@ -88,6 +88,18 @@ func _on_Button_pressed():
 					return
 				Agent.purchaseCargo(goodDat["symbol"],$VBoxContainer/HBoxContainer/HBoxContainer2/LineEdit.text,self)
 			1,2: #Sell
+				#Sell All
+				if $VBoxContainer/HBoxContainer/HBoxContainer2/OptionButton.selected == 2:
+					var unit
+					var ais
+					for s in Agent._FleetData["data"]:
+						if s["symbol"] == Agent.interfaceShip:
+							ais = s
+					for g in ais["cargo"]["inventory"]:
+						if g["symbol"] == goodDat["symbol"]:
+							unit = g["units"]
+					Agent.sellCargo(goodDat["symbol"],unit,self)
+					return
 				#Entered Valid Data
 				if !$VBoxContainer/HBoxContainer/HBoxContainer2/LineEdit.text.is_valid_integer():
 					$VBoxContainer/InventoryReport.bbcode_text = "[right][shake]please enter a [b]number"
@@ -121,7 +133,8 @@ func _on_BUYrequest_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		Agent.emit_signal("PurchaseCargo")
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():
@@ -133,7 +146,8 @@ func _on_SELLrequest_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		Agent.emit_signal("SellCargo")
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 

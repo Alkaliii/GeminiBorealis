@@ -4,6 +4,7 @@ extends Node
 signal agentFetched
 const shipQuery = preload("res://Interface/Ships/SelectShipPopUp.tscn")
 const waypointQuery = preload("res://Interface/Systems/SelectWaypointPopUp.tscn")
+const surveyQuery = preload("res://Interface/Ships/SelectSurveyPopUp.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -18,15 +19,27 @@ func _ready():
 	Agent.connect("login", self, "setStatus")
 	Agent.connect("login", self, "_on_Systems_pressed")
 	Agent.connect("login", self, "resetWindow")
-	Agent.connect("chart", self, "showPanel")
+	Agent.connect("shipyard", self, "showPanel")
+	Agent.connect("visitmarket",self,"showPanel")
+	Agent.connect("shipfocused",self,"showPanel")
+	Agent.connect("closeShop",self,"hidePanel")
 	Agent.connect("mapHOME",self,"hidePanel")
 	Agent.connect("AcceptContract", self, "updateStatus")
 	Agent.connect("PurchaseShip",self,"updateStatus")
 	Agent.connect("PurchaseShip",self,"_on_Ships_pressed")
 	Agent.connect("PurchaseCargo",self,"updateStatus")
+	Agent.connect("SellCargo",self,"updateStatus")
 	
 	Agent.connect("query_Ship",self,"queryShip")
 	Agent.connect("query_Waypoint",self,"queryWaypoint")
+	Agent.connect("query_Survey",self,"querySurvey")
+	
+	Agent.connect("RefuelFinished",self,"updateStatus")
+	
+	Agent.connect("error2disp",self,"dispError")
+
+func dispError(node):
+	$CanvasLayer.add_child(node)
 
 func queryShip(Arr):
 	var query = shipQuery.instance()
@@ -38,12 +51,17 @@ func queryWaypoint(data, prompt = null):
 	query.setdat(data, prompt)
 	$CanvasLayer.add_child(query)
 
+func querySurvey(symbol):
+	var query = surveyQuery.instance()
+	query.setdat(symbol)
+	$CanvasLayer.add_child(query)
+
 func setStatus():
 	#$Back/ViewportContainer/Viewport.handle_input_locally = true
 	var details = $StatusBack/Details
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
 
-func updateStatus():
+func updateStatus(_1 = null):
 	fetchAgent()
 	yield(self,"agentFetched")
 	var details = $StatusBack/Details
@@ -78,22 +96,26 @@ func _on_fetchAgentrequest_completed(result, response_code, headers, body):
 		Agent.cleanHQ()
 		emit_signal("agentFetched")
 	else:
-		getfail()
+		Agent.dispError(cleanbody)
+		#getfail()
 	print(json.result)
 
 func getfail():
 	pass
 
-func showPanel(data):
+func showPanel(_1 = null,_2 = null,_3 = null):
 	#$Back/Panel.modulate = Color(1,1,1,0)
 	$Back/Panel.show()
 	var twee = get_tree().create_tween()
-	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,1),1).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,1),0.3).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CIRC)
+	twee.parallel().tween_property($Back/ViewportContainer, "rect_position", Vector2(300,0), 1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
 	yield(twee,"finished")
+	Agent.emit_signal("showFMAPbut")
 
-func hidePanel():
+func hidePanel(_1 = null):
 	var twee = get_tree().create_tween()
-	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,0),1).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	twee.tween_property($Back/Panel,"modulate",Color(1,1,1,0),0.3).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CIRC)
+	twee.parallel().tween_property($Back/ViewportContainer, "rect_position", Vector2.ZERO, 1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
 	yield(twee,"finished")
 	$Back/Panel.hide()
 
@@ -108,6 +130,8 @@ func logout():
 
 
 func _on_Agent_pressed():
+	Agent.menu = "AGENT"
+	showPanel()
 	var Window = $MainWindow
 	var SysArt = $Back/SystemArt
 	var twee = get_tree().create_tween()
@@ -119,6 +143,8 @@ func _on_Agent_pressed():
 
 
 func _on_Systems_pressed():
+	Agent.menu = "SYSTEM"
+	Agent.emit_signal("mapHOME")
 	var Window = $MainWindow
 	var SysArt = $Back/SystemArt
 	var twee = get_tree().create_tween()
@@ -130,6 +156,8 @@ func _on_Systems_pressed():
 
 
 func _on_Ships_pressed():
+	$MainMenu/Ships.disabled = true
+	Agent.menu = "SHIPS"
 	var Window = $MainWindow
 	var SysArt = $Back/SystemArt
 	var twee = get_tree().create_tween()
@@ -138,5 +166,6 @@ func _on_Ships_pressed():
 	twee.parallel().tween_property($MainWindow/Systems, "modulate", Color(1,1,1,0),0.5)
 	twee.parallel().tween_property($MainWindow/Ships, "modulate", Color(1,1,1,1),0.5)
 	twee.parallel().tween_property($MainWindow/Agent, "modulate", Color(1,1,1,0),0.5)
-	yield(twee,"finished")
 	$MainWindow/Ships/ViewShips.show()
+	yield(twee,"finished")
+	$MainMenu/Ships.disabled = false
