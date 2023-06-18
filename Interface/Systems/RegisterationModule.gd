@@ -14,7 +14,7 @@ func getFactions():
 	HTTP.use_threads = true
 	HTTP.connect("request_completed",self,"_on_FACrequest_completed")
 	self.add_child(HTTP)
-	var url = str("https://api.spacetraders.io/v2/factions")
+	var url = str("https://api.spacetraders.io/v2/factions?limit=20")
 	#var headerstring = str("Authorization: Bearer ", testtoken)
 	var header = []#headerstring]
 	HTTP.request(url, header)
@@ -69,6 +69,9 @@ func Register(data):
 	Agent.AgentSymbol = data["data"]["agent"]["symbol"]
 	Agent.cleanHQ()
 	Agent.emit_signal("login")
+	
+	Save.pastTokens[Agent.AgentSymbol] = {"token": Agent.USERTOKEN,"symbol": Agent.AgentSymbol,"faction": Agent.AgentFaction,"date": Time.get_unix_time_from_system()}
+	Save.writeClientSave()
 	
 	var twee = get_tree().create_tween()
 	get_node(anim).play("Out")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Font/Small.tres" type="DynamicFont" id=2]
@@ -74,27 +74,57 @@ PopupMenu/icons/submenu = SubResource( 20 )
 PopupMenu/icons/unchecked = SubResource( 21 )
 PopupMenu/styles/panel = SubResource( 29 )
 
-[sub_resource type="StyleBoxFlat" id=13]
-bg_color = Color( 1, 1, 1, 0 )
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color( 1, 1, 1, 1 )
-
-[sub_resource type="StyleBoxEmpty" id=14]
-
-[sub_resource type="AtlasTexture" id=15]
-flags = 4
-atlas = ExtResource( 3 )
-region = Rect2( 65, 34, 30, 30 )
-
-[sub_resource type="StyleBoxEmpty" id=8]
-
 [sub_resource type="AtlasTexture" id=16]
 flags = 4
 atlas = ExtResource( 3 )
 region = Rect2( 289, 130, 30, 30 )
+
+[sub_resource type="StyleBoxFlat" id=31]
+bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxLine" id=32]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=33]
+VScrollBar/styles/grabber = SubResource( 31 )
+VScrollBar/styles/grabber_highlight = SubResource( 2 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 32 )
 
 [sub_resource type="Animation" id=17]
 tracks/0/type = "value"
@@ -243,8 +273,8 @@ custom_constants/separation = 0
 alignment = 1
 
 [node name="Login" type="CenterContainer" parent="HBoxContainer"]
-margin_left = 320.0
-margin_right = 960.0
+margin_left = 107.0
+margin_right = 747.0
 margin_bottom = 550.0
 rect_min_size = Vector2( 640, 0 )
 
@@ -262,10 +292,9 @@ anim = NodePath("../../../AnimationPlayer")
 use_threads = true
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer/Login/Register"]
-margin_left = 135.0
-margin_right = 165.0
+margin_right = 30.0
 margin_bottom = 30.0
-size_flags_horizontal = 4
+size_flags_horizontal = 0
 texture = SubResource( 9 )
 
 [node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Login/Register"]
@@ -276,7 +305,7 @@ rect_min_size = Vector2( 0, 15 )
 custom_fonts/bold_font = ExtResource( 4 )
 custom_fonts/normal_font = ExtResource( 5 )
 bbcode_enabled = true
-bbcode_text = "[b][center]REGISTRATION"
+bbcode_text = "[b]REGISTRATION"
 text = "REGISTRATION"
 scroll_active = false
 
@@ -336,9 +365,9 @@ expand_icon = true
 [node name="Login" type="VBoxContainer" parent="HBoxContainer/Login"]
 visible = false
 margin_left = 170.0
-margin_top = 156.0
+margin_top = 223.0
 margin_right = 470.0
-margin_bottom = 393.0
+margin_bottom = 326.0
 rect_min_size = Vector2( 300, 0 )
 script = ExtResource( 6 )
 control = NodePath("../../..")
@@ -349,86 +378,16 @@ USER2TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiS0VMUFRPT
 [node name="HTTPRequest" type="HTTPRequest" parent="HBoxContainer/Login/Login"]
 use_threads = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Login/Login"]
-margin_right = 300.0
-margin_bottom = 130.0
-rect_min_size = Vector2( 0, 130 )
-alignment = 1
-
-[node name="Button" type="Button" parent="HBoxContainer/Login/Login/HBoxContainer"]
-margin_left = 68.0
-margin_right = 148.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 80, 100 )
-size_flags_vertical = 0
-custom_fonts/font = ExtResource( 5 )
-custom_styles/hover = SubResource( 13 )
-custom_styles/pressed = SubResource( 14 )
-custom_styles/normal = SubResource( 13 )
-icon = SubResource( 15 )
-align = 2
-icon_align = 1
-
-[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Login/HBoxContainer/Button"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-margin_left = -35.0
-margin_top = -16.0
-margin_right = 35.0
-margin_bottom = -8.0
-rect_min_size = Vector2( 70, 8 )
-custom_fonts/bold_font = ExtResource( 1 )
-custom_fonts/normal_font = ExtResource( 2 )
-bbcode_enabled = true
-bbcode_text = "[b][center]GEMINI"
-text = "GEMINI"
-scroll_active = false
-
-[node name="Button2" type="Button" parent="HBoxContainer/Login/Login/HBoxContainer"]
-margin_left = 152.0
-margin_right = 232.0
-margin_bottom = 100.0
-rect_min_size = Vector2( 80, 100 )
-size_flags_vertical = 0
-custom_fonts/font = ExtResource( 5 )
-custom_styles/hover = SubResource( 13 )
-custom_styles/pressed = SubResource( 8 )
-custom_styles/normal = SubResource( 13 )
-icon = SubResource( 15 )
-align = 2
-icon_align = 1
-
-[node name="300line" type="RichTextLabel" parent="HBoxContainer/Login/Login/HBoxContainer/Button2"]
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-margin_left = -35.0
-margin_top = -16.0
-margin_right = 35.0
-margin_bottom = -8.0
-rect_min_size = Vector2( 70, 8 )
-custom_fonts/bold_font = ExtResource( 1 )
-custom_fonts/normal_font = ExtResource( 2 )
-bbcode_enabled = true
-bbcode_text = "[b][center]KELPTO"
-text = "KELPTO"
-scroll_active = false
-
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer/Login/Login"]
-margin_left = 135.0
-margin_top = 134.0
-margin_right = 165.0
-margin_bottom = 164.0
-size_flags_horizontal = 4
+margin_right = 30.0
+margin_bottom = 30.0
+size_flags_horizontal = 0
 texture = SubResource( 16 )
 
 [node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/Login/Login"]
-margin_top = 168.0
+margin_top = 34.0
 margin_right = 300.0
-margin_bottom = 183.0
+margin_bottom = 49.0
 rect_min_size = Vector2( 0, 15 )
 custom_fonts/bold_font = ExtResource( 4 )
 custom_fonts/normal_font = ExtResource( 5 )
@@ -438,9 +397,9 @@ text = "TOKEN"
 scroll_active = false
 
 [node name="LineEdit" type="LineEdit" parent="HBoxContainer/Login/Login"]
-margin_top = 187.0
+margin_top = 53.0
 margin_right = 300.0
-margin_bottom = 211.0
+margin_bottom = 77.0
 rect_min_size = Vector2( 0, 24 )
 custom_fonts/font = ExtResource( 5 )
 custom_styles/normal = SubResource( 1 )
@@ -449,9 +408,9 @@ secret_character = "+"
 caret_blink = true
 
 [node name="Button" type="Button" parent="HBoxContainer/Login/Login"]
-margin_top = 215.0
+margin_top = 81.0
 margin_right = 300.0
-margin_bottom = 237.0
+margin_bottom = 103.0
 custom_fonts/font = ExtResource( 5 )
 text = "LOGIN"
 flat = true
@@ -505,12 +464,29 @@ margin_right = 1280.0
 margin_bottom = 550.0
 rect_min_size = Vector2( 640, 0 )
 
+[node name="CenterContainer" type="CenterContainer" parent="HBoxContainer"]
+margin_left = 747.0
+margin_right = 1173.0
+margin_bottom = 550.0
+rect_min_size = Vector2( 426, 550 )
+
+[node name="PrevUserList" type="ScrollContainer" parent="HBoxContainer/CenterContainer"]
+margin_left = 63.0
+margin_top = 125.0
+margin_right = 363.0
+margin_bottom = 425.0
+rect_min_size = Vector2( 300, 300 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/CenterContainer/PrevUserList"]
+margin_right = 300.0
+margin_bottom = 300.0
+rect_min_size = Vector2( 300, 300 )
+theme = SubResource( 33 )
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Out = SubResource( 17 )
 anims/RESET = SubResource( 18 )
 
 [connection signal="pressed" from="MenuBack/Swap" to="." method="_on_Swap_pressed"]
 [connection signal="pressed" from="HBoxContainer/Login/Register/Button" to="HBoxContainer/Login/Register" method="_on_Button_pressed"]
-[connection signal="pressed" from="HBoxContainer/Login/Login/HBoxContainer/Button" to="HBoxContainer/Login/Login" method="_on_USER1Button_pressed"]
-[connection signal="pressed" from="HBoxContainer/Login/Login/HBoxContainer/Button2" to="HBoxContainer/Login/Login" method="_on_USER2Button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Login/Login/Button" to="HBoxContainer/Login/Login" method="_on_Button_pressed"]

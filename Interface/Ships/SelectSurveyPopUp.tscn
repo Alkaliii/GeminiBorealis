@@ -88,6 +88,7 @@ margin_right = 300.0
 margin_bottom = 27.0
 rect_min_size = Vector2( 300, 15 )
 theme = SubResource( 8 )
+clip_text = true
 
 [node name="Button" type="Button" parent="VBoxContainer"]
 margin_top = 31.0

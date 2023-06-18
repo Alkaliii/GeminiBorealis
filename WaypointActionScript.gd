@@ -26,7 +26,7 @@ func _on_request_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		match wpt:
-			0:
+			0: #MARKET
 				if !close:
 					Agent.emit_signal("visitmarket",cleanbody,ws,ss)
 					self.text = "Close Market"
@@ -35,7 +35,7 @@ func _on_request_completed(result, response_code, headers, body):
 					self.text = "Open Market"
 					Agent.emit_signal("closeShop",cleanbody)
 					close = false
-			1:
+			1: #SHIPYARD
 				if !close:
 					Agent.emit_signal("shipyard",cleanbody,ws,ss)
 					self.text = "Close Shipyard"
@@ -44,7 +44,7 @@ func _on_request_completed(result, response_code, headers, body):
 					self.text = "Open Shipyard"
 					Agent.emit_signal("closeShop",cleanbody)
 					close = false
-			3:
+			3: #ORBITAL
 				Agent.emit_signal("chart",cleanbody)
 #		setdat(cleanbody, true)
 #	else:

@@ -144,7 +144,7 @@ func _on_SELLrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
-		Agent.emit_signal("SellCargo")
+		Agent.emit_signal("SellCargo",cleanbody)
 	else:
 		Agent.dispError(cleanbody)
 		#getfail()

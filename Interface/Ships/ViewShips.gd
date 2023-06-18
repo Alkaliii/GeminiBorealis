@@ -26,7 +26,7 @@ func _on_request_completed(result, response_code, headers, body):
 	else:
 		Agent.dispError(cleanbody)
 #		getfail()
-	#print(json.result)
+	print(json.result)
 
 func show(arg = null):
 	self.modulate = Color(1,1,1,0)
@@ -34,7 +34,27 @@ func show(arg = null):
 	var twee = get_tree().create_tween()
 	twee.tween_property(self, "modulate", Color(1,1,1,1), 1)
 	yield(get_tree(),"idle_frame")
-	setShips()
+	
+	if arg != null:
+		#sellCargo and purchaseCargo returns cacheable data
+		if arg.has("data") and arg["data"].has("transaction"):
+			for ship in Agent._FleetData["data"]:
+				if ship["symbol"] == arg["data"]["transaction"]["shipSymbol"]:
+					ship["cargo"] = arg["data"]["cargo"]
+					print("dataCached[s/pCargo]",arg["data"]["transaction"])
+					Agent.emit_signal("fleetUpdated")
+		#jettisonCargo returns cacheable data
+		elif arg.has("data") and arg["data"].has("cargo"):
+			for ship in Agent._FleetData["data"]:
+				if ship["symbol"] == Agent.focusShip:
+					ship["cargo"] = arg["data"]["cargo"]
+					print("dataCached[jCargo]")
+					Agent.emit_signal("fleetUpdated")
+		else:
+			setShips()
+	else:
+		setShips()
+	
 	$Label.bbcode_text = str("[b]", Agent.AgentSymbol,"[/b]'s Fleet")
 	
 	for c in $Actions.get_children():

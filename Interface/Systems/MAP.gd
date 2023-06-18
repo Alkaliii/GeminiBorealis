@@ -136,10 +136,16 @@ func tweenCam(data):
 		return
 	if $Camera2D.position == (Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])): return
 	#485
-	tweeC = get_tree().create_tween()
-	tweeC.tween_property($Camera2D,"zoom",Vector2(0.1,0.1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	tweeC.parallel().tween_property($Camera2D,"position",(Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-	yield(tweeC,"finished")
+	
+	if $Camera2D.zoom < Vector2(0.1,0.1):	
+		tweeC = get_tree().create_tween()
+		tweeC.tween_property($Camera2D,"zoom",Vector2(0.1,0.1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		tweeC.parallel().tween_property($Camera2D,"position",(Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		yield(tweeC,"finished")
+	else:
+		tweeC = get_tree().create_tween()
+		tweeC.tween_property($Camera2D,"position",(Vector2(500,500)+Vector2(data["data"]["x"],data["data"]["y"])),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+		yield(tweeC,"finished")
 	tweeC = get_tree().create_tween()
 	tweeC.tween_property($Camera2D,"zoom",Vector2(0.05,0.05),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
@@ -243,21 +249,24 @@ func calc_nearNode():
 	
 	if nearLine != null:
 		for l in $Lines.get_children():
-			l.width = 0.05
-			if l.get_point_count() == 2:
-				if l.get_point_position(0).distance_to($Camera2D.position) < nearLine.get_point_position(0).distance_to($Camera2D.position) or l.get_point_position(1).distance_to($Camera2D.position) < nearLine.get_point_position(1).distance_to($Camera2D.position):
-					nearLine = l
-				elif ((l.get_point_position(0)+l.get_point_position(1))/2).distance_to($Camera2D.position) < ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2).distance_to($Camera2D.position):
-					nearLine = l
+			if l.get_point_position(0).distance_to($Camera2D.position) < nearLine.get_point_position(0).distance_to($Camera2D.position) or l.get_point_position(1).distance_to($Camera2D.position) < nearLine.get_point_position(1).distance_to($Camera2D.position):
+				nearLine = l
+			if ((l.get_point_position(0)+l.get_point_position(1))/2).distance_to($Camera2D.position) < ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2).distance_to($Camera2D.position):
+				nearLine = l
+			if l != nearLine:
+				l.width = 0.05
 		if nearLine.get_point_position(0).distance_to($Camera2D.position) < 12 or nearLine.get_point_position(1).distance_to($Camera2D.position) < 12:
 			$CanvasLayer/VBoxContainer/DISTANCE.show()
 			$CanvasLayer/VBoxContainer/DISTANCE.bbcode_text = str("[color=#949495][b]D: ", nearLine.name)
-		elif ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2).distance_to($Camera2D.position) < 12:
+		elif ((nearLine.get_point_position(0)+nearLine.get_point_position(1))/2.0).distance_to($Camera2D.position) < 12:
 			$CanvasLayer/VBoxContainer/DISTANCE.show()
 			$CanvasLayer/VBoxContainer/DISTANCE.bbcode_text = str("[color=#949495][b]D: ", nearLine.name)
 			nearLine.width = 0.3
 		else:
 			$CanvasLayer/VBoxContainer/DISTANCE.hide()
+			for l in $Lines.get_children():
+				l.width = 0.05
+			
 
 func mapZoom():
 	if Input.is_action_just_pressed("MAPzoom_out"): #OUT
@@ -425,6 +434,10 @@ func genLine(one,two, col = null, transit = false, arrival = null):
 	line.add_point((one+Vector2(500,500)),0)
 	line.add_point((two+Vector2(500,500)),1)
 	line.name = str(round((one-two).length()))
+	for l in $Lines.get_children():
+		if l.name == str(round((one-two).length())):
+			line.name += "'"
+	
 	if transit:
 		line.name = str(round((one-two).length()),"TRANSIT")
 		$Transit.add_child(line)

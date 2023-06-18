@@ -1,0 +1,116 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=1]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Interface/Login/PreviousUser.gd" type="Script" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=13]
+
+[sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="Theme" id=16]
+Button/styles/hover = SubResource( 13 )
+Button/styles/normal = SubResource( 14 )
+Button/styles/pressed = SubResource( 14 )
+
+[sub_resource type="StyleBoxEmpty" id=17]
+
+[sub_resource type="AtlasTexture" id=15]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 65, 34, 30, 30 )
+
+[sub_resource type="StyleBoxEmpty" id=31]
+
+[sub_resource type="StyleBoxFlat" id=32]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="Theme" id=33]
+Button/styles/hover = SubResource( 31 )
+Button/styles/normal = SubResource( 32 )
+Button/styles/pressed = SubResource( 32 )
+
+[sub_resource type="StyleBoxEmpty" id=34]
+
+[sub_resource type="AtlasTexture" id=35]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 225, 258, 30, 30 )
+
+[node name="PreviousUser" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -980.0
+margin_bottom = -550.0
+rect_min_size = Vector2( 300, 50 )
+script = ExtResource( 4 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_constants/separation = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 300.0
+margin_bottom = 20.0
+
+[node name="LoginAs" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_right = 275.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 275, 20 )
+theme = SubResource( 16 )
+custom_fonts/font = ExtResource( 2 )
+custom_styles/focus = SubResource( 17 )
+text = "GEMINI"
+icon = SubResource( 15 )
+align = 0
+expand_icon = true
+
+[node name="RemoveLogin" type="Button" parent="VBoxContainer/HBoxContainer"]
+self_modulate = Color( 0.870588, 0.192157, 0.388235, 1 )
+margin_left = 279.0
+margin_right = 299.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+theme = SubResource( 33 )
+custom_fonts/font = ExtResource( 2 )
+custom_styles/focus = SubResource( 34 )
+icon = SubResource( 35 )
+icon_align = 2
+expand_icon = true
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/HBoxContainer"]
+visible = false
+margin_left = 304.0
+margin_right = 324.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+texture = SubResource( 15 )
+expand = true
+
+[node name="Details" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 22.0
+margin_right = 300.0
+margin_bottom = 37.0
+rect_min_size = Vector2( 300, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]([b]OMEGA[/b]) | TIME "
+text = "(OMEGA) | TIME "
+scroll_active = false
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/LoginAs" to="." method="_on_LoginAs_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/RemoveLogin" to="." method="_on_RemoveLogin_pressed"]

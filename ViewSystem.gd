@@ -7,6 +7,8 @@ export var waypointInfo : NodePath
 var selected : int = 0
 
 var scrollTwee
+var oldscndata = null
+var stoptwee = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -118,6 +120,11 @@ func setdat(data):
 		$ScrollContainer/HBoxContainer.add_child(new)
 
 func setCamNear(data):
+	if oldscndata != null and data == oldscndata:
+		return
+	oldscndata = data
+	
+	if stoptwee: return
 	for b in $ScrollContainer/HBoxContainer.get_children():
 		if b.symbol == data and Agent.menu == "SYSTEM":
 			if scrollTwee == SceneTreeTween:
@@ -178,3 +185,11 @@ func _on_WAYrequest_completed(result, response_code, headers, body):
 							continue
 	else:
 		Agent.dispError(cleanbody)
+
+
+func _on_ScrollContainer_mouse_entered():
+	stoptwee = true
+
+
+func _on_ScrollContainer_mouse_exited():
+	stoptwee = false

@@ -1,6 +1,7 @@
 extends Control
 
 const cargoline = preload("res://Interface/Ships/CargoListing.tscn")
+const line = preload("res://300linesmall.tscn")
 var ArrivalTime = null
 var CooldownTime = null
 var SHIPDATA
@@ -45,6 +46,10 @@ func refreshCargo(data):
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
 		r.queue_free()
 	
+	var cartotal = line.instance()
+	cartotal.bbcode_text = str("[color=#949495][b]",data["data"]["cargo"]["units"],"[/b](",data["data"]["cargo"]["capacity"],")")
+	$VBoxContainer/ScrollContainer/Inventory.add_child(cartotal)
+	
 	for c in data["data"]["cargo"]["inventory"]:
 		yield(get_tree(),"idle_frame")
 		var cargo = cargoline.instance()
@@ -68,6 +73,10 @@ func setdat(data):
 	
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
 		r.queue_free()
+	
+	var cartotal = line.instance()
+	cartotal.bbcode_text = str("[color=#949495][b]",data["cargo"]["units"],"[/b](",data["cargo"]["capacity"],")")
+	$VBoxContainer/ScrollContainer/Inventory.add_child(cartotal)
 	
 	for c in data["cargo"]["inventory"]:
 		yield(get_tree(),"idle_frame")
@@ -203,6 +212,8 @@ func Navigate():
 	
 	if NAVWAYPOINT == "CANCEL": return
 	
+	$VBoxContainer/Actions/Button.disabled = true
+	
 	var HTTP = HTTPRequest.new()
 	self.add_child(HTTP)
 	HTTP.use_threads = true
@@ -215,6 +226,7 @@ func Navigate():
 	HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
 	yield(HTTP,"request_completed")
 	HTTP.queue_free()
+	$VBoxContainer/Actions/Button.disabled = false
 
 func _on_NAVrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
@@ -441,6 +453,7 @@ func refreshONORBIT(data):
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/refuel
 func Refuel():
+	$VBoxContainer/Actions/Button.disabled = true
 	var HTTP = HTTPRequest.new()
 	self.add_child(HTTP)
 	HTTP.use_threads = true
@@ -452,6 +465,7 @@ func Refuel():
 	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
 	yield(HTTP,"request_completed")
 	HTTP.queue_free()
+	$VBoxContainer/Actions/Button.disabled = false
 
 func _on_REFUELrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
@@ -487,6 +501,8 @@ func Survey():
 		return
 	else: CooldownTime = null
 	
+	$VBoxContainer/Actions/Button.disabled = true
+	
 	var HTTP = HTTPRequest.new()
 	self.add_child(HTTP)
 	HTTP.use_threads = true
@@ -498,6 +514,7 @@ func Survey():
 	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
 	yield(HTTP,"request_completed")
 	HTTP.queue_free()
+	$VBoxContainer/Actions/Button.disabled = false
 
 func _on_SURVEYrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
@@ -506,6 +523,7 @@ func _on_SURVEYrequest_completed(result, response_code, headers, body):
 		for s in cleanbody["data"]["surveys"]:
 			Agent.surveys[s["signature"]] = s
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
+		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
 	else:
 		Agent.dispError(cleanbody)
 #		getfail()
@@ -523,8 +541,10 @@ func Extract():
 		return
 	else: CooldownTime = null
 	
+	$VBoxContainer/Actions/Button.disabled = true
+	
 	if Agent.surveys.size() != 0:
-		Agent.emit_signal("query_Survey",SHIPDATA["nav"]["waypointSymbol"])
+		Agent.call_deferred("emit_signal","query_Survey",SHIPDATA["nav"]["waypointSymbol"])
 		yield(Agent,"selectedSurvey")
 	
 	if sSURVEY == "CANCEL" or sSURVEY == null:
@@ -554,13 +574,22 @@ func Extract():
 	
 	yield(HTTP,"request_completed")
 	HTTP.queue_free()
+	$VBoxContainer/Actions/Button.disabled = false
 
 func _on_EXTRACTrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		refreshCargo(cleanbody)
+		#Extract returns cacheable data
+		for ship in Agent._FleetData["data"]:
+			if ship["symbol"] == Agent.focusShip:
+				ship["cargo"] = cleanbody["data"]["cargo"]
+				print("dataCached[Extract]")
+				Agent.emit_signal("fleetUpdated")
+		
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
+		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
 	else:
 		Agent.dispError(cleanbody)
-	print(json.result)
+		print(json.result)

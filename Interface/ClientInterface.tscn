@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=2]
+[gd_scene load_steps=56 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Interface/Theme.tres" type="Theme" id=2]
@@ -32,7 +32,7 @@ border_width_right = 250
 border_color = Color( 0.156863, 0.156863, 0.168627, 0 )
 border_blend = true
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=31]
 bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -73,10 +73,31 @@ color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 thickness = 5
 
 [sub_resource type="Theme" id=5]
-HScrollBar/styles/grabber = SubResource( 1 )
+HScrollBar/styles/grabber = SubResource( 31 )
 HScrollBar/styles/grabber_highlight = SubResource( 2 )
 HScrollBar/styles/grabber_pressed = SubResource( 3 )
 HScrollBar/styles/scroll = SubResource( 4 )
+
+[sub_resource type="StyleBoxLine" id=32]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=33]
+VScrollBar/styles/grabber = SubResource( 31 )
+VScrollBar/styles/grabber_highlight = SubResource( 2 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 32 )
+
+[sub_resource type="StyleBoxFlat" id=40]
+bg_color = Color( 0.0627451, 0.211765, 0.560784, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=7]
 
 [sub_resource type="StyleBoxFlat" id=6]
 bg_color = Color( 0.6, 0.6, 0.6, 0 )
@@ -86,23 +107,18 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxEmpty" id=7]
+[sub_resource type="StyleBoxFlat" id=41]
+bg_color = Color( 0.0156863, 0.0156863, 0.0156863, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="AtlasTexture" id=8]
 flags = 4
 atlas = ExtResource( 13 )
 region = Rect2( 65, 34, 30, 30 )
-
-[sub_resource type="StyleBoxLine" id=10]
-color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
-thickness = 5
-vertical = true
-
-[sub_resource type="Theme" id=9]
-VScrollBar/styles/grabber = SubResource( 1 )
-VScrollBar/styles/grabber_highlight = SubResource( 2 )
-VScrollBar/styles/grabber_pressed = SubResource( 3 )
-VScrollBar/styles/scroll = SubResource( 10 )
 
 [sub_resource type="StyleBoxFlat" id=22]
 bg_color = Color( 0.109804, 0.109804, 0.117647, 1 )
@@ -169,7 +185,7 @@ PopupMenu/icons/submenu = SubResource( 20 )
 PopupMenu/icons/unchecked = SubResource( 21 )
 PopupMenu/styles/panel = SubResource( 29 )
 
-[sub_resource type="StyleBoxFlat" id=31]
+[sub_resource type="StyleBoxFlat" id=37]
 bg_color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 border_width_left = 1
 border_width_top = 1
@@ -177,7 +193,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=32]
+[sub_resource type="StyleBoxFlat" id=38]
 bg_color = Color( 0.25098, 0.709804, 0.678431, 1 )
 border_width_left = 1
 border_width_top = 1
@@ -185,7 +201,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxEmpty" id=33]
+[sub_resource type="StyleBoxEmpty" id=39]
 
 [sub_resource type="StyleBoxFlat" id=34]
 bg_color = Color( 1, 1, 1, 0 )
@@ -449,57 +465,11 @@ margin_right = 528.0
 margin_bottom = 244.0
 script = ExtResource( 15 )
 
-[node name="Buttons" type="VBoxContainer" parent="MainWindow/Systems/Shop"]
-visible = false
-margin_right = 32.0
-margin_bottom = 104.0
-
-[node name="Button" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
-margin_right = 32.0
-margin_bottom = 32.0
-rect_min_size = Vector2( 32, 32 )
-size_flags_vertical = 0
-custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 6 )
-custom_styles/pressed = SubResource( 7 )
-custom_styles/normal = SubResource( 6 )
-icon = SubResource( 8 )
-align = 2
-icon_align = 1
-
-[node name="Button2" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
-margin_top = 36.0
-margin_right = 32.0
-margin_bottom = 68.0
-rect_min_size = Vector2( 32, 32 )
-size_flags_vertical = 0
-custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 6 )
-custom_styles/pressed = SubResource( 7 )
-custom_styles/normal = SubResource( 6 )
-icon = SubResource( 8 )
-align = 2
-icon_align = 1
-
-[node name="Button3" type="Button" parent="MainWindow/Systems/Shop/Buttons"]
-margin_top = 72.0
-margin_right = 32.0
-margin_bottom = 104.0
-rect_min_size = Vector2( 32, 32 )
-size_flags_vertical = 0
-custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 6 )
-custom_styles/pressed = SubResource( 7 )
-custom_styles/normal = SubResource( 6 )
-icon = SubResource( 8 )
-align = 2
-icon_align = 1
-
 [node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Systems/Shop"]
 margin_right = 520.0
 margin_bottom = 280.0
 rect_min_size = Vector2( 520, 280 )
-theme = SubResource( 9 )
+theme = SubResource( 33 )
 
 [node name="Items" type="VBoxContainer" parent="MainWindow/Systems/Shop/ScrollContainer"]
 margin_right = 462.0
@@ -546,6 +516,80 @@ anchor_bottom = 0.0
 margin_top = 300.0
 margin_right = 462.0
 margin_bottom = 340.0
+
+[node name="MarketButtons" type="VBoxContainer" parent="MainWindow/Systems/Shop"]
+margin_left = 524.0
+margin_right = 594.0
+margin_bottom = 280.0
+rect_min_size = Vector2( 70, 0 )
+
+[node name="Dock" type="Button" parent="MainWindow/Systems/Shop/MarketButtons"]
+margin_right = 70.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 32, 20 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 40 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+text = "Dock"
+icon_align = 1
+
+[node name="Info" type="Button" parent="MainWindow/Systems/Shop/MarketButtons"]
+margin_top = 24.0
+margin_right = 70.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 32, 20 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 41 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+text = "Info"
+icon_align = 1
+
+[node name="Purge" type="Button" parent="MainWindow/Systems/Shop/MarketButtons"]
+margin_top = 48.0
+margin_right = 70.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 32, 20 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 41 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+text = "Purge"
+icon_align = 1
+
+[node name="Button2" type="Button" parent="MainWindow/Systems/Shop/MarketButtons"]
+visible = false
+margin_top = 24.0
+margin_right = 70.0
+margin_bottom = 56.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 8 )
+align = 2
+icon_align = 1
+
+[node name="Button3" type="Button" parent="MainWindow/Systems/Shop/MarketButtons"]
+visible = false
+margin_top = 72.0
+margin_right = 70.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 32, 32 )
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 6 )
+icon = SubResource( 8 )
+align = 2
+icon_align = 1
 
 [node name="Ships" type="Control" parent="MainWindow"]
 margin_left = 1280.0
@@ -654,7 +698,7 @@ rect_min_size = Vector2( 250, 92 )
 margin_right = 424.0
 margin_bottom = 300.0
 rect_min_size = Vector2( 0, 300 )
-theme = SubResource( 9 )
+theme = SubResource( 33 )
 
 [node name="Inventory" type="VBoxContainer" parent="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer"]
 margin_right = 398.0
@@ -892,9 +936,9 @@ rect_pivot_offset = Vector2( -20, 0 )
 size_flags_horizontal = 8
 size_flags_vertical = 4
 custom_fonts/font = ExtResource( 1 )
-custom_styles/hover = SubResource( 31 )
-custom_styles/pressed = SubResource( 32 )
-custom_styles/focus = SubResource( 33 )
+custom_styles/hover = SubResource( 37 )
+custom_styles/pressed = SubResource( 38 )
+custom_styles/focus = SubResource( 39 )
 custom_styles/normal = SubResource( 34 )
 icon = SubResource( 35 )
 align = 2
@@ -951,7 +995,7 @@ margin_right = 400.0
 margin_bottom = 246.0
 rect_min_size = Vector2( 390, 200 )
 size_flags_horizontal = 8
-theme = SubResource( 9 )
+theme = SubResource( 33 )
 scroll_horizontal_enabled = false
 
 [node name="List" type="VBoxContainer" parent="MainWindow/Agent/Contracts/ScrollContainer"]
@@ -1031,6 +1075,11 @@ flat = true
 icon_align = 2
 expand_icon = true
 
+[connection signal="pressed" from="MainWindow/Systems/Shop/MarketButtons/Dock" to="MainWindow/Systems/Shop" method="_on_Dock_pressed"]
+[connection signal="pressed" from="MainWindow/Systems/Shop/MarketButtons/Info" to="MainWindow/Systems/Shop" method="_on_Info_pressed"]
+[connection signal="pressed" from="MainWindow/Systems/Shop/MarketButtons/Purge" to="MainWindow/Systems/Shop" method="_on_Purge_pressed"]
+[connection signal="mouse_entered" from="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer" to="MainWindow/Systems/ViewSystem" method="_on_ScrollContainer_mouse_entered"]
+[connection signal="mouse_exited" from="MainWindow/Ships/ShipInfoModule/VBoxContainer/ScrollContainer" to="MainWindow/Systems/ViewSystem" method="_on_ScrollContainer_mouse_exited"]
 [connection signal="pressed" from="MainWindow/Ships/ShipInfoModule/VBoxContainer/Actions/Button" to="MainWindow/Ships/ShipInfoModule" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainWindow/Agent/Contracts/Button" to="MainWindow/Agent/Contracts" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainMenu/Systems" to="." method="_on_Systems_pressed"]

@@ -10,20 +10,31 @@ export var USERTOKEN : String
 
 var systemData
 var surveys : Dictionary = {
-	"X1-SS23-49325D-FAB7F2": {
-		"signature": "X1-SS23-49325D-FAB7F2",
-		"symbol": "X1-SS23-49325D",
-		"deposit": [
+	"X1-YR16-99585Z-EBACD8": {
+		"signature": "X1-YR16-99585Z-EBACD8",
+		"symbol": "X1-YR16-99585Z",
+		"deposits": [
 			{
-			"symbol": "PRECIOUS_STONES"
+			"symbol": "QUARTZ_SAND"
 			},{
 			"symbol": "ICE_WATER"
+			},{
+			"symbol": "SILICON_CRYSTALS"
+			},{
+			"symbol": "AMMONIA_ICE"
+			},{
+			"symbol": "SILICON_CRYSTALS"
+			},{
+			"symbol": "QUARTZ_SAND"
+			},{
+			"symbol": "QUARTZ_SAND"
 			}
 		],
-		"expiration":"2023-06-17T07:25:06.984Z",
+		"expiration":"2023-06-17T22:41:19.358Z",
 		"size":"SMALL"
 	}
 }
+var cooldowns : Dictionary
 
 export var _FleetData : Dictionary
 export var interfaceShip : String
@@ -53,6 +64,7 @@ signal mapSEL(sym)
 signal mapGenLine(one,two)
 
 #SHIP ACTIONS
+signal cooldownStarted
 signal NavigationFinished
 signal FocusMapNav
 signal DockFinished
@@ -143,7 +155,7 @@ func _on_SYSrequest_completed(result, response_code, headers, body):
 
 func setInterfaceShip(symbol):
 	interfaceShip = symbol
-	print(symbol)
+	#print(symbol)
 	emit_signal("interfaceShipSet")
 
 func acceptContract(CID, node):

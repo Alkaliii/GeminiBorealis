@@ -62,8 +62,17 @@ func setStatus():
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
 
 func updateStatus(_1 = null):
-	fetchAgent()
-	yield(self,"agentFetched")
+	if _1 != null:
+		#sellCargo returns cacheable data
+		if _1.has("data") and _1["data"].has("agent") and _1["data"]["agent"].has("credits"):
+			Agent.AgentCredits = _1["data"]["agent"]["credits"]
+			print("dataCached",_1)
+		else:
+			fetchAgent()
+			yield(self,"agentFetched")
+	else:
+		fetchAgent()
+		yield(self,"agentFetched")
 	var details = $StatusBack/Details
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
 

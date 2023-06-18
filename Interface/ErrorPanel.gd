@@ -11,7 +11,31 @@ func _ready():
 	pass
 
 func setdat(error):
-	$Control/BG/Control/ErrorJson.set_text(str(error)) 
+	var textbox = $Control/BG/Control/ErrorJson
+	textbox.clear()
+	var line = ""
+	var indentlevel = 0
+	
+	for c in str(error):
+		var cont = false
+		match c:
+			"{":
+				cont = true
+				line += "{\n[indent]"
+			"}":
+				cont = true
+				line += "\n[/indent]}"
+			",":
+				cont = true
+				line += ",\n"
+		if cont:
+			pass
+		else:
+			line += c
+	textbox.set_bbcode(line)
+	print(textbox.text)
+	
+	#$Control/BG/Control/ErrorJson.set_text(str(error)) 
 
 func _on_COPY_pressed():
 	#print("hi")

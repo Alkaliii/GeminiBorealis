@@ -40,6 +40,9 @@ func login(data):
 	Agent.cleanHQ()
 	Agent.emit_signal("login")
 	
+	Save.pastTokens[Agent.AgentSymbol] = {"token": Agent.USERTOKEN,"symbol": Agent.AgentSymbol,"faction": Agent.AgentFaction,"date": Time.get_unix_time_from_system()}
+	Save.writeClientSave()
+	
 	var twee = get_tree().create_tween()
 	get_node(anim).play("Out")
 	twee.tween_property(get_node(control), "rect_scale", Vector2(2,2),1).set_trans(Tween.TRANS_EXPO)
@@ -69,23 +72,14 @@ func login(data):
 
 func _on_Button_pressed():
 	token = $LineEdit.text
-	if token == "token": token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoiR0VNSU5JX1RIUkVFIiwidmVyc2lvbiI6InYyIiwicmVzZXRfZGF0ZSI6IjIwMjMtMDYtMTAiLCJpYXQiOjE2ODY0NzA3NzAsInN1YiI6ImFnZW50LXRva2VuIn0.S9y4Ja9nBxhsaNrRBRayDHz9HZHR_pu8eFGMgeP9Ob4XK6Ns2qG3pG3UmDmnbGhuyh5iRDN1qGoaIj-_dX2ash97uyCvdZqutrWOdsCfhzi8V2FHNKjd0GgZ2PiLc_-PusiV4ZGKJzRnwCSA8kzZVKKxYdxGTQphk900o2798snIYHQrYdqq2OLHstQxjjeWrr4IgHthRvS_NiNNEAtxaLML5nTyS0vyvxgdRBM4sn3Qf7wSm498qwS8SKX3XuAbtBgT9xCv7ee-jEq17DlhKtAOgW9FoM_8KAgyL_iAjQ3AlbGHzmLyV058PL_bBMbmEpbFVJ1jwlisdCdweqHB5Q"
 	var url = "https://api.spacetraders.io/v2/my/agent"
 	var headerstring = str("Authorization: Bearer ", token)
 	var header = [headerstring]
 	$HTTPRequest.request(url, header)
 
 
-func _on_USER1Button_pressed():
-	token = USER1TOKEN
-	var url = "https://api.spacetraders.io/v2/my/agent"
-	var headerstring = str("Authorization: Bearer ", token)
-	var header = [headerstring]
-	$HTTPRequest.request(url, header)
-
-
-func _on_USER2Button_pressed():
-	token = USER2TOKEN
+func _on_USERButton_pressed(data):
+	token = data
 	var url = "https://api.spacetraders.io/v2/my/agent"
 	var headerstring = str("Authorization: Bearer ", token)
 	var header = [headerstring]

@@ -19,7 +19,7 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=19]
 bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -31,7 +31,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=20]
 bg_color = Color( 1, 0.74902, 0, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -43,7 +43,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=21]
 bg_color = Color( 1, 1, 1, 1 )
 border_width_left = 3
 border_width_top = 3
@@ -55,20 +55,20 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxLine" id=10]
+[sub_resource type="StyleBoxLine" id=22]
 color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 thickness = 5
 vertical = true
 
 [sub_resource type="Theme" id=9]
-VScrollBar/styles/grabber = SubResource( 1 )
-VScrollBar/styles/grabber_highlight = SubResource( 2 )
-VScrollBar/styles/grabber_pressed = SubResource( 3 )
-VScrollBar/styles/scroll = SubResource( 10 )
+VScrollBar/styles/grabber = SubResource( 19 )
+VScrollBar/styles/grabber_highlight = SubResource( 20 )
+VScrollBar/styles/grabber_pressed = SubResource( 21 )
+VScrollBar/styles/scroll = SubResource( 22 )
 
-[sub_resource type="StyleBoxEmpty" id=13]
+[sub_resource type="StyleBoxEmpty" id=17]
 
-[sub_resource type="StyleBoxFlat" id=14]
+[sub_resource type="StyleBoxFlat" id=18]
 bg_color = Color( 0.6, 0.6, 0.6, 0 )
 border_width_left = 1
 border_width_top = 1
@@ -77,9 +77,9 @@ border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
 [sub_resource type="Theme" id=15]
-Button/styles/hover = SubResource( 13 )
-Button/styles/normal = SubResource( 14 )
-Button/styles/pressed = SubResource( 14 )
+Button/styles/hover = SubResource( 17 )
+Button/styles/normal = SubResource( 18 )
+Button/styles/pressed = SubResource( 18 )
 
 [sub_resource type="StyleBoxEmpty" id=16]
 
@@ -153,6 +153,8 @@ focus_mode = 2
 theme = SubResource( 9 )
 custom_fonts/bold_font = ExtResource( 3 )
 custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+tab_size = 1
 selection_enabled = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/BG"]
