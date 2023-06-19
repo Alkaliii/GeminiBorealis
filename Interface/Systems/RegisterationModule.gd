@@ -55,9 +55,9 @@ func logfail(data):
 
 func Register(data):
 	$Button.hide()
-	$RichTextLabel.bbcode_text = "[b][center]TOKEN COPIED TO CLIPBOARD"
+	$RichTextLabel.bbcode_text = "[b]TOKEN COPIED TO CLIPBOARD"
 	yield(get_tree().create_timer(2),"timeout")
-	$RichTextLabel.bbcode_text = "[b][center]KEEP IT SAFE!"
+	$RichTextLabel.bbcode_text = "[b]KEEP IT SAFE!"
 	OS.set_clipboard(data["data"]["token"])
 	yield(get_tree().create_timer(1),"timeout")
 	

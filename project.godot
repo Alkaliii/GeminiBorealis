@@ -9,13 +9,37 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "STATEMACHINE",
+"class": "AutoExtractFSM",
+"language": "GDScript",
+"path": "res://Automation/AutoExtract.gd"
+}, {
+"base": "Routine",
+"class": "AutoExtractRoutine",
+"language": "GDScript",
+"path": "res://Automation/AutoExtractRoutine.gd"
+}, {
 "base": "Control",
 "class": "Planet",
 "language": "GDScript",
 "path": "res://EXTERNAL/Planets/Planet.gd"
+}, {
+"base": "Node",
+"class": "Routine",
+"language": "GDScript",
+"path": "res://Automation/Routine.gd"
+}, {
+"base": "Node",
+"class": "STATEMACHINE",
+"language": "GDScript",
+"path": "res://Automation/FSM.gd"
 } ]
 _global_script_class_icons={
-"Planet": ""
+"AutoExtractFSM": "",
+"AutoExtractRoutine": "",
+"Planet": "",
+"Routine": "",
+"STATEMACHINE": ""
 }
 
 [application]
@@ -28,6 +52,7 @@ config/icon="res://icon.png"
 
 Agent="*res://Agent.tscn"
 Save="*res://Save.tscn"
+Automation="*res://Automation/Automation.tscn"
 
 [display]
 
@@ -93,12 +118,14 @@ MAPzoom_in={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":61,"unicode":0,"echo":false,"script":null)
 , Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":16777232,"unicode":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":16777232,"unicode":0,"echo":false,"script":null)
  ]
 }
 MAPzoom_out={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":45,"unicode":0,"echo":false,"script":null)
 , Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":16777234,"unicode":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":16777234,"unicode":0,"echo":false,"script":null)
  ]
 }
 MAPconfirm={

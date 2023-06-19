@@ -9,7 +9,7 @@ const pShip = preload("res://Interface/ShipyardMarket/ShipPurchaseModule.tscn")
 const pGood = preload("res://Interface/ResourceMarket/MarketItemModule.tscn")
 const iee = preload("res://Interface/ResourceMarket/importexportexchange.tscn")
 
-var Purging = false
+var Purging = false 
 
 #const infoline = preload("res://300linesmall.tscn")
 
@@ -204,6 +204,7 @@ func _on_Info_pressed():
 func _on_Purge_pressed():
 	$MarketButtons/Purge.disabled = true
 	Purging = true
+	var purgeReq : Array
 	var ship
 	var itemspurged = 0
 	
@@ -224,15 +225,30 @@ func _on_Purge_pressed():
 	
 	print(purgelist)
 	for purgable in purgelist:
-		Agent.sellCargo(purgable["sym"],purgable["amt"],self)
-		yield(Agent,"SellCargo")
+		#Agent.sellCargo(purgable["sym"],purgable["amt"],self)
+		
+		var PURGE_POST_REQUEST_OBj = {
+			"Author": self,
+			"Callback": "_on_SELLrequest_completed",
+			"API_ext": str("my/ships/",Agent.interfaceShip,"/sell"), #After "v2" in https://api.spacetraders.io/v2
+			"data": {"symbol": purgable["sym"], "units": purgable["amt"]}, #JSON.print'd dictionary, if it remains null an additional header will be added "Content-Length: 0"
+			"RID": str(ship["symbol"],"SELL",purgable["sym"],Time.get_unix_time_from_system()), #Request ID, which will be used to identify it, different nodes should create different IDs utilizing time, the node name and maybe other relevant data
+			"TYPE": "POST"
+		}
+		
+		Automation.callQueue.push_back(PURGE_POST_REQUEST_OBj)
+		purgeReq.push_back(PURGE_POST_REQUEST_OBj.RID)
+		#yield(Agent,"SellCargo")
 		itemspurged += 1
-		$MarketButtons/Purge.text = "wait"
-		yield(get_tree().create_timer(1),"timeout")
+		#$MarketButtons/Purge.text = "wait"
+		#yield(get_tree().create_timer(1),"timeout")
+		#$MarketButtons/Purge.text = str(itemspurged)
+		#if itemspurged == 10: yield(get_tree().create_timer(5),"timeout")
+		#else: yield(get_tree().create_timer(1),"timeout")
+	for i in purgeReq:
+		Automation.progressQueue.erase(i)
 		$MarketButtons/Purge.text = str(itemspurged)
-		if itemspurged == 10: yield(get_tree().create_timer(5),"timeout")
-		else: yield(get_tree().create_timer(1),"timeout")
-	
+		itemspurged -= 1
 	$MarketButtons/Purge.text = "Purge"
 	$MarketButtons/Purge.disabled = false
 	Purging = false

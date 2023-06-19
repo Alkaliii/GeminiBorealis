@@ -15,6 +15,8 @@ func _ready():
 	Agent.connect("shipfocused",self,"setdat")
 	Agent.connect("JettisonCargo",self,"refreshCargo")
 	Agent.connect("selectedWaypoint",self,"prepNav")
+	
+	Automation.connect("EXTRACTRESOURCES",self,"refreshCargo")
 	pass # Replace with function body.
 
 func _process(delta):
@@ -325,6 +327,7 @@ func _on_DOCKrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
+		cleanbody["meta"] = SHIPDATA["symbol"]
 		Agent.emit_signal("DockFinished",cleanbody)
 		refreshONDOCK(cleanbody)
 	else:
@@ -397,6 +400,7 @@ func _on_ORBITrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
+		cleanbody["meta"] = SHIPDATA["symbol"]
 		Agent.emit_signal("OrbitFinished",cleanbody)
 		refreshONORBIT(cleanbody)
 	else:
@@ -522,6 +526,7 @@ func _on_SURVEYrequest_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		for s in cleanbody["data"]["surveys"]:
 			Agent.surveys[s["signature"]] = s
+		Save.writeUserSave()
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
 		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
 	else:
@@ -590,6 +595,7 @@ func _on_EXTRACTrequest_completed(result, response_code, headers, body):
 		
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
 		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
+		Automation.emit_signal("EXTRACTRESOURCES",cleanbody)
 	else:
 		Agent.dispError(cleanbody)
 		print(json.result)

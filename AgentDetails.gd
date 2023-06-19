@@ -9,31 +9,7 @@ export var AgentSymbol : String
 export var USERTOKEN : String
 
 var systemData
-var surveys : Dictionary = {
-	"X1-YR16-99585Z-EBACD8": {
-		"signature": "X1-YR16-99585Z-EBACD8",
-		"symbol": "X1-YR16-99585Z",
-		"deposits": [
-			{
-			"symbol": "QUARTZ_SAND"
-			},{
-			"symbol": "ICE_WATER"
-			},{
-			"symbol": "SILICON_CRYSTALS"
-			},{
-			"symbol": "AMMONIA_ICE"
-			},{
-			"symbol": "SILICON_CRYSTALS"
-			},{
-			"symbol": "QUARTZ_SAND"
-			},{
-			"symbol": "QUARTZ_SAND"
-			}
-		],
-		"expiration":"2023-06-17T22:41:19.358Z",
-		"size":"SMALL"
-	}
-}
+var surveys : Dictionary = {}
 var cooldowns : Dictionary
 
 export var _FleetData : Dictionary

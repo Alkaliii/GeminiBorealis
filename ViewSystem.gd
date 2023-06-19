@@ -33,6 +33,7 @@ func _on_request_completed(result, response_code, headers, body):
 	if cleanbody.has("data"):
 		setdat(cleanbody)
 		Agent.emit_signal("systemFetch",cleanbody)
+		Automation.emit_signal("GETSYSTEM",cleanbody)
 		fetchSysWay()
 	else:
 		Agent.dispError(cleanbody)
@@ -170,6 +171,7 @@ func _on_WAYrequest_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody.has("data"):
 		Agent.emit_signal("systemWayFetch",cleanbody)
+		Automation.emit_signal("LISTSYSTEMWAYPOINTS",cleanbody)
 		Agent.systemData = cleanbody
 		for w in cleanbody["data"]:
 			for b in $ScrollContainer/HBoxContainer.get_children():

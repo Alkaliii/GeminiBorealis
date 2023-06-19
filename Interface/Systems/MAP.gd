@@ -160,14 +160,15 @@ func focusWPT(data):
 		SubOrbitNdList[data["data"]["symbol"]].modulate = Color(WPCM[data["data"]["type"]]["bg"]).lightened(0.7)
 
 func _process(delta):
-	mapZoom()
-	mapTranslate()
-	mapHome()
-	if Input.is_action_just_pressed("MAPconfirm"):
-		for w in Agent.systemData["data"]:
-			if w["symbol"] == nearNodeName:
-				quickChart = true
-				Agent.emit_signal("chart",{"data":w})
+	if Agent.AgentCredits.is_valid_float():
+		mapZoom()
+		mapTranslate()
+		mapHome()
+		if Input.is_action_just_pressed("MAPconfirm"):
+			for w in Agent.systemData["data"]:
+				if w["symbol"] == nearNodeName:
+					quickChart = true
+					Agent.emit_signal("chart",{"data":w})
 
 
 func mapHome():
@@ -327,19 +328,19 @@ func generateSYSTEM(data):
 	self.show()
 	
 	for w in data["data"]["waypoints"]:
-		var wpt
-		var ints : Array
-		for s in w["symbol"]:
-			if s.is_valid_integer():
-				ints.push_back(s)
-		
-		var total = 0
-		for i in ints:
-			total += int(i)
-		
-		var long = ""
-		for i in ints:
-			long += str(i)
+#		var wpt
+#		var ints : Array
+#		for s in w["symbol"]:
+#			if s.is_valid_integer():
+#				ints.push_back(s)
+#
+#		var total = 0
+#		for i in ints:
+#			total += int(i)
+#
+#		var long = ""
+#		for i in ints:
+#			long += str(i)
 		
 		#print(w["symbol"],ints,total)
 		match w["type"]:

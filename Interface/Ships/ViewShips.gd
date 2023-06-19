@@ -23,6 +23,7 @@ func _on_request_completed(result, response_code, headers, body):
 		setdat(cleanbody)
 		Agent._FleetData = cleanbody
 		Agent.emit_signal("fleetUpdated")
+		Automation.emit_signal("LISTSHIPS",cleanbody)
 	else:
 		Agent.dispError(cleanbody)
 #		getfail()
@@ -70,7 +71,7 @@ func setdat(data):
 		$ScrollContainer/HBoxContainer.add_child(ship)
 
 func setShips():
-	var url = str("https://api.spacetraders.io/v2/my/ships")
+	var url = str("https://api.spacetraders.io/v2/my/ships?limit=20")
 	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
 	var header = ["Accept: application/json",headerstring]
 	$HTTPRequest.request(url, header)
