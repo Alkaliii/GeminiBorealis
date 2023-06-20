@@ -1,0 +1,151 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=2]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=3]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Interface/Ships/Groups/SelectGroupPopUpScript.gd" type="Script" id=5]
+
+[sub_resource type="StreamTexture" id=23]
+
+[sub_resource type="StyleBoxFlat" id=24]
+content_margin_left = 15.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+border_width_right = 16
+border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+
+[sub_resource type="StreamTexture" id=25]
+
+[sub_resource type="StreamTexture" id=26]
+
+[sub_resource type="StreamTexture" id=27]
+
+[sub_resource type="StreamTexture" id=28]
+
+[sub_resource type="StreamTexture" id=29]
+
+[sub_resource type="StyleBoxFlat" id=30]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 5.0
+expand_margin_right = 5.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Theme" id=18]
+default_font = ExtResource( 1 )
+OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
+OptionButton/icons/arrow = SubResource( 23 )
+OptionButton/styles/focus = null
+OptionButton/styles/hover = SubResource( 24 )
+OptionButton/styles/normal = SubResource( 24 )
+OptionButton/styles/pressed = SubResource( 24 )
+PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+PopupMenu/icons/checked = SubResource( 25 )
+PopupMenu/icons/radio_checked = SubResource( 26 )
+PopupMenu/icons/radio_unchecked = SubResource( 27 )
+PopupMenu/icons/submenu = SubResource( 28 )
+PopupMenu/icons/unchecked = SubResource( 29 )
+PopupMenu/styles/panel = SubResource( 30 )
+
+[sub_resource type="StyleBoxEmpty" id=31]
+
+[sub_resource type="StyleBoxFlat" id=32]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="Theme" id=13]
+Button/styles/hover = SubResource( 31 )
+Button/styles/normal = SubResource( 32 )
+Button/styles/pressed = SubResource( 32 )
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 3 )
+region = Rect2( 225, 258, 30, 30 )
+
+[node name="SelectGroupPopUp" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 5 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.666667 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -150.0
+margin_top = -20.0
+margin_right = 150.0
+margin_bottom = 20.0
+
+[node name="Label" type="RichTextLabel" parent="VBoxContainer"]
+margin_right = 300.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 2 )
+bbcode_enabled = true
+bbcode_text = "[b]SELECT GROUP"
+text = "SELECT GROUP"
+scroll_active = false
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer"]
+margin_top = 12.0
+margin_right = 300.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 300, 15 )
+theme = SubResource( 18 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 31.0
+margin_right = 300.0
+margin_bottom = 49.0
+alignment = 1
+
+[node name="CANCEL" type="Button" parent="VBoxContainer/HBoxContainer"]
+self_modulate = Color( 0.870588, 0.192157, 0.388235, 1 )
+margin_left = 4.0
+margin_right = 22.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 18, 0 )
+theme = SubResource( 13 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/focus = SubResource( 9 )
+icon = SubResource( 14 )
+icon_align = 2
+expand_icon = true
+
+[node name="CONFIRM" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 26.0
+margin_right = 296.0
+margin_bottom = 18.0
+rect_min_size = Vector2( 270, 0 )
+theme = SubResource( 13 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/focus = SubResource( 9 )
+text = "Confirm"
+icon_align = 2
+expand_icon = true
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CANCEL" to="." method="_on_CANCEL_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CONFIRM" to="." method="_on_CONFIRM_pressed"]

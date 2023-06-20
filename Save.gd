@@ -12,6 +12,7 @@ var groups : Dictionary
 var _file = File.new()
 
 signal loadClientComplete
+signal ShipAssigned
 
 func _ready():
 	loadClientSave()

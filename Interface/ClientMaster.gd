@@ -5,6 +5,8 @@ signal agentFetched
 const shipQuery = preload("res://Interface/Ships/SelectShipPopUp.tscn")
 const waypointQuery = preload("res://Interface/Systems/SelectWaypointPopUp.tscn")
 const surveyQuery = preload("res://Interface/Ships/SelectSurveyPopUp.tscn")
+const groupQuery = preload("res://Interface/Ships/Groups/SelectGroupPopUp.tscn")
+const routineQuery = preload("res://Automation/SetRoutinePopUp.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -33,6 +35,8 @@ func _ready():
 	Agent.connect("query_Ship",self,"queryShip")
 	Agent.connect("query_Waypoint",self,"queryWaypoint")
 	Agent.connect("query_Survey",self,"querySurvey")
+	Agent.connect("query_Group",self,"queryGroup")
+	Agent.connect("query_Routine",self,"queryRoutine")
 	
 	Agent.connect("RefuelFinished",self,"updateStatus")
 	
@@ -40,6 +44,16 @@ func _ready():
 
 func dispError(node):
 	$CanvasLayer.add_child(node)
+
+func queryRoutine(data):
+	var query = routineQuery.instance()
+	query.GROUP = data
+	$CanvasLayer.add_child(query)
+
+func queryGroup():
+	var query = groupQuery.instance()
+	query.setdat(Save.groups.keys())
+	$CanvasLayer.add_child(query)
 
 func queryShip(Arr):
 	var query = shipQuery.instance()

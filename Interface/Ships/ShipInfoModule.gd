@@ -6,6 +6,7 @@ var ArrivalTime = null
 var CooldownTime = null
 var SHIPDATA
 
+var GROUP
 var NAVWAYPOINT
 var sSURVEY
 
@@ -15,6 +16,7 @@ func _ready():
 	Agent.connect("shipfocused",self,"setdat")
 	Agent.connect("JettisonCargo",self,"refreshCargo")
 	Agent.connect("selectedWaypoint",self,"prepNav")
+	Agent.connect("selectedGroup",self,"prepAssign")
 	
 	Automation.connect("EXTRACTRESOURCES",self,"refreshCargo")
 	pass # Replace with function body.
@@ -45,6 +47,9 @@ func clearInfo():
 	self.hide()
 
 func refreshCargo(data):
+	if data["data"].has("extraction") and data["data"]["extraction"]["shipSymbol"] != SHIPDATA["symbol"]:
+		return
+	
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
 		r.queue_free()
 	
@@ -183,7 +188,8 @@ func setdat(data):
 
 func _on_Button_pressed():
 	match $VBoxContainer/Actions/OptionButton.get_item_text($VBoxContainer/Actions/OptionButton.selected):
-		"ASSIGN GROUP": pass
+		"ASSIGN GROUP":
+			Assign()
 		"RENAME": pass
 		"DOCK":
 			Dock()
@@ -203,6 +209,48 @@ func _on_Button_pressed():
 		"INSTALL HARDWARE": pass
 		"REMOVE HARDWARE": pass
 		"CHANGE FLIGHT MODE": pass
+
+func prepAssign(data):
+	GROUP = data
+
+func Assign():
+	if Save.groups.size() > 0:
+		Agent.emit_signal("query_Group")
+		yield(Agent,"selectedGroup")
+		
+		if GROUP == "CANCEL": return
+		
+		for g in Save.groups: if Save.groups[g].has("Ships"):
+			for s in Save.groups[g]["Ships"]: if s == SHIPDATA["symbol"]:
+				Save.groups[g]["Ships"].erase(SHIPDATA["symbol"])
+		
+		if GROUP == "NEW":
+			var alphabet = ["?","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+			var groupName = str("Group ",alphabet[(Save.groups.size()+1)%28])
+			if Save.groups.has(groupName): groupName += "?"
+			Save.groups[groupName] = {
+				"Ships":{
+					SHIPDATA["symbol"]: SHIPDATA
+				},
+				"Name": groupName
+				}
+			
+			GROUP = groupName
+		
+		if !Save.groups[GROUP].has("Ships"): Save.groups[GROUP]["Ships"] = {}
+		Save.groups[GROUP]["Ships"][SHIPDATA["symbol"]] = SHIPDATA
+		
+		yield(get_tree(),"idle_frame")
+		Save.emit_signal("ShipAssigned")
+		
+	else:
+		Save.groups["Group A"] = {}
+		Save.groups["Group A"]["Ships"] = {}
+		Save.groups["Group A"]["Name"] = "Group A"
+		Save.groups["Group A"]["Ships"][SHIPDATA["symbol"]] = SHIPDATA
+		
+		yield(get_tree(),"idle_frame")
+		Save.emit_signal("ShipAssigned")
 
 func prepNav(data):
 	NAVWAYPOINT = data

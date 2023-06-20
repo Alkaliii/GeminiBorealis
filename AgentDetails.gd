@@ -57,6 +57,12 @@ signal selectedWaypoint(waypointSym)
 signal query_Survey(symbol)
 signal selectedSurvey(signature)
 
+signal query_Group
+signal selectedGroup(key)
+
+signal query_Routine(GROUP)
+signal selectedRoutine(data)
+
 signal shipfocused(data)
 
 signal error2disp(inst)

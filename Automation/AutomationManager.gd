@@ -33,14 +33,18 @@ var active = false
 var _FleetData : Dictionary
 var _SystemsData : Dictionary
 
+signal OperationChanged
+
 signal LISTSHIPS
 signal GETSYSTEM
 signal LISTSYSTEMWAYPOINTS
 signal EXTRACTRESOURCES
 
+var Current_Request = "none"
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	Agent.connect("login",self,"activateAu")
+	#Agent.connect("login",self,"activateAu")
 	self.connect("LISTSHIPS",self,"cacheSHIPS")
 	self.connect("GETSYSTEM",self,"cacheSYSTEM")
 	self.connect("LISTSYSTEMWAYPOINTS",self,"cacheSYSTEMWPT")
@@ -71,6 +75,25 @@ func activateAu():
 	self.add_child(routine)
 	routine.startRoutine()
 
+func setRoutine(data):
+	match data["state"]:
+		"Stop":
+			for c in self.get_children():
+				if c.assigned_Group == data["group"]:
+					c.endRoutine()
+			return
+	
+	var routine
+	match data["routine"]:
+		"Auto-Extract":
+			routine = AutoExtractRoutine.new()
+		"Purge Cargo": pass
+	
+	routine.assigned_Group = data["group"]
+	routine.groupData = Save.groups[data["group"]]["Ships"]
+	self.add_child(routine)
+	routine.startRoutine()
+
 func _setRate(new):
 	SelectRateTime = new
 	match new:
@@ -81,12 +104,17 @@ func _setRate(new):
 func _process(delta):
 	cooldown += delta
 	if cooldown >=  RateTime and active:
-		cooldown = 0
-		processQueue()
-		processQueue()
-		processQueue()
+		pushAPI()
 	if callQueue.size() > 0:
 		active = true
+
+func pushAPI():
+	cooldown = 0
+	processQueue()
+	yield(get_tree().create_timer(0.2),"timeout")
+	processQueue()
+	yield(get_tree().create_timer(0.2),"timeout")
+	processQueue()
 
 func processQueue(idx = 0):
 	if callQueue.size() >= (idx+1):
@@ -94,6 +122,7 @@ func processQueue(idx = 0):
 		match r["TYPE"]:
 			"POST": executePOST(r)
 			"GET": executeGET(r)
+		Current_Request = r.RID
 	else: 
 		print("empty")
 		active = false
@@ -137,7 +166,11 @@ func _on_request_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody is Dictionary and cleanbody.has("error"):
 		Agent.dispError(cleanbody)
-	else: pass#print("success") 
+		for req in progressQueue:
+			callQueue.push_back(progressQueue[req])
+			progressQueue.erase(req)
+	else:
+		progressQueue.erase(Current_Request)
 
 func cacheSHIPS(data):
 	for ship in data["data"]:

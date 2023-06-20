@@ -3,7 +3,7 @@ class_name AutoExtractFSM
 
 var shipSymbol : String
 var shipData : Dictionary
-var Cooldown : String
+var Cooldown : int
 var possibleFocus = ["PRECIOUS_STONES","QUARTZ_SAND","SILICON_CRYSTALS",
 "AMMONIA_ICE","LIQUID_HYDROGEN","LIQUID_NITROGEN","ICE_WATER","EXOTIC_MATTER",
 "ADVANCED_CIRCUITRY","GRAVITON_EMITTERS","IRON","IRON_ORE","COPPER","COPPER_ORE",
@@ -71,13 +71,16 @@ func endFSM():
 	Automation.callQueue.erase(EXTRACT_POST_REQUEST_OBj.RID)
 	Automation.callQueue.erase(SURVEY_POST_REQUEST_OBj.RID)
 	Automation.callQueue.erase(ORBIT_POST_REQUEST_OBj.RID)
+	
+	var operation = {"Ship":shipSymbol,"Op":"[wave]AWAITING ORDERS"}
+	Automation.emit_signal("OperationChanged",operation)
 	self.queue_free()
 
 func state_logic(delta):
 	match state:
 		STATES.Extract: pass
 		STATES.Yield_Cooldown:
-			if Time.get_unix_time_from_datetime_string(Cooldown) < Time.get_unix_time_from_system():
+			if Cooldown < Time.get_unix_time_from_system():
 				set_state(STATES["Extract"])
 		STATES.Yield_Orbit:
 			if shipData["nav"]["status"] == "IN_ORBIT":
@@ -113,7 +116,7 @@ func validateSTATUS():
 	return false
 
 func checkSURVEY():
-	var bestSurvey = {"survey": null, "FM": 0}
+	var bestSurvey = {"survey": null, "FM": 1}
 	if Agent.surveys.size() > 0:
 		for s in Agent.surveys:
 			var SUR = Agent.surveys[s]
@@ -138,13 +141,23 @@ func _get_transition(delta):
 func _enter_state(new_state, old_state):
 	match new_state:
 		STATES.Extract:
+			var operation = {"Ship":shipSymbol,"Op":"EXTRACTING"}
+			Automation.emit_signal("OperationChanged",operation)
+			
 			if shipData["cargo"]["units"] == shipData["cargo"]["capacity"]:
 				set_state(null)
+				operation = {"Ship":shipSymbol,"Op":"CARGO FULL"}
+				Automation.emit_signal("OperationChanged",operation)
 				OfficerStatus = 2
 				return
-			var _1 = validateLOCATION()
-			var _2 = validateMOUNT()
-			var _3 = validateSTATUS()
+			
+			var _1 = false
+			_1 = validateLOCATION()
+			var _2 = false
+			_2 = validateMOUNT()
+			var _3 = false
+			_3 = validateSTATUS()
+			yield(get_tree(),"idle_frame")
 			if !_1: 
 				set_state(STATES["error"])
 				return
@@ -154,7 +167,7 @@ func _enter_state(new_state, old_state):
 			elif !_3:
 				set_state(STATES["Yield_Orbit"])
 				return
-			elif _1 and _2 and _3: #Triple Affirmative
+			if _1 and _2 and _3: #Triple Affirmative
 				var SUR = checkSURVEY()
 				if SUR == null:
 					var surveyWpt = ["MOUNT_SURVEYOR_I","MOUNT_SURVEYOR_II","MOUNT_SURVEYOR_III"]
@@ -162,21 +175,40 @@ func _enter_state(new_state, old_state):
 						if m["symbol"] in surveyWpt:
 							set_state(STATES["Survey"])
 							return
+				
+				if Agent.cooldowns.has(shipSymbol):
+					Cooldown = Agent.cooldowns[shipSymbol]
+					set_state(STATES["Yield_Cooldown"])
+					return
+				
 				EXTRACT_POST_REQUEST_OBj.API_ext = str("my/ships/",shipSymbol,"/extract")
 				EXTRACT_POST_REQUEST_OBj.RID = str(shipSymbol,"EXTRACT",Time.get_unix_time_from_system())
 				EXTRACT_POST_REQUEST_OBj.data = SUR
 				Automation.callQueue.push_back(EXTRACT_POST_REQUEST_OBj)
 				print(shipSymbol," is EXTRACTING")
 		STATES.Yield_Cooldown:
-			pass
+			var operation
+			if shipData["cargo"]["units"] == shipData["cargo"]["capacity"]:
+				set_state(null)
+				operation = {"Ship":shipSymbol,"Op":"CARGO FULL"}
+				Automation.emit_signal("OperationChanged",operation)
+				OfficerStatus = 2
+				return
+			operation = {"Ship":shipSymbol,"Op":"COOLING DOWN"}
+			Automation.emit_signal("OperationChanged",operation)
 		STATES.Yield_Orbit:
-			pass
+			var operation = {"Ship":shipSymbol,"Op":"ORBITING"}
+			Automation.emit_signal("OperationChanged",operation)
 		STATES.Survey:
+			var operation = {"Ship":shipSymbol,"Op":"SURVEYING"}
+			Automation.emit_signal("OperationChanged",operation)
 			SURVEY_POST_REQUEST_OBj.API_ext = str("my/ships/",shipSymbol,"/survey")
 			SURVEY_POST_REQUEST_OBj.RID = str(shipSymbol,"SURVEY",Time.get_unix_time_from_system())
 			Automation.callQueue.push_back(SURVEY_POST_REQUEST_OBj)
 			print(shipSymbol," is SURVEYING")
 		STATES.error:
+			var operation = {"Ship":shipSymbol,"Op":"[color=#EE4B2B]ERROR"}
+			Automation.emit_signal("OperationChanged",operation)
 			OfficerStatus = 1
 
 func _exit_state(old_state, new_state):
@@ -186,14 +218,15 @@ func _on_EXTRACTrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-			var req = Automation.progressQueue[EXTRACT_POST_REQUEST_OBj.RID]
-			Automation.progressQueue.erase(EXTRACT_POST_REQUEST_OBj.RID)
-			Automation.callQueue.push_back(req)
+		pass
+#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
+#			var req = Automation.progressQueue[EXTRACT_POST_REQUEST_OBj.RID]
+#			Automation.progressQueue.erase(EXTRACT_POST_REQUEST_OBj.RID)
+#			Automation.callQueue.push_back(req)
 	else:
-		Cooldown = cleanbody["data"]["cooldown"]["expiration"]
+		Cooldown = Time.get_unix_time_from_datetime_string(cleanbody["data"]["cooldown"]["expiration"])
 		shipData["cargo"] = cleanbody["data"]["cargo"]
-		Agent.emit_signal("cooldownStarted",Cooldown,cleanbody["data"]["cooldown"]["shipSymbol"])
+		Agent.emit_signal("cooldownStarted",cleanbody["data"]["cooldown"]["expiration"],cleanbody["data"]["cooldown"]["shipSymbol"])
 		Automation.emit_signal("EXTRACTRESOURCES",cleanbody)
 		set_state(STATES["Yield_Cooldown"])
 		
@@ -203,13 +236,14 @@ func _on_SURVEYrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-			var req = Automation.progressQueue[SURVEY_POST_REQUEST_OBj.RID]
-			Automation.progressQueue.erase(SURVEY_POST_REQUEST_OBj.RID)
-			Automation.callQueue.push_back(req)
+		pass
+#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
+#			var req = Automation.progressQueue[SURVEY_POST_REQUEST_OBj.RID]
+#			Automation.progressQueue.erase(SURVEY_POST_REQUEST_OBj.RID)
+#			Automation.callQueue.push_back(req)
 	else:
-		Cooldown = cleanbody["data"]["cooldown"]["expiration"]
-		Agent.emit_signal("cooldownStarted",Cooldown,cleanbody["data"]["cooldown"]["shipSymbol"])
+		Cooldown = Time.get_unix_time_from_datetime_string(cleanbody["data"]["cooldown"]["expiration"])
+		Agent.emit_signal("cooldownStarted",cleanbody["data"]["cooldown"]["expiration"],cleanbody["data"]["cooldown"]["shipSymbol"])
 		for s in cleanbody["data"]["surveys"]:
 			Agent.surveys[s["signature"]] = s
 		Save.writeUserSave()
@@ -221,10 +255,11 @@ func _on_ORBITrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-			var req = Automation.progressQueue[ORBIT_POST_REQUEST_OBj.RID]
-			Automation.progressQueue.erase(ORBIT_POST_REQUEST_OBj.RID)
-			Automation.callQueue.push_back(req)
+		pass
+#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
+#			var req = Automation.progressQueue[ORBIT_POST_REQUEST_OBj.RID]
+#			Automation.progressQueue.erase(ORBIT_POST_REQUEST_OBj.RID)
+#			Automation.callQueue.push_back(req)
 	else:
 		shipData["nav"] = cleanbody["data"]["nav"]
 		cleanbody["meta"] = shipData["symbol"]

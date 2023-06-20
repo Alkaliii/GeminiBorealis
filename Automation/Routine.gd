@@ -16,3 +16,4 @@ func startRoutine():
 func endRoutine():
 	for o in get_children():
 		o.endFSM()
+	self.queue_free()

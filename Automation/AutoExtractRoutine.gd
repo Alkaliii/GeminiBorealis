@@ -19,3 +19,4 @@ func startRoutine():
 		self.add_child(officer)
 		yield(get_tree(),"idle_frame")
 		officer.set_state(officer.STATES["Extract"])
+		#yield(get_tree().create_timer(0.2),"timeout")
