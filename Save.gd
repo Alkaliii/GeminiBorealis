@@ -21,7 +21,7 @@ func _ready():
 func loadClientSave():
 	var error = _file.open(clientSavePath, File.READ)
 	if error != OK:
-		Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [clientSavePath,error])
+		#Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [clientSavePath,error])
 		printerr("Could not open %s. Aborting load operation. err: %s" % [clientSavePath,error])
 		return
 	
@@ -36,7 +36,7 @@ func loadClientSave():
 func writeClientSave():
 	var error = _file.open(clientSavePath, File.WRITE)
 	if error != OK:
-		Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [clientSavePath,error])
+		#Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [clientSavePath,error])
 		printerr("Could not open %s. Aborting save operation. err: %s" % [clientSavePath,error])
 		return
 	
@@ -54,7 +54,7 @@ func writeClientSave():
 func loadUserSave():
 	var error = _file.open(savePath % Agent.AgentSymbol, File.READ)
 	if error != OK:
-		Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		#Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [savePath % Agent.AgentSymbol,error])
 		printerr("Could not open %s. Aborting load operation. err: %s" % [savePath % Agent.AgentSymbol,error])
 		return
 	
@@ -67,7 +67,7 @@ func loadUserSave():
 func writeUserSave():
 	var error = _file.open(savePath % Agent.AgentSymbol, File.WRITE)
 	if error != OK:
-		Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		#Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [savePath % Agent.AgentSymbol,error])
 		printerr("Could not open %s. Aborting save operation. err: %s" % [savePath % Agent.AgentSymbol,error])
 		return
 	

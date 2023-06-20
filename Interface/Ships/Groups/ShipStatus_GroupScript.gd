@@ -11,7 +11,7 @@ func setdat(data):
 	SHIPDATA = data
 	$VBoxContainer/HBoxContainer/ShipName.bbcode_text = data["symbol"]
 	$VBoxContainer/ShipType.bbcode_text = data["registration"]["role"]
-	$VBoxContainer/CurrentOperation.bbcode_text = "[color=#949495]CO: [b][wave]AWAITING ORDERS"
+	$VBoxContainer/CurrentOperation.bbcode_text = "[color=#949495]CO: [b][wave]..."
 
 func setCO(data):
 	if data["Ship"] != SHIPDATA["symbol"]: return

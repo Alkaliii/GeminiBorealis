@@ -121,7 +121,7 @@ func _on_fetchAgentrequest_completed(result, response_code, headers, body):
 	else:
 		Agent.dispError(cleanbody)
 		#getfail()
-	print(json.result)
+	#print(json.result)
 
 func getfail():
 	pass

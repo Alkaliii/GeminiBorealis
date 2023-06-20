@@ -27,7 +27,7 @@ func _on_request_completed(result, response_code, headers, body):
 	else:
 		Agent.dispError(cleanbody)
 #		getfail()
-	print(json.result)
+		print(json.result)
 
 func show(arg = null):
 	self.modulate = Color(1,1,1,0)

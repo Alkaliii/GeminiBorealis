@@ -80,13 +80,20 @@ func state_logic(delta):
 	match state:
 		STATES.Extract: pass
 		STATES.Yield_Cooldown:
+			if Cooldown == 0: return
 			if Cooldown < Time.get_unix_time_from_system():
-				set_state(STATES["Extract"])
+				cooldownOver()
 		STATES.Yield_Orbit:
 			if shipData["nav"]["status"] == "IN_ORBIT":
 				set_state(STATES.Extract)
 		STATES.Survey: pass
 		STATES.error: pass
+
+func cooldownOver():
+	Cooldown = 0
+	yield(get_tree().create_timer(3),"timeout")
+	Agent.cooldowns.erase(shipSymbol)
+	set_state(STATES["Extract"])
 
 func validateLOCATION():
 	var extractTrait = ["MINERAL_DEPOSITS","COMMON_METAL_DEPOSITS","PRECIOUS_METAL_DEPOSITS","RARE_METAL_DEPOSITS","METHANE_POOLS","ICE_CRYSTALS","EXPLOSIVE_GASES"]
@@ -139,6 +146,10 @@ func _get_transition(delta):
 	return null
 
 func _enter_state(new_state, old_state):
+	yield(get_tree(),"idle_frame")
+	
+	shipData = Automation._FleetData[shipSymbol]
+	
 	match new_state:
 		STATES.Extract:
 			var operation = {"Ship":shipSymbol,"Op":"EXTRACTING"}
@@ -151,24 +162,22 @@ func _enter_state(new_state, old_state):
 				OfficerStatus = 2
 				return
 			
-			var _1 = false
-			_1 = validateLOCATION()
-			var _2 = false
-			_2 = validateMOUNT()
-			var _3 = false
-			_3 = validateSTATUS()
-			yield(get_tree(),"idle_frame")
-			if !_1: 
+			var _1 = true
+			var _2 = true
+			var _3 = true
+			
+			if !validateLOCATION(): 
 				set_state(STATES["error"])
 				return
-			elif !_2: 
+			if !validateMOUNT(): 
 				set_state(STATES["error"])
 				return
-			elif !_3:
+			if !validateSTATUS():
 				set_state(STATES["Yield_Orbit"])
 				return
 			if _1 and _2 and _3: #Triple Affirmative
 				var SUR = checkSURVEY()
+				yield(get_tree(),"idle_frame")
 				if SUR == null:
 					var surveyWpt = ["MOUNT_SURVEYOR_I","MOUNT_SURVEYOR_II","MOUNT_SURVEYOR_III"]
 					for m in shipData["mounts"]:
@@ -186,6 +195,7 @@ func _enter_state(new_state, old_state):
 				EXTRACT_POST_REQUEST_OBj.data = SUR
 				Automation.callQueue.push_back(EXTRACT_POST_REQUEST_OBj)
 				print(shipSymbol," is EXTRACTING")
+			#print("help")
 		STATES.Yield_Cooldown:
 			var operation
 			if shipData["cargo"]["units"] == shipData["cargo"]["capacity"]:
@@ -218,11 +228,7 @@ func _on_EXTRACTrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		pass
-#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-#			var req = Automation.progressQueue[EXTRACT_POST_REQUEST_OBj.RID]
-#			Automation.progressQueue.erase(EXTRACT_POST_REQUEST_OBj.RID)
-#			Automation.callQueue.push_back(req)
+		set_state(STATES["error"])
 	else:
 		Cooldown = Time.get_unix_time_from_datetime_string(cleanbody["data"]["cooldown"]["expiration"])
 		shipData["cargo"] = cleanbody["data"]["cargo"]
@@ -236,11 +242,7 @@ func _on_SURVEYrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		pass
-#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-#			var req = Automation.progressQueue[SURVEY_POST_REQUEST_OBj.RID]
-#			Automation.progressQueue.erase(SURVEY_POST_REQUEST_OBj.RID)
-#			Automation.callQueue.push_back(req)
+		set_state(STATES["error"])
 	else:
 		Cooldown = Time.get_unix_time_from_datetime_string(cleanbody["data"]["cooldown"]["expiration"])
 		Agent.emit_signal("cooldownStarted",cleanbody["data"]["cooldown"]["expiration"],cleanbody["data"]["cooldown"]["shipSymbol"])
@@ -255,11 +257,7 @@ func _on_ORBITrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("error"):
-		pass
-#		if Automation.progressQueue.size() > 0 and Automation.progressQueue.has(SURVEY_POST_REQUEST_OBj.RID):
-#			var req = Automation.progressQueue[ORBIT_POST_REQUEST_OBj.RID]
-#			Automation.progressQueue.erase(ORBIT_POST_REQUEST_OBj.RID)
-#			Automation.callQueue.push_back(req)
+		set_state(STATES["error"])
 	else:
 		shipData["nav"] = cleanbody["data"]["nav"]
 		cleanbody["meta"] = shipData["symbol"]

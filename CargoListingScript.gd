@@ -63,6 +63,7 @@ func _on_Button_pressed():
 func _on_JETrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
+	cleanbody["meta"] = Agent.focusShip
 	if cleanbody.has("data"):
 		Agent.emit_signal("JettisonCargo",cleanbody)
 	else:

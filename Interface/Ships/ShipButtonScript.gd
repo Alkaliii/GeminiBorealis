@@ -12,7 +12,7 @@ func _ready():
 func _process(delta):
 	if cooldownTime != null:
 		var present = Time.get_unix_time_from_system()
-		var difference = cooldownTime - present
+		var difference = round(cooldownTime - present)
 		$VBoxContainer/ButtonStatus/Button.text = str(ShipDat["registration"]["role"]," (",difference,")")
 		
 		if cooldownTime < present:

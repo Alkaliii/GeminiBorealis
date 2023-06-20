@@ -52,6 +52,9 @@ func _ready():
 	
 	Agent.connect("DockFinished",self,"cacheSHIPstatus")
 	Agent.connect("OrbitFinished",self,"cacheSHIPstatus")
+	Agent.connect("JettisonCargo",self,"cacheJETTISON")
+	Agent.connect("PurchaseCargo",self,"cachePURCHASE")
+	Agent.connect("SellCargo",self,"cacheSELL")
 	
 	_setRate(SelectRateTime)
 #	for i in 25:
@@ -192,6 +195,15 @@ func cacheSYSTEMWPT(data):
 
 func cacheEXTRACT(data):
 	_FleetData[data["data"]["extraction"]["shipSymbol"]]["cargo"] = data["data"]["cargo"]
+
+func cacheJETTISON(data):
+	_FleetData[data["meta"]]["cargo"] = data["data"]["cargo"]
+
+func cachePURCHASE(data):
+	_FleetData[data["data"]["transaction"]["shipSymbol"]]["cargo"] = data["data"]["cargo"]
+
+func cacheSELL(data):
+	_FleetData[data["data"]["transaction"]["shipSymbol"]]["cargo"] = data["data"]["cargo"]
 
 func cacheSHIPstatus(data):
 	_FleetData[data["meta"]]["nav"] = data["data"]["nav"]
