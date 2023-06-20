@@ -1,5 +1,7 @@
-# GeminiBorealis
-(GB) is a [SpaceTraders](spacetraders.io) 3rd party client made in [Godot Engine](godotengine.org). GB is perfect for managing small fleets (<20) or playing around in a single ship thanks to it's built in automations and contextual UI.
+# GeminiBorealis (WIP)
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/7dfee5bf-2c30-4143-9ec6-79369cdd6166)
+
+(GB) is a [SpaceTraders](spacetraders.io) 3rd party client made in [Godot Engine](godotengine.org). Thanks to its built-in automation and contextual UI, GB is perfect for managing small fleets (<20) or playing around in a single ship.
 
 *I may be overselling it a bit*
 
@@ -37,16 +39,33 @@
    - [ ] Orbit Group
    - [ ] Top Up (Refuel) Group
    - [ ] Purge (Sell) Group Cargo
-- [ ] Automations
+- [ ] Automation
    - [x] Purge Ship Cargo
    - [ ] Strip Waypoint (group)
-   - [ ] Auto Extract (group)
+   - [x] Auto Extract (group)
    - [ ] Auto Explore (group)
-- [x] Quickly Login to Previously used Tokens
+- [x] Quickly Login to Previously Used Tokens
 - [ ] Nameable Ships
 
+# Quickstart Guide
+Enter a pre-existing token or press register in the bottom right to create a new token. Please be aware it will be saved locally to your machine immediately upon login. You can remove tokens from the save file but can't prevent them from being auto-saved on usage. Once on the map screen, you can:
+
+* Move around the map by holding [SHIFT] and pressing one of the arrow keys.
+* Press [SHIFT] & [TAB] to return the screen to default.
+* You can use [SHIFT] & [=/+] to zoom in and [SHIFT] & [-/_] to zoom out (or [CTRL] & [SHIFT] & [ARROW UP/DOWN]).
+* Use [SHIFT] & [A] to select waypoints quickly, and [SHIFT] & [Z] to chart a line between a previously selected location and a hovered one.
+
+## System Screen
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/5138859d-e22b-48a8-a632-3b8fad7bc6c8)
+
+On the System Screen, you can click options at the bottom to focus them. Some provide more options you can click on when a ship is at the location.
+The top left provides a focus map button which will remove information from the map and recenter it. It also features a chart button which replicates [SHIFT] & [Z].
+
+## Ships Screen
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/0959fd24-30dc-4bcd-9824-c0e352b111e9)
 
 
+On the Ships Screen, you can click the options at the bottom to focus on a ship. The black box beside the checkmark can be clicked to reveal possible actions (not all of them work currently). When a ship is docked you can assign them to a group doing so will reveal a panel for group management. At the moment it is very buggy and might need to be restarted (set routine to stop, then set routine to start).
 
-
-
+## Agent Screen
+Doesn't do much...
