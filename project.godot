@@ -53,6 +53,7 @@ config/icon="res://icon.png"
 Agent="*res://Agent.tscn"
 Save="*res://Save.tscn"
 Automation="*res://Automation/Automation.tscn"
+API="*res://Automation/Gemini/GeminiCentral.gd"
 
 [display]
 
@@ -138,6 +139,11 @@ MAPplotline={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":false,"meta":false,"command":false,"pressed":false,"scancode":0,"physical_scancode":90,"unicode":0,"echo":false,"script":null)
  ]
 }
+openGROUPS={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":71,"unicode":0,"echo":false,"script":null)
+ ]
+}
 
 [physics]
 
@@ -145,4 +151,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+2d/snapping/use_gpu_pixel_snap=true
 environment/default_environment="res://default_env.tres"

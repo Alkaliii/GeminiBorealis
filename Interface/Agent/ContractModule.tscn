@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://sprite-action-black.png" type="Texture" id=1]
 [ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=2]
@@ -39,13 +39,48 @@ flags = 4
 atlas = ExtResource( 1 )
 region = Rect2( 1, 97, 30, 30 )
 
+[sub_resource type="AtlasTexture" id=14]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 129, 64, 30, 30 )
+
+[sub_resource type="StyleBoxFlat" id=12]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=10]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 0.411765, 0.411765, 0.419608, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=11]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 0.917647, 0.917647, 0.917647, 1 )
+
+[sub_resource type="StyleBoxFlat" id=13]
+content_margin_left = 8.0
+content_margin_right = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+
 [node name="ContractModule" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -936.0
+margin_right = -980.0
 margin_bottom = -548.0
-rect_min_size = Vector2( 344, 52 )
-size_flags_horizontal = 0
+rect_min_size = Vector2( 300, 90 )
+size_flags_horizontal = 4
 script = ExtResource( 6 )
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
@@ -54,16 +89,18 @@ use_threads = true
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
-rect_min_size = Vector2( 344, 52 )
+rect_min_size = Vector2( 300, 52 )
 size_flags_horizontal = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
 margin_right = 344.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 344, 40 )
 size_flags_horizontal = 0
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer"]
+visible = false
 margin_top = 4.0
 margin_right = 32.0
 margin_bottom = 36.0
@@ -77,21 +114,66 @@ align = 0
 icon_align = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
-margin_left = 36.0
+visible = false
 margin_top = 5.0
-margin_right = 344.0
+margin_right = 304.0
 margin_bottom = 35.0
 rect_min_size = Vector2( 304, 30 )
 size_flags_vertical = 4
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_right = 308.0
-margin_bottom = 8.0
+[node name="Icon" type="TextureRect" parent="VBoxContainer"]
+margin_right = 20.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 20, 20 )
+size_flags_horizontal = 0
+texture = SubResource( 14 )
+expand = true
 
-[node name="Type" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-margin_right = 100.0
+[node name="ContractID" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 24.0
+margin_right = 300.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 300, 8 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]Contract ID"
+text = "Contract ID"
+scroll_active = false
+
+[node name="DeliverableList" type="VBoxContainer" parent="VBoxContainer"]
+margin_top = 36.0
+margin_right = 300.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 300, 0 )
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/DeliverableList"]
+margin_right = 300.0
+margin_bottom = 4.0
+
+[node name="Deliverable" type="RichTextLabel" parent="VBoxContainer/DeliverableList"]
+visible = false
+margin_top = 8.0
+margin_right = 300.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[color=#949495]10000x[/color] [b]MODULE_SHIELD_GENERATOR_II[/b]"
+text = "10000x MODULE_SHIELD_GENERATOR_II"
+scroll_active = false
+
+[node name="Info" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 44.0
+margin_right = 300.0
+margin_bottom = 52.0
+rect_min_size = Vector2( 300, 0 )
+
+[node name="Type" type="RichTextLabel" parent="VBoxContainer/Info"]
+margin_right = 95.0
 margin_bottom = 8.0
-rect_min_size = Vector2( 100, 8 )
+rect_min_size = Vector2( 95, 8 )
 size_flags_vertical = 0
 custom_fonts/bold_font = ExtResource( 4 )
 custom_fonts/normal_font = ExtResource( 5 )
@@ -100,11 +182,11 @@ bbcode_text = "[b]PROCUREMENT"
 text = "PROCUREMENT"
 scroll_active = false
 
-[node name="Faction" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-margin_left = 104.0
-margin_right = 204.0
+[node name="Faction" type="RichTextLabel" parent="VBoxContainer/Info"]
+margin_left = 99.0
+margin_right = 194.0
 margin_bottom = 8.0
-rect_min_size = Vector2( 100, 8 )
+rect_min_size = Vector2( 95, 8 )
 size_flags_vertical = 0
 custom_fonts/bold_font = ExtResource( 4 )
 custom_fonts/normal_font = ExtResource( 5 )
@@ -113,9 +195,9 @@ bbcode_text = "[color=#949495]COSMIC"
 text = "COSMIC"
 scroll_active = false
 
-[node name="Reward" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-margin_left = 208.0
-margin_right = 308.0
+[node name="Reward" type="RichTextLabel" parent="VBoxContainer/Info"]
+margin_left = 198.0
+margin_right = 298.0
 margin_bottom = 8.0
 rect_min_size = Vector2( 100, 8 )
 size_flags_vertical = 0
@@ -126,29 +208,67 @@ bbcode_text = "[right]$999999999"
 text = "$999999999"
 scroll_active = false
 
-[node name="Deliverable" type="RichTextLabel" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
-visible = false
-margin_top = 12.0
-margin_right = 308.0
-margin_bottom = 27.0
-rect_min_size = Vector2( 0, 15 )
-custom_fonts/bold_font = ExtResource( 2 )
-custom_fonts/normal_font = ExtResource( 3 )
-bbcode_enabled = true
-bbcode_text = "[b]MODULE_SHIELD_GENERATOR_II[/b][color=#949495](10000)"
-text = "MODULE_SHIELD_GENERATOR_II(10000)"
-scroll_active = false
+[node name="Accept" type="Button" parent="VBoxContainer"]
+margin_top = 56.0
+margin_right = 300.0
+margin_bottom = 69.0
+rect_min_size = Vector2( 300, 13 )
+custom_colors/font_color_focus = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 12 )
+custom_styles/pressed = SubResource( 10 )
+custom_styles/focus = SubResource( 11 )
+custom_styles/normal = SubResource( 13 )
+text = "ACCEPT"
+align = 0
+icon_align = 2
+expand_icon = true
 
-[node name="DeliverableList" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
-margin_top = 12.0
-margin_right = 308.0
-margin_bottom = 12.0
+[node name="Deliver" type="Button" parent="VBoxContainer"]
+visible = false
+margin_top = 37.0
+margin_right = 300.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 300, 13 )
+custom_colors/font_color_focus = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 12 )
+custom_styles/pressed = SubResource( 10 )
+custom_styles/focus = SubResource( 11 )
+custom_styles/normal = SubResource( 11 )
+text = "DELIVER"
+align = 0
+icon_align = 2
+expand_icon = true
+
+[node name="Fulfill" type="Button" parent="VBoxContainer"]
+visible = false
+margin_top = 54.0
+margin_right = 300.0
+margin_bottom = 67.0
+rect_min_size = Vector2( 300, 13 )
+custom_colors/font_color_focus = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color = Color( 0.156863, 0.156863, 0.168627, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = SubResource( 12 )
+custom_styles/pressed = SubResource( 10 )
+custom_styles/focus = SubResource( 11 )
+custom_styles/normal = SubResource( 11 )
+text = "FULFILL"
+align = 0
+icon_align = 2
+expand_icon = true
 
 [node name="Deadline" type="RichTextLabel" parent="VBoxContainer"]
-margin_top = 44.0
-margin_right = 344.0
-margin_bottom = 52.0
-rect_min_size = Vector2( 0, 8 )
+margin_top = 73.0
+margin_right = 300.0
+margin_bottom = 81.0
+rect_min_size = Vector2( 300, 8 )
 custom_fonts/bold_font = ExtResource( 4 )
 custom_fonts/normal_font = ExtResource( 5 )
 bbcode_enabled = true
@@ -156,4 +276,4 @@ bbcode_text = "[color=#949495][right]Due: tomorrow"
 text = "Due: tomorrow"
 scroll_active = false
 
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="VBoxContainer/Accept" to="." method="_on_Accept_pressed"]

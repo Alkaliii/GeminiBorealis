@@ -3,10 +3,18 @@ extends Node
 
 const savePath = "user://USER_SAVE%s.json"
 const clientSavePath = "user://CLIENT_SAVE.json"
+const universeSavePath = "user://universe.json"
 
 var clientVer = "0.1.0"
-var pastTokens : Dictionary
 
+#Client
+var pastTokens : Dictionary
+var universe = {
+	"version": null,
+	"data": null
+}
+
+#User
 var groups : Dictionary
 
 var _file = File.new()
@@ -63,6 +71,9 @@ func loadUserSave():
 	
 	var data = JSON.parse(content).result
 	Agent.surveys = data["surveys"]
+	Agent.networth = data["networth"]
+	Agent.sellgood = data["sellgood"]
+	Agent.sellship = data["sellship"]
 
 func writeUserSave():
 	var error = _file.open(savePath % Agent.AgentSymbol, File.WRITE)
@@ -73,11 +84,43 @@ func writeUserSave():
 	
 	var data = {
 		"client_version": clientVer,
-		"surveys": Agent.surveys
+		"surveys": Agent.surveys,
+		"networth": Agent.networth,
+		"sellgood": Agent.sellgood,
+		"sellship": Agent.sellship
 	}
 	
 	var JSONIFY = JSON.print(data)
 	_file.store_string(JSONIFY)
 	_file.close()
 	
-	print("saved")
+	print("saved user data to file")
+
+func loadUniverse():
+	var error = _file.open(universeSavePath, File.READ)
+	if error != OK:
+		#Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		printerr("Could not open %s. Aborting load operation. err: %s" % [universeSavePath,error])
+		return
+	
+	var content = _file.get_as_text()
+	_file.close()
+	
+	var data = JSON.parse(content).result
+	universe.version = data.version
+	universe.data = data.data
+
+func writeUniverse():
+	var error = _file.open(universeSavePath, File.WRITE)
+	if error != OK:
+		#Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		printerr("Could not open %s. Aborting save operation. err: %s" % [universeSavePath,error])
+		return
+	
+	var data = universe
+	
+	var JSONIFY = JSON.print(data)
+	_file.store_string(JSONIFY)
+	_file.close()
+	
+	print("saved universe to file")

@@ -15,7 +15,8 @@ func _input(event):
 		else:
 			dragging = false
 	elif event is InputEventMouseMotion and dragging:
-		position = (zoom * (mouse_start_pos - event.position) + screen_start_position)
-		position.x = clamp(position.x,(500+limit_left),(500+limit_right))
-		position.y = clamp(position.y,(500+limit_top),(500+limit_bottom))
+		position = ((zoom * (mouse_start_pos - event.position)) + screen_start_position)
+		position.x = clamp(position.x,-65000,65000)
+		position.y = clamp(position.y,-65000,65000)
+		#(500+limit_bottom)
 		#print(position)

@@ -154,6 +154,7 @@ func _on_DOCKrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
+		cleanbody["meta"] = Agent.interfaceShip
 		Agent.emit_signal("DockFinished",cleanbody)
 	else:
 		Agent.dispError(cleanbody)

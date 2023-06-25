@@ -12,6 +12,11 @@ var systemData
 var surveys : Dictionary = {}
 var cooldowns : Dictionary
 
+#Monitoring
+var networth : Dictionary = {}
+var sellgood : Dictionary = {} #Symbol, #Symbol/#TotalAmountSold[{Time:NewTotal}]/#TotalRevenue[{Time:NewTotal}]
+var sellship : Dictionary = {} #ShipSymbol, #ShipSymbol/#TotalRevenue{Time:NewTotal}
+
 export var _FleetData : Dictionary
 export var interfaceShip : String
 export var focusShip : String

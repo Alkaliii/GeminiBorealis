@@ -355,7 +355,7 @@ func generateSYSTEM(data):
 					$Planets.add_child(waypoi)
 					PlanetNdList[w["symbol"]] = waypoi
 					
-					print(w["symbol"])
+					#print(w["symbol"])
 					var circ = circle.instance()
 					circ.pos = Vector2(500,500)
 					circ.rad = Vector2(w["x"],w["y"]).length()
@@ -422,6 +422,7 @@ func genLine(one,two, col = null, transit = false, arrival = null):
 			return
 	
 	for l in $Transit.get_children():
+		#if !l is Line2D: continue
 		if (l.get_point_position(0) == one+Vector2(500,500)) and (l.get_point_position(1) == two+Vector2(500,500)):
 			return
 		if (l.get_point_position(0) == two+Vector2(500,500)) and (l.get_point_position(1) == one+Vector2(500,500)):
@@ -441,13 +442,26 @@ func genLine(one,two, col = null, transit = false, arrival = null):
 	
 	if transit:
 		line.name = str(round((one-two).length()),"TRANSIT")
+		
+		for l in $Transit.get_children():
+			if l.name == line.name:
+				line.queue_free()
+				return
+		
+		line.begin_cap_mode = Line2D.LINE_CAP_BOX
+		line.end_cap_mode = Line2D.LINE_CAP_BOX
 		$Transit.add_child(line)
+		var transitTweeProg = get_tree().create_tween()
+		transitTweeProg.bind_node(line)
+		transitTweeProg.tween_method(self,"tweenTransitLine",one+Vector2(500,500),two+Vector2(500,500),(Time.get_unix_time_from_datetime_string(arrival) - Time.get_unix_time_from_system()),[line]).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUART).set_delay(6)
+		#transitTweeProg.tween_property(circ,"rect_position",two+Vector2(500.0,500.0),(Time.get_unix_time_from_datetime_string(arrival) - Time.get_unix_time_from_system())).set_ease(Tween.EASE_IN_OUT)
+		
 		var transitTwee = get_tree().create_tween()
 		transitTwee.set_loops()
 		transitTwee.bind_node(line)
 		transitTwee.tween_property(line,"modulate",Color(1,1,1,1),1)
 		transitTwee.tween_interval(0.2)
-		transitTwee.tween_property(line,"modulate",Color(1,1,1,0),1)
+		transitTwee.tween_property(line,"modulate",Color(1,1,1,0.5),1)
 		if arrival != null:
 			var expiry = (Time.get_unix_time_from_datetime_string(arrival) - Time.get_unix_time_from_system())
 			var terminate = get_tree().create_timer(expiry)
@@ -458,3 +472,6 @@ func genLine(one,two, col = null, transit = false, arrival = null):
 	if $Lines.get_child_count() == 1:
 		nearLine = line
 	#print(line.global_position)
+
+func tweenTransitLine(newEnd : Vector2,line : Line2D):
+	line.call_deferred("set_point_position",0,newEnd)

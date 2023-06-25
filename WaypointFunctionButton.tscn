@@ -3,7 +3,7 @@
 [ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://WaypointActionScript.gd" type="Script" id=3]
 
-[sub_resource type="StyleBoxFlat" id=7]
+[sub_resource type="StyleBoxFlat" id=10]
 content_margin_left = 8.0
 content_margin_right = 6.0
 bg_color = Color( 0.411765, 0.411765, 0.419608, 0 )
@@ -13,7 +13,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=5]
+[sub_resource type="StyleBoxFlat" id=11]
 content_margin_left = 8.0
 content_margin_right = 6.0
 bg_color = Color( 0.917647, 0.917647, 0.917647, 1 )
@@ -27,10 +27,10 @@ custom_colors/font_color_focus = Color( 0.156863, 0.156863, 0.168627, 1 )
 custom_colors/font_color = Color( 0.156863, 0.156863, 0.168627, 1 )
 custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
 custom_fonts/font = ExtResource( 1 )
-custom_styles/hover = SubResource( 7 )
-custom_styles/pressed = SubResource( 7 )
-custom_styles/focus = SubResource( 5 )
-custom_styles/normal = SubResource( 5 )
+custom_styles/hover = SubResource( 10 )
+custom_styles/pressed = SubResource( 10 )
+custom_styles/focus = SubResource( 11 )
+custom_styles/normal = SubResource( 11 )
 text = "text here"
 align = 0
 icon_align = 2

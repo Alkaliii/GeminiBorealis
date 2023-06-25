@@ -15,6 +15,14 @@ export (Dictionary) var _GET_REQUEST_OBj = {
 	"RID": null,
 	"TYPE": "GET"
 }
+export (Dictionary) var _PATCH_REQUEST_OBj = {
+	"Author": self,
+	"Callback": "_on_request_completed",
+	"API_ext": "my/agent",
+	"data": null,
+	"RID": null,
+	"TYPE": "PATCH"
+}
 
 export var laxRateTime = 2
 export var executiveRateTime = 1.2
@@ -32,13 +40,16 @@ var active = false
 
 var _FleetData : Dictionary
 var _SystemsData : Dictionary
+var _MarketData : Dictionary
 
 signal OperationChanged
+signal PushAPI
 
 signal LISTSHIPS
 signal GETSYSTEM
 signal LISTSYSTEMWAYPOINTS
 signal EXTRACTRESOURCES
+signal GETMARKET
 
 var Current_Request = "none"
 
@@ -49,12 +60,14 @@ func _ready():
 	self.connect("GETSYSTEM",self,"cacheSYSTEM")
 	self.connect("LISTSYSTEMWAYPOINTS",self,"cacheSYSTEMWPT")
 	self.connect("EXTRACTRESOURCES",self,"cacheEXTRACT")
+	self.connect("GETMARKET",self,"cacheMARKET")
 	
 	Agent.connect("DockFinished",self,"cacheSHIPstatus")
 	Agent.connect("OrbitFinished",self,"cacheSHIPstatus")
 	Agent.connect("JettisonCargo",self,"cacheJETTISON")
 	Agent.connect("PurchaseCargo",self,"cachePURCHASE")
 	Agent.connect("SellCargo",self,"cacheSELL")
+	Agent.connect("visitmarket",self,"cacheMARKET")
 	
 	_setRate(SelectRateTime)
 #	for i in 25:
@@ -108,8 +121,16 @@ func _process(delta):
 	cooldown += delta
 	if cooldown >=  RateTime and active:
 		pushAPI()
+		emit_signal("PushAPI")
 	if callQueue.size() > 0:
 		active = true
+	cleanProgressQ()
+
+func cleanProgressQ():
+	if progressQueue.size() > 0:
+		for req in progressQueue:
+			if progressQueue[req]["RCT"] < (Time.get_unix_time_from_system()-10):
+				progressQueue.erase(req)
 
 func pushAPI():
 	cooldown = 0
@@ -125,6 +146,7 @@ func processQueue(idx = 0):
 		match r["TYPE"]:
 			"POST": executePOST(r)
 			"GET": executeGET(r)
+			"PATCH": executePATCH(r)
 		Current_Request = r.RID
 	else: 
 		print("empty")
@@ -144,6 +166,25 @@ func executePOST(request):
 		HTTP.request(url, header, true, HTTPClient.METHOD_POST)
 	else:
 		HTTP.request(url, header, true, HTTPClient.METHOD_POST,JSON.print(request["data"]))
+	yield(HTTP,"request_completed")
+	HTTP.queue_free()
+	request["RCT"] = Time.get_unix_time_from_system()
+	progressQueue[request["RID"]] = request
+
+func executePATCH(request):
+	var HTTP = HTTPRequest.new()
+	self.add_child(HTTP)
+	HTTP.use_threads = true
+	if request["Callback"] != null:
+		HTTP.connect("request_completed", request["Author"], request["Callback"])
+	HTTP.connect("request_completed", self,"_on_request_completed")
+	var url = str("https://api.spacetraders.io/v2/", request["API_ext"])
+	var header = ["Accept: application/json",str("Authorization: Bearer ", Agent.USERTOKEN),"Content-Type: application/json"]
+	if request["data"] == null:
+		header.push_back("Content-Length: 0")
+		HTTP.request(url, header, true, HTTPClient.METHOD_PATCH)
+	else:
+		HTTP.request(url, header, true, HTTPClient.METHOD_PATCH,JSON.print(request["data"]))
 	yield(HTTP,"request_completed")
 	HTTP.queue_free()
 	request["RCT"] = Time.get_unix_time_from_system()
@@ -204,6 +245,37 @@ func cachePURCHASE(data):
 
 func cacheSELL(data):
 	_FleetData[data["data"]["transaction"]["shipSymbol"]]["cargo"] = data["data"]["cargo"]
+	
+	if Agent.sellgood.has(data["data"]["transaction"]["tradeSymbol"]):
+		var TotalSold = Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]]["TotalSold"]
+		var NewTotalSold = TotalSold[TotalSold.size()-1].values()[0] + data["data"]["transaction"]["units"]
+		TotalSold.push_back({str(Time.get_unix_time_from_system()):NewTotalSold})
+		
+		var TotalRevenue = Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]]["TotalRevenue"]
+		var NewTotalRevenue = TotalRevenue[TotalRevenue.size()-1].values()[0] + data["data"]["transaction"]["totalPrice"]
+		TotalRevenue.push_back({str(Time.get_unix_time_from_system()):NewTotalRevenue})
+	else:
+		var FirstTotalSold = {str(Time.get_unix_time_from_system()):data["data"]["transaction"]["units"]}
+		var FirstTotalRevenue = {str(Time.get_unix_time_from_system()):data["data"]["transaction"]["totalPrice"]}
+		Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]] = {
+			"symbol": data["data"]["transaction"]["tradeSymbol"],
+			"TotalSold": [FirstTotalSold],
+			"TotalRevenue": [FirstTotalRevenue]
+		}
+	
+	if Agent.sellship.has(data["data"]["transaction"]["shipSymbol"]):
+		var TotalRevenue = Agent.sellship[data["data"]["transaction"]["shipSymbol"]]["TotalRevenue"]
+		var NewTotalRevenue = TotalRevenue[TotalRevenue.size()-1].values()[0] + data["data"]["transaction"]["totalPrice"]
+		TotalRevenue.push_back({str(Time.get_unix_time_from_system()):NewTotalRevenue})
+	else:
+		var FirstTotalRevenue = {str(Time.get_unix_time_from_system()):data["data"]["transaction"]["totalPrice"]}
+		Agent.sellship[data["data"]["transaction"]["shipSymbol"]] = {
+			"shipSymbol": data["data"]["transaction"]["shipSymbol"],
+			"TotalRevenue": [FirstTotalRevenue]
+		}
 
 func cacheSHIPstatus(data):
 	_FleetData[data["meta"]]["nav"] = data["data"]["nav"]
+
+func cacheMARKET(data,ws = null,ss = null,_4 = null):
+	_MarketData[data["data"]["symbol"]] = data["data"]

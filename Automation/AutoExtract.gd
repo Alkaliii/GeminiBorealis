@@ -4,6 +4,7 @@ class_name AutoExtractFSM
 var shipSymbol : String
 var shipData : Dictionary
 var Cooldown : int
+var Leftover : int
 var possibleFocus = ["PRECIOUS_STONES","QUARTZ_SAND","SILICON_CRYSTALS",
 "AMMONIA_ICE","LIQUID_HYDROGEN","LIQUID_NITROGEN","ICE_WATER","EXOTIC_MATTER",
 "ADVANCED_CIRCUITRY","GRAVITON_EMITTERS","IRON","IRON_ORE","COPPER","COPPER_ORE",
@@ -60,11 +61,33 @@ export (Dictionary) var ORBIT_POST_REQUEST_OBj = {
 	"TYPE": "POST"
 }
 
+export (Dictionary) var DOCK_POST_REQUEST_OBj = {
+	"Author": self,
+	"Callback": "_on_DOCKrequest_completed",
+	"API_ext": str("my/ships/",shipSymbol,"/dock"), #After "v2" in https://api.spacetraders.io/v2
+	"data": null, #JSON.print'd dictionary, if it remains null an additional header will be added "Content-Length: 0"
+	"RID": str(shipSymbol,"DOCK",Time.get_unix_time_from_system()), #Request ID, which will be used to identify it, different nodes should create different IDs utilizing time, the node name and maybe other relevant data
+	"TYPE": "POST"
+}
+
+export (Dictionary) var MARKET_POST_REQUEST_OBj = {
+	"Author": self,
+	"Callback": "_on_MARKETrequest_completed",
+	"API_ext": str("systems/","systemSymbol","/waypoints/","waypointSymbol","/market"), #After "v2" in https://api.spacetraders.io/v2
+	"data": null, #JSON.print'd dictionary, if it remains null an additional header will be added "Content-Length: 0"
+	"RID": str(shipSymbol,"MARKET",Time.get_unix_time_from_system()), #Request ID, which will be used to identify it, different nodes should create different IDs utilizing time, the node name and maybe other relevant data
+	"TYPE": "GET"
+}
+
 func _ready():
-	add_state("Extract")
-	add_state("Yield_Cooldown")
-	add_state("Yield_Orbit")
-	add_state("Survey")
+	add_state("Extract") #-> Cooldown,Orbit,Survey
+	add_state("Yield_Cooldown") #-> Extract
+	add_state("Yield_Orbit") #-> Extract
+	add_state("Survey") #-> Cooldown
+	add_state("Cargo_Full") #-> Dock
+	add_state("Yield_Dock") #-> Purge,Visit
+	add_state("Visit_Market") #-> Purge
+	add_state("Purge") #-> Orbit
 	add_state("error")
 
 func endFSM():
@@ -87,6 +110,22 @@ func state_logic(delta):
 			if shipData["nav"]["status"] == "IN_ORBIT":
 				set_state(STATES.Extract)
 		STATES.Survey: pass
+		STATES.Yield_Dock:
+			if shipData["nav"]["status"] == "DOCKED":
+				if Automation._MarketData.has(shipData["nav"]["waypointSymbol"]):
+					set_state(STATES.Purge)
+				else:
+					set_state(STATES.Visit_Market)
+		STATES.Visit_Market:
+			if Automation._MarketData.has(shipData["nav"]["waypointSymbol"]):
+				set_state(STATES.Purge)
+		STATES.Purge:
+			if shipData["cargo"]["units"] <= Leftover:
+				ORBIT_POST_REQUEST_OBj.API_ext = str("my/ships/",shipSymbol,"/orbit")
+				ORBIT_POST_REQUEST_OBj.RID = str(shipSymbol,"ORBIT",Time.get_unix_time_from_system())
+				Automation.callQueue.push_back(ORBIT_POST_REQUEST_OBj)
+				print(shipSymbol," is ORBITING")
+				set_state(STATES.Yield_Orbit)
 		STATES.error: pass
 
 func cooldownOver():
@@ -127,6 +166,9 @@ func checkSURVEY():
 	if Agent.surveys.size() > 0:
 		for s in Agent.surveys:
 			var SUR = Agent.surveys[s]
+			if Time.get_unix_time_from_datetime_string(SUR["expiration"]) < Time.get_unix_time_from_system():
+				Agent.surveys.erase(s)
+				continue
 			if SUR["symbol"] == shipData["nav"]["waypointSymbol"]:
 				var focusMatch = 0
 				if focusList.size() > 0: for d in SUR["deposits"]: if d["symbol"] in focusList:
@@ -156,10 +198,9 @@ func _enter_state(new_state, old_state):
 			Automation.emit_signal("OperationChanged",operation)
 			
 			if shipData["cargo"]["units"] == shipData["cargo"]["capacity"]:
-				set_state(null)
+				set_state(STATES.Cargo_Full)
 				operation = {"Ship":shipSymbol,"Op":"CARGO FULL"}
 				Automation.emit_signal("OperationChanged",operation)
-				OfficerStatus = 2
 				return
 			
 			var _1 = true
@@ -199,10 +240,9 @@ func _enter_state(new_state, old_state):
 		STATES.Yield_Cooldown:
 			var operation
 			if shipData["cargo"]["units"] == shipData["cargo"]["capacity"]:
-				set_state(null)
+				set_state(STATES.Cargo_Full)
 				operation = {"Ship":shipSymbol,"Op":"CARGO FULL"}
 				Automation.emit_signal("OperationChanged",operation)
-				OfficerStatus = 2
 				return
 			operation = {"Ship":shipSymbol,"Op":"COOLING DOWN"}
 			Automation.emit_signal("OperationChanged",operation)
@@ -216,6 +256,48 @@ func _enter_state(new_state, old_state):
 			SURVEY_POST_REQUEST_OBj.RID = str(shipSymbol,"SURVEY",Time.get_unix_time_from_system())
 			Automation.callQueue.push_back(SURVEY_POST_REQUEST_OBj)
 			print(shipSymbol," is SURVEYING")
+		STATES.Cargo_Full:
+			DOCK_POST_REQUEST_OBj.API_ext = str("my/ships/",shipSymbol,"/dock")
+			DOCK_POST_REQUEST_OBj.RID = str(shipSymbol,"DOCK",Time.get_unix_time_from_system())
+			Automation.callQueue.push_back(DOCK_POST_REQUEST_OBj)
+			print(shipSymbol," is DOCKING")
+			set_state(STATES["Yield_Dock"])
+		STATES.Yield_Dock:
+			var operation = {"Ship":shipSymbol,"Op":"DOCKING"}
+			Automation.emit_signal("OperationChanged",operation)
+		STATES.Visit_Market:
+			var operation = {"Ship":shipSymbol,"Op":"SHOPPING"}
+			Automation.emit_signal("OperationChanged",operation)
+			MARKET_POST_REQUEST_OBj.API_ext = str("systems/",shipData["nav"]["systemSymbol"],"/waypoints/",shipData["nav"]["waypointSymbol"],"/market")
+			MARKET_POST_REQUEST_OBj.RID = str(shipSymbol,"MARKET",Time.get_unix_time_from_system())
+			Automation.callQueue.push_back(MARKET_POST_REQUEST_OBj)
+			print(shipSymbol," is SHOPPING")
+		STATES.Purge:
+			var operation = {"Ship":shipSymbol,"Op":"PURGING"}
+			Automation.emit_signal("OperationChanged",operation)
+			var purgelist : Array
+			var rmvAMT : int
+			for c in shipData["cargo"]["inventory"]:
+				for g in Automation._MarketData[shipData["nav"]["waypointSymbol"]]["tradeGoods"]:
+					if c["symbol"] == g["symbol"]:
+						purgelist.push_back({"sym":g["symbol"],"amt":c["units"]})
+						rmvAMT += c["units"]
+			
+			print(purgelist)
+			for purgable in purgelist:
+				var PURGE_POST_REQUEST_OBj = {
+					"Author": self,
+					"Callback": "_on_SELLrequest_completed",
+					"API_ext": str("my/ships/",shipSymbol,"/sell"), #After "v2" in https://api.spacetraders.io/v2
+					"data": {"symbol": purgable["sym"], "units": purgable["amt"]}, #JSON.print'd dictionary, if it remains null an additional header will be added "Content-Length: 0"
+					"RID": str(shipSymbol,"SELL",purgable["sym"],Time.get_unix_time_from_system()), #Request ID, which will be used to identify it, different nodes should create different IDs utilizing time, the node name and maybe other relevant data
+					"TYPE": "POST"
+				}
+				
+				Automation.callQueue.push_back(PURGE_POST_REQUEST_OBj)
+			
+			Leftover = shipData["cargo"]["capacity"] - rmvAMT
+			
 		STATES.error:
 			var operation = {"Ship":shipSymbol,"Op":"[color=#EE4B2B]ERROR"}
 			Automation.emit_signal("OperationChanged",operation)
@@ -264,3 +346,33 @@ func _on_ORBITrequest_completed(result, response_code, headers, body):
 		Agent.emit_signal("OrbitFinished",cleanbody)
 		
 		Automation.progressQueue.erase(ORBIT_POST_REQUEST_OBj.RID)
+
+func _on_DOCKrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("error"):
+		set_state(STATES["error"])
+	else:
+		shipData["nav"] = cleanbody["data"]["nav"]
+		cleanbody["meta"] = shipData["symbol"]
+		Agent.emit_signal("DockFinished",cleanbody)
+		
+		Automation.progressQueue.erase(DOCK_POST_REQUEST_OBj.RID)
+
+func _on_MARKETrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("error"):
+		set_state(STATES["error"])
+	else:
+		Agent.emit_signal("visitmarket",cleanbody,shipData["nav"]["waypointSymbol"],shipData["nav"]["systemSymbol"],true)
+
+func _on_SELLrequest_completed(result, response_code, headers, body):
+	var json = JSON.parse(body.get_string_from_utf8())
+	var cleanbody = json.result
+	if cleanbody.has("error"):
+		#set_state(STATES["error"])
+		pass
+	else:
+		shipData["cargo"] = cleanbody["data"]["cargo"]
+		Agent.emit_signal("SellCargo",cleanbody)

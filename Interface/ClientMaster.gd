@@ -27,6 +27,8 @@ func _ready():
 	Agent.connect("closeShop",self,"hidePanel")
 	Agent.connect("mapHOME",self,"hidePanel")
 	Agent.connect("AcceptContract", self, "updateStatus")
+	API.connect("accept_contract_complete",self,"updateStatus")
+	
 	Agent.connect("PurchaseShip",self,"updateStatus")
 	Agent.connect("PurchaseShip",self,"_on_Ships_pressed")
 	Agent.connect("PurchaseCargo",self,"updateStatus")
@@ -80,7 +82,7 @@ func updateStatus(_1 = null):
 		#sellCargo returns cacheable data
 		if _1.has("data") and _1["data"].has("agent") and _1["data"]["agent"].has("credits"):
 			Agent.AgentCredits = _1["data"]["agent"]["credits"]
-			print("dataCached",_1)
+			#print("dataCached",_1)
 		else:
 			fetchAgent()
 			yield(self,"agentFetched")
@@ -89,6 +91,12 @@ func updateStatus(_1 = null):
 		yield(self,"agentFetched")
 	var details = $StatusBack/Details
 	details.bbcode_text = str("[right][b][USER]:[/b] ",Agent.AgentSymbol," [color=#69696b]([b]",Agent.AgentFaction,"[/b])[/color]"," | [b][CREDITS]:[/b] ",Agent.AgentCredits)
+	if Agent.networth.has("net"):
+		Agent.networth["net"].push_back({str(Time.get_unix_time_from_system()):Agent.AgentCredits})
+	else:
+		Agent.networth["net"] = []
+		Agent.networth["net"].push_back({str(Time.get_unix_time_from_system()):Agent.AgentCredits})
+	Save.writeUserSave()
 
 func resetWindow():
 	$MainWindow.rect_position = Vector2(0,0)
@@ -126,7 +134,7 @@ func _on_fetchAgentrequest_completed(result, response_code, headers, body):
 func getfail():
 	pass
 
-func showPanel(_1 = null,_2 = null,_3 = null):
+func showPanel(_1 = null,_2 = null,_3 = null,_4 = null):
 	#$Back/Panel.modulate = Color(1,1,1,0)
 	$Back/Panel.show()
 	var twee = get_tree().create_tween()

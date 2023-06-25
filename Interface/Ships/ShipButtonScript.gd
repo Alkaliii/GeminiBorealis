@@ -18,7 +18,7 @@ func _process(delta):
 		if cooldownTime < present:
 			cooldownTime = null
 			$VBoxContainer/ButtonStatus/Button.text = str(ShipDat["registration"]["role"])
-			OS.request_attention()
+			#OS.request_attention()
 
 func setCooldown(cTime, sym):
 	if sym != ShipDat["symbol"]: return
