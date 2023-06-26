@@ -2,8 +2,13 @@ extends Node2D
 
 var _UNIDATA = {}
 var genSys = PoolStringArray()
+var nodSys = {}
+var jumNodCor = {}
 var loadPage = 1
 var curVer
+
+var input = true
+var lastFocus = null
 
 const circle = preload("res://Interface/CIRCLE.tscn")
 const circleTEX = preload("res://Interface/CIRCLETEX.tscn")
@@ -41,6 +46,7 @@ func _ready():
 	
 	API.get_status(self)
 	yield(API,"get_status_complete")
+	yield(get_tree().create_timer(10),"timeout")
 	
 	getUNIVERSE()
 
@@ -77,14 +83,15 @@ static func centerSort (a,b):
 
 func generateUNIVERSE():
 	var fat = 0
+	$Camera2D.zoom = Vector2(90.1,90.1)
 	for s in _UNIDATA:
 		if genSys.has(s): continue
 		fat += 1
 		
 		var system = circleTEX.instance()
-		#var twee = get_tree().create_tween()
 		system.name = s
 		system.setLabel(s)
+		system.hideLabel()
 		system.add_to_group("Stars")
 		system.rect_global_position = Vector2(_UNIDATA[s]["x"],_UNIDATA[s]["y"])
 		system.changeSize(3)
@@ -93,7 +100,9 @@ func generateUNIVERSE():
 		for w in _UNIDATA[s]["waypoints"]:
 			if w["type"] == "JUMP_GATE":
 				system.modulate = Color(1,1,1,1)
-				system.setLabel(str("[b]",s))
+				var newS = str(s).replace("-",str("-[color=",Color(SCM[_UNIDATA[s]["type"]]["bg"]),"]"))
+				system.setLabel(newS)
+				#system.setLabel(str("[b]",s))
 				#system.setOutCol(Color(SCM[_UNIDATA[s]["type"]]["bg"]))
 				#system.setLabel(str("[color=",SCM[_UNIDATA[s]["type"]]["bg"],"]",s))
 				#system.growLabel()
@@ -104,11 +113,13 @@ func generateUNIVERSE():
 #		system.col = Color(1,1,1,1)
 #		system.fill = true
 		$Stars.add_child(system)
-#		twee.tween_property(system,"rect_scale",Vector2(100,100),0.2).set_ease(Tween.EASE_IN_OUT)
-#		twee.chain().tween_property(system,"rect_scale",Vector2(16,16),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		var twee = get_tree().create_tween()
+		twee.tween_property(system,"rect_scale",Vector2(100,100),0.2).set_ease(Tween.EASE_IN_OUT)
+		twee.chain().tween_property(system,"rect_scale",Vector2(16,16),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
 		
 		genSys.push_back(s)
-		if fat > 3000:
+		nodSys[s] = system
+		if fat > 100:
 			fat = 0
 			yield(get_tree().create_timer(0.1),"timeout")
 	
@@ -148,6 +159,100 @@ func getRad(type, symbol):
 		"HYPERGIANT": return (11 + (mod/2))
 		"NEBULA": return (11 + (mod/2))
 		"UNSTABLE": return (8 + (mod/2))
+
+func filterUNI(condition, invert = false):
+	condition = str(condition)
+	if condition == "OFF": unFilterUNI()
+	if !condition.is_valid_integer() and !condition in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]:
+		return
+	
+	if condition.is_valid_integer():
+		match invert:
+			true:
+				for s in _UNIDATA:
+					if _UNIDATA[s]["waypoints"].size() > int(condition): 
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+			false:
+				for s in _UNIDATA:
+					if _UNIDATA[s]["waypoints"].size() < int(condition): 
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+	else:
+		match invert:
+			true:
+				for s in _UNIDATA: for w in _UNIDATA[s]["waypoints"]: if w["type"] == condition: 
+					nodSys[s].hide()
+					if jumNodCor.has(s): for l in jumNodCor[s]:
+						l.hide()
+			false:
+				for s in _UNIDATA: 
+					var keep = false
+					for w in _UNIDATA[s]["waypoints"]: 
+						if w["type"] == condition: keep = true
+					
+					if !keep:
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+
+func unFilterUNI():
+	for s in _UNIDATA:
+		nodSys[s].show()
+		if jumNodCor.has(s): for l in jumNodCor[s]: l.show()
+
+func labels(state):
+	match state:
+		"ON": get_tree().call_group("Stars","showLabel")
+		"OFF": get_tree().call_group("Stars","hideLabel")
+
+func focusStar(starSym):
+	#if !nodSys.has(starSym): return
+	if starSym in ["RANDOM","RAND","R","IDK","SOMETHING"]: #Random Focus
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,genSys.size()-1)
+		starSym = genSys[new]
+	if starSym in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]: #Random Focus Type
+		var temp = []
+		for s in _UNIDATA: for w in _UNIDATA[s]["waypoints"]: if w["type"] == starSym: temp.push_back(s)
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,(temp.size()-1))
+		if temp.size() != 0: starSym = temp[new]
+		else: starSym = "HOME"
+	if starSym in ["HOME","ZERO"]:
+		var twee = get_tree().create_tween()
+		twee.tween_property($Camera2D,"position",Vector2(0,0),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+		if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+		return
+	
+	lastFocus = starSym
+	var twee = get_tree().create_tween()
+	twee.tween_property($Camera2D,"position",nodSys[starSym].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+	if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+
+func bookmarkStar(starSym):
+	$CanvasLayer/Control2/Bookmarks.preview()
+	if starSym == "SHOW": return
+	if starSym == "CLEAR":
+		$CanvasLayer/Control2/Bookmarks.clear()
+		return
+	if starSym in ["LAST","RECENT"] and lastFocus != null:
+		$CanvasLayer/Control2/Bookmarks.addBookmark(_UNIDATA[lastFocus])
+		return
+	if starSym in ["RANDOM","RAND","R","IDK","SOMETHING"]: #Random Bookmark
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,genSys.size()-1)
+		starSym = genSys[new]
+	$CanvasLayer/Control2/Bookmarks.addBookmark(_UNIDATA[starSym])
+
+func unmarkStar(starSym):
+	$CanvasLayer/Control2/Bookmarks.preview()
+	$CanvasLayer/Control2/Bookmarks.removeBookmark(starSym)
 
 var curSys
 func generateJUMPS():
@@ -197,11 +302,19 @@ func drawJUMP(data):
 		var line = Line2D.new()
 		var ve = VisibilityEnabler2D.new()
 		line.width = 3.0 - clamp(pow((float(s["distance"]) * 0.01),1.2), 0.1,2.5)
-		line.default_color = Color(0.6,0,1,(1.0 - clamp(pow((float(s["distance"]) * 0.01),2), 0.01,0.95)))
+		line.default_color = Color(1,1,1,(1.0 - clamp(pow((float(s["distance"]) * 0.01),2), 0.01,0.95))) #(0.6,0,1) PURPLE
 		line.add_point(Vector2(sys["x"],sys["y"]))
 		line.add_point(Vector2(s["x"],s["y"]))
 		$Lines.add_child(line)
 		line.add_child(ve)
+		
+		if jumNodCor.has(sys["symbol"]):
+			jumNodCor[sys["symbol"]].push_back(line)
+		else: jumNodCor[sys["symbol"]] = [line]
+		
+		if jumNodCor.has(s["symbol"]):
+			jumNodCor[s["symbol"]].push_back(line)
+		else: jumNodCor[s["symbol"]] = [line]
 
 func tweenJUMP(newEnd : Vector2,line : Line2D):
 	line.call_deferred("set_point_position",0,newEnd)
@@ -225,8 +338,9 @@ func loadUNIVERSE(data):
 
 
 func _process(delta):
-	mapZoom()
-	mapTranslate()
+	if input:
+		mapZoom()
+		mapTranslate()
 	cullStars()
 
 func mapZoom():
@@ -256,7 +370,7 @@ func cullStars():
 		get_tree().call_group("Stars","hideLabel")
 	elif !$Lines.visible and $Camera2D.zoom.x < 2: 
 		$Lines.show()
-		get_tree().call_group("Stars","showLabel")
+		#get_tree().call_group("Stars","showLabel")
 	
 #	var zooms = [0,10,20,30,40,50,60,70,80,90,100]
 #	zooms.push_back($Camera2D.zoom.x)
@@ -300,3 +414,7 @@ func mapTranslate():
 	$CanvasLayer/Control2/Coords.bbcode_text = str("[color=#69696b][b]x.[/b]",round($Camera2D.position.x),", [b]y.[/b]",round($Camera2D.position.y)," / (",round($Camera2D.zoom.x),"x)")
 	$Camera2D.position.x = clamp($Camera2D.position.x,-60000,60000)
 	$Camera2D.position.y = clamp($Camera2D.position.y,-60000,60000)
+
+
+func _on_Button_pressed():
+	filterUNI("ORBITAL_STATION")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Interface/Systems/UNIVERSE/UNIVERSE.gd" type="Script" id=1]
 [ext_resource path="res://Interface/Systems/DragCamera2D.gd" type="Script" id=2]
@@ -6,6 +6,89 @@
 [ext_resource path="res://Font/H2Small.tres" type="DynamicFont" id=4]
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Font/Small.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Font/Default.tres" type="DynamicFont" id=7]
+[ext_resource path="res://Interface/Systems/UNIVERSE/CommandLine.gd" type="Script" id=8]
+[ext_resource path="res://Interface/Systems/UNIVERSE/SystemButton.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Interface/Systems/UNIVERSE/BookmarkMenu.gd" type="Script" id=10]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 5.0
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id=31]
+bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxLine" id=32]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=33]
+VScrollBar/styles/grabber = SubResource( 31 )
+VScrollBar/styles/grabber_highlight = SubResource( 2 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 32 )
+
+[sub_resource type="StyleBoxFlat" id=11]
+bg_color = Color( 0, 0, 0, 0.666667 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxLine" id=4]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+
+[sub_resource type="Theme" id=5]
+HScrollBar/styles/grabber = SubResource( 31 )
+HScrollBar/styles/grabber_highlight = SubResource( 2 )
+HScrollBar/styles/grabber_pressed = SubResource( 3 )
+HScrollBar/styles/scroll = SubResource( 4 )
+
+[sub_resource type="StyleBoxFlat" id=34]
+bg_color = Color( 0.156863, 0.156863, 0.168627, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="UNIVERSE" type="Node2D"]
 script = ExtResource( 1 )
@@ -21,6 +104,9 @@ margin_right = 120000.0
 margin_bottom = 90000.0
 rect_pivot_offset = Vector2( 120000, 90000 )
 color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+__meta__ = {
+"_edit_lock_": true
+}
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
@@ -124,3 +210,195 @@ bbcode_enabled = true
 bbcode_text = "text here"
 text = "text here"
 scroll_active = false
+
+[node name="CommandLine" type="Control" parent="CanvasLayer/Control2"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -70.0
+margin_right = 1280.0
+script = ExtResource( 8 )
+Parent = NodePath("../../..")
+
+[node name="Line" type="LineEdit" parent="CanvasLayer/Control2/CommandLine"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -250.0
+margin_right = 250.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 0, 24 )
+custom_fonts/font = ExtResource( 7 )
+custom_styles/normal = SubResource( 1 )
+secret_character = "+"
+placeholder_text = "@command <value>"
+caret_blink = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Control2"]
+visible = false
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -246.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = 216.0
+theme = SubResource( 33 )
+scroll_horizontal_enabled = false
+
+[node name="List" type="VBoxContainer" parent="CanvasLayer/Control2/ScrollContainer"]
+margin_right = 220.0
+margin_bottom = 282.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 4
+
+[node name="SystemButton" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 220.0
+margin_bottom = 18.0
+
+[node name="SystemButton2" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 22.0
+margin_right = 220.0
+margin_bottom = 40.0
+
+[node name="SystemButton3" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 44.0
+margin_right = 220.0
+margin_bottom = 62.0
+
+[node name="SystemButton4" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 66.0
+margin_right = 220.0
+margin_bottom = 84.0
+
+[node name="SystemButton5" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 88.0
+margin_right = 220.0
+margin_bottom = 106.0
+
+[node name="SystemButton6" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 110.0
+margin_right = 220.0
+margin_bottom = 128.0
+
+[node name="SystemButton7" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 132.0
+margin_right = 220.0
+margin_bottom = 150.0
+
+[node name="SystemButton8" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 154.0
+margin_right = 220.0
+margin_bottom = 172.0
+
+[node name="SystemButton9" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 176.0
+margin_right = 220.0
+margin_bottom = 194.0
+
+[node name="SystemButton10" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 198.0
+margin_right = 220.0
+margin_bottom = 216.0
+
+[node name="SystemButton11" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 220.0
+margin_right = 220.0
+margin_bottom = 238.0
+
+[node name="SystemButton12" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 242.0
+margin_right = 220.0
+margin_bottom = 260.0
+
+[node name="SystemButton13" parent="CanvasLayer/Control2/ScrollContainer/List" instance=ExtResource( 9 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 264.0
+margin_right = 220.0
+margin_bottom = 282.0
+
+[node name="Bookmarks" type="Panel" parent="CanvasLayer/Control2"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -250.0
+margin_top = -145.0
+margin_right = 250.0
+margin_bottom = -80.0
+custom_styles/panel = SubResource( 11 )
+script = ExtResource( 10 )
+Parent = NodePath("../../..")
+
+[node name="ScrollContainer2" type="ScrollContainer" parent="CanvasLayer/Control2/Bookmarks"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -237.5
+margin_top = -40.0
+margin_right = 237.5
+margin_bottom = -10.0
+theme = SubResource( 5 )
+scroll_vertical_enabled = false
+
+[node name="List" type="HBoxContainer" parent="CanvasLayer/Control2/Bookmarks/ScrollContainer2"]
+margin_bottom = 24.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 4
+
+[node name="bTAB" type="Panel" parent="CanvasLayer/Control2/Bookmarks"]
+margin_right = 500.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 400, 20 )
+custom_styles/panel = SubResource( 34 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control2/Bookmarks/bTAB"]
+margin_right = 120.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 120, 20 )
+size_flags_horizontal = 4
+alignment = 1
+
+[node name="Label" type="RichTextLabel" parent="CanvasLayer/Control2/Bookmarks/bTAB/HBoxContainer"]
+margin_left = 10.0
+margin_top = 6.0
+margin_right = 110.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 100, 8 )
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[b]BOOKMARKS
+"
+text = "BOOKMARKS
+"
+scroll_active = false
+
+[connection signal="focus_entered" from="CanvasLayer/Control2/CommandLine/Line" to="CanvasLayer/Control2/CommandLine" method="_on_Line_focus_entered"]
+[connection signal="focus_exited" from="CanvasLayer/Control2/CommandLine/Line" to="CanvasLayer/Control2/CommandLine" method="_on_Line_focus_exited"]
+[connection signal="text_entered" from="CanvasLayer/Control2/CommandLine/Line" to="CanvasLayer/Control2/CommandLine" method="_on_Line_text_entered"]

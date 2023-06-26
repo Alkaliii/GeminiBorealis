@@ -66,25 +66,25 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
-[sub_resource type="StreamTexture" id=25]
+[sub_resource type="StreamTexture" id=38]
 
-[sub_resource type="StyleBoxFlat" id=26]
+[sub_resource type="StyleBoxFlat" id=39]
 content_margin_left = 15.0
 bg_color = Color( 0.12549, 0.12549, 0.133333, 1 )
 border_width_right = 16
 border_color = Color( 0.12549, 0.12549, 0.133333, 1 )
 
-[sub_resource type="StreamTexture" id=19]
+[sub_resource type="StreamTexture" id=40]
 
-[sub_resource type="StreamTexture" id=27]
+[sub_resource type="StreamTexture" id=41]
 
-[sub_resource type="StreamTexture" id=28]
+[sub_resource type="StreamTexture" id=42]
 
-[sub_resource type="StreamTexture" id=20]
+[sub_resource type="StreamTexture" id=43]
 
-[sub_resource type="StreamTexture" id=21]
+[sub_resource type="StreamTexture" id=44]
 
-[sub_resource type="StyleBoxFlat" id=29]
+[sub_resource type="StyleBoxFlat" id=45]
 content_margin_left = 2.0
 content_margin_right = 2.0
 content_margin_top = 2.0
@@ -103,18 +103,18 @@ expand_margin_bottom = 2.0
 default_font = ExtResource( 4 )
 OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
 OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
-OptionButton/icons/arrow = SubResource( 25 )
+OptionButton/icons/arrow = SubResource( 38 )
 OptionButton/styles/focus = null
-OptionButton/styles/hover = SubResource( 26 )
-OptionButton/styles/normal = SubResource( 26 )
-OptionButton/styles/pressed = SubResource( 26 )
+OptionButton/styles/hover = SubResource( 39 )
+OptionButton/styles/normal = SubResource( 39 )
+OptionButton/styles/pressed = SubResource( 39 )
 PopupMenu/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
-PopupMenu/icons/checked = SubResource( 19 )
-PopupMenu/icons/radio_checked = SubResource( 27 )
-PopupMenu/icons/radio_unchecked = SubResource( 28 )
-PopupMenu/icons/submenu = SubResource( 20 )
-PopupMenu/icons/unchecked = SubResource( 21 )
-PopupMenu/styles/panel = SubResource( 29 )
+PopupMenu/icons/checked = SubResource( 40 )
+PopupMenu/icons/radio_checked = SubResource( 41 )
+PopupMenu/icons/radio_unchecked = SubResource( 42 )
+PopupMenu/icons/submenu = SubResource( 43 )
+PopupMenu/icons/unchecked = SubResource( 44 )
+PopupMenu/styles/panel = SubResource( 45 )
 
 [sub_resource type="StyleBoxFlat" id=33]
 bg_color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )

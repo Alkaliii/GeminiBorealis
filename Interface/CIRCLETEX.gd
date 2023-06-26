@@ -21,6 +21,11 @@ func changeSize(size):
 #func setOutCol(color):
 #	$Outline.modulate = color
 
+func fadeLabel(pos):
+	if self.rect_global_position.distance_to(pos) < 50:
+		showLabel()
+	else: hideLabel()
+
 func setLabel(text):
 	$Label.bbcode_text = text
 
