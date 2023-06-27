@@ -23,7 +23,7 @@
    - [ ] Manage Ship Hardware *(Install/Remove Mounts)
 - [ ] Explore the Universe
    - [ ] Scan, Survey, and/or Chart Locations
-   - [ ] View Systems and Waypoints
+   - [x] View Systems and Waypoints
    - [ ] Use Jump Gates
 - [ ] Game the Economy
    - [ ] View Markets and Shipyards
@@ -61,11 +61,20 @@ Enter a pre-existing token or press register in the bottom right to create a new
 On the System Screen, you can click options at the bottom to focus them. Some provide more options you can click on when a ship is at the location.
 The top left provides a focus map button which will remove information from the map and recenter it. It also features a chart button which replicates [SHIFT] & [Z].
 
+### Universe Screen
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/24578880-8b2f-48a1-b1b1-d48421d9d86e)
+
+By opening a JUMP_GATE, you can access the Universe Screen, it will require a bit of loading the first time around but afterwards should be much faster. You can click on the textbox to enter commands such as `@focus ZERO`, `@bookmark IDK`, or `help` to do things. You can also drag the map around by clicking. currently [SHIFT] & [TAB], [SHIFT] & [A], [SHIFT] & [Z] are not available but the rest of the navigation shortcuts are functional. Additionally, you can press [B] to bring up the bookmark menu. Once you're done looking at the stars you can use `@exit` to return to the system screen.
+
 ## Ships Screen
-![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/0959fd24-30dc-4bcd-9824-c0e352b111e9)
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/4f02cf64-59f5-4fb0-b19d-770d33736a58)
 
+On the Ships Screen, you can click the options at the bottom to focus on a ship. The black box beside the checkmark can be clicked to reveal possible actions (not all of them work currently). When a ship is docked you can assign them to a group doing so will reveal the Group Overlay. At the moment it is very buggy and might need to be restarted (set routine to stop, then set routine to start).
 
-On the Ships Screen, you can click the options at the bottom to focus on a ship. The black box beside the checkmark can be clicked to reveal possible actions (not all of them work currently). When a ship is docked you can assign them to a group doing so will reveal a panel for group management. At the moment it is very buggy and might need to be restarted (set routine to stop, then set routine to start).
+### Group Overlay
+![image](https://github.com/Alkaliii/GeminiBorealis/assets/53021785/ddab51e2-ade9-4a4d-aff5-fb123bd80b8c)
+
+Press [CTRL] & [G] to open the Group Overlay. Here you can manage groups and assign tasks. It's still pretty buggy.
 
 ## Agent Screen
 Doesn't do much...
