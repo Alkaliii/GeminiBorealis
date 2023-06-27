@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://Interface/Systems/UNIVERSE/UNIVERSE.gd" type="Script" id=1]
 [ext_resource path="res://Interface/Systems/DragCamera2D.gd" type="Script" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://Interface/Systems/UNIVERSE/CommandLine.gd" type="Script" id=8]
 [ext_resource path="res://Interface/Systems/UNIVERSE/SystemButton.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Interface/Systems/UNIVERSE/BookmarkMenu.gd" type="Script" id=10]
+[ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=11]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 5.0
@@ -90,6 +91,77 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id=38]
+bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=39]
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=40]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxLine" id=41]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=42]
+VScrollBar/styles/grabber = SubResource( 38 )
+VScrollBar/styles/grabber_highlight = SubResource( 39 )
+VScrollBar/styles/grabber_pressed = SubResource( 40 )
+VScrollBar/styles/scroll = SubResource( 41 )
+
+[sub_resource type="StyleBoxFlat" id=35]
+bg_color = Color( 0.156863, 0.156863, 0.168627, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id=36]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0, 0, 0, 0 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+corner_detail = 20
+
+[sub_resource type="Theme" id=37]
+ProgressBar/styles/bg = SubResource( 35 )
+ProgressBar/styles/fg = SubResource( 36 )
+
 [node name="UNIVERSE" type="Node2D"]
 script = ExtResource( 1 )
 
@@ -103,6 +175,7 @@ margin_top = -90000.0
 margin_right = 120000.0
 margin_bottom = 90000.0
 rect_pivot_offset = Vector2( 120000, 90000 )
+mouse_default_cursor_shape = 13
 color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 __meta__ = {
 "_edit_lock_": true
@@ -207,8 +280,8 @@ rect_min_size = Vector2( 0, 8 )
 custom_fonts/bold_font = ExtResource( 5 )
 custom_fonts/normal_font = ExtResource( 6 )
 bbcode_enabled = true
-bbcode_text = "text here"
-text = "text here"
+bbcode_text = "..."
+text = "..."
 scroll_active = false
 
 [node name="CommandLine" type="Control" parent="CanvasLayer/Control2"]
@@ -229,7 +302,7 @@ rect_min_size = Vector2( 0, 24 )
 custom_fonts/font = ExtResource( 7 )
 custom_styles/normal = SubResource( 1 )
 secret_character = "+"
-placeholder_text = "@command <value>"
+placeholder_text = "@command <value>, or help"
 caret_blink = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Control2"]
@@ -244,7 +317,7 @@ theme = SubResource( 33 )
 scroll_horizontal_enabled = false
 
 [node name="List" type="VBoxContainer" parent="CanvasLayer/Control2/ScrollContainer"]
-margin_right = 220.0
+margin_right = 224.0
 margin_bottom = 282.0
 rect_min_size = Vector2( 0, 24 )
 size_flags_vertical = 4
@@ -397,6 +470,774 @@ bbcode_text = "[b]BOOKMARKS
 "
 text = "BOOKMARKS
 "
+scroll_active = false
+
+[node name="help" type="Panel" parent="CanvasLayer/Control2" groups=["help"]]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -250.0
+margin_top = -280.0
+margin_right = 250.0
+margin_bottom = -80.0
+custom_styles/panel = SubResource( 11 )
+
+[node name="ScrollContainer2" type="ScrollContainer" parent="CanvasLayer/Control2/help"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -240.0
+margin_top = 28.0
+margin_right = 240.0
+margin_bottom = 178.0
+theme = SubResource( 42 )
+scroll_horizontal_enabled = false
+
+[node name="List" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2"]
+margin_right = 475.0
+margin_bottom = 492.0
+rect_min_size = Vector2( 0, 24 )
+size_flags_vertical = 4
+custom_constants/separation = 10
+
+[node name="help" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/help"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@help[/color]' or '[color=#78DCE8]help[/color]'"
+text = "'@help' or 'help'"
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/help"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ displays this menu, helpful."
+text = "/ displays this menu, helpful."
+scroll_active = false
+
+[node name="filter" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 37.0
+margin_right = 475.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@filter[/color] <[color=#FC9867]condition[/color]>'"
+text = "'@filter <condition>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ filters which stars are displayed, additive."
+text = "/ filters which stars are displayed, additive."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter"]
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#FC9867][b](Int,Type,OFF)"
+text = "(Int,Type,OFF)"
+scroll_active = false
+
+[node name="TYPES" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter"]
+margin_top = 43.0
+margin_right = 475.0
+margin_bottom = 63.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter/TYPES"]
+visible = false
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]TYPES"
+text = "TYPES"
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter/TYPES"]
+margin_left = 25.0
+margin_right = 475.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+text = "PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+scroll_active = false
+
+[node name="details3" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter/TYPES"]
+margin_left = 25.0
+margin_top = 12.0
+margin_right = 475.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]NEBULA,DEBRIS_FIELD,GRAVITY_WELL"
+text = "NEBULA,DEBRIS_FIELD,GRAVITY_WELL"
+scroll_active = false
+
+[node name="filter2" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 110.0
+margin_right = 475.0
+margin_bottom = 173.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@filter2[/color] <[color=#FC9867]condition[/color]>'"
+text = "'@filter2 <condition>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ like '[color=#78DCE8]@filter[/color]' but inverted, still additive."
+text = "/ like '@filter' but inverted, still additive."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2"]
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#FC9867][b](Int,Type,OFF)"
+text = "(Int,Type,OFF)"
+scroll_active = false
+
+[node name="TYPES" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2"]
+margin_top = 43.0
+margin_right = 475.0
+margin_bottom = 63.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2/TYPES"]
+visible = false
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]TYPES"
+text = "TYPES"
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2/TYPES"]
+margin_left = 25.0
+margin_right = 475.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+text = "PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+scroll_active = false
+
+[node name="details3" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/filter2/TYPES"]
+margin_left = 25.0
+margin_top = 12.0
+margin_right = 475.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]NEBULA,DEBRIS_FIELD,GRAVITY_WELL"
+text = "NEBULA,DEBRIS_FIELD,GRAVITY_WELL"
+scroll_active = false
+
+[node name="focus" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 183.0
+margin_right = 475.0
+margin_bottom = 246.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@focus[/color] <[color=#FFD866]systemSymbol[/color]>'"
+text = "'@focus <systemSymbol>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ moves the viewport to the system specified, nifty."
+text = "/ moves the viewport to the system specified, nifty."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus"]
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFD866][b](OFF)"
+text = "(OFF)"
+scroll_active = false
+
+[node name="TYPES" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus"]
+margin_top = 43.0
+margin_right = 475.0
+margin_bottom = 63.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus/TYPES"]
+visible = false
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]TYPES"
+text = "TYPES"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus/TYPES"]
+margin_left = 25.0
+margin_right = 475.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+text = "PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+scroll_active = false
+
+[node name="details3" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus/TYPES"]
+margin_left = 25.0
+margin_top = 12.0
+margin_right = 475.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 450, 8 )
+rect_clip_content = false
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]NEBULA,DEBRIS_FIELD,GRAVITY_WELL,[wave]RANDOM,RAND,R,IDK,SOMETHING"
+text = "NEBULA,DEBRIS_FIELD,GRAVITY_WELL,RANDOM,RAND,R,IDK,SOMETHING"
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/focus/TYPES"]
+visible = false
+margin_left = 25.0
+margin_top = 24.0
+margin_right = 475.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]RANDOM,RAND,R,IDK,SOMETHING"
+text = "RANDOM,RAND,R,IDK,SOMETHING"
+scroll_active = false
+
+[node name="bookmark" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 256.0
+margin_right = 475.0
+margin_bottom = 295.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@bookmark[/color] <[color=#FFD866]systemSymbol[/color]>'"
+text = "'@bookmark <systemSymbol>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ saves a system for later in the bookmark (b) menu, handy."
+text = "/ saves a system for later in the bookmark (b) menu, handy."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark"]
+visible = false
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFD866][b](OFF)"
+text = "(OFF)"
+scroll_active = false
+
+[node name="TYPES" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark"]
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark/TYPES"]
+visible = false
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]TYPES"
+text = "TYPES"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark/TYPES"]
+visible = false
+margin_left = 25.0
+margin_right = 475.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+text = "PLANET,GAS_GIANT,MOON,ORBITAL_STATION,JUMP_GATE,ASTEROID_FIELD,"
+scroll_active = false
+
+[node name="details3" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark/TYPES"]
+margin_left = 25.0
+margin_right = 475.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 450, 8 )
+rect_clip_content = false
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]SHOW,CLEAR,LAST,RECENT,[wave]RANDOM,RAND,R,IDK,SOMETHING"
+text = "SHOW,CLEAR,LAST,RECENT,RANDOM,RAND,R,IDK,SOMETHING"
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/bookmark/TYPES"]
+visible = false
+margin_left = 25.0
+margin_top = 24.0
+margin_right = 475.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b]RANDOM,RAND,R,IDK,SOMETHING"
+text = "RANDOM,RAND,R,IDK,SOMETHING"
+scroll_active = false
+
+[node name="unmark" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 305.0
+margin_right = 475.0
+margin_bottom = 332.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/unmark"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@unmark[/color] <[color=#FFD866]systemSymbol[/color]>'"
+text = "'@unmark <systemSymbol>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/unmark"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ removes a system that was saved for later, neat."
+text = "/ removes a system that was saved for later, neat."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/unmark"]
+visible = false
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#FFD866][b](OFF)"
+text = "(OFF)"
+scroll_active = false
+
+[node name="labels" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 342.0
+margin_right = 475.0
+margin_bottom = 381.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/labels"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@labels[/color] <[color=#A9DC76]state[/color]>'"
+text = "'@labels <state>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/labels"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ turns labels on or off, nice."
+text = "/ turns labels on or off, nice."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/labels"]
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#A9DC76][b](ON, OFF)"
+text = "(ON, OFF)"
+scroll_active = false
+
+[node name="exit" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 391.0
+margin_right = 475.0
+margin_bottom = 418.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/exit"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#78DCE8]@exit[/color]'"
+text = "'@exit'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/exit"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ exits the universe map, important."
+text = "/ exits the universe map, important."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/exit"]
+visible = false
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#A9DC76][b](ON, OFF)"
+text = "(ON, OFF)"
+scroll_active = false
+
+[node name="warp" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 428.0
+margin_right = 475.0
+margin_bottom = 455.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/warp"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#AB9DF2]@warp[/color] <[color=#FFD866]systemSymbol[/color]>'"
+text = "'@warp <systemSymbol>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/warp"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ not implemented yet, darn."
+text = "/ not implemented yet, darn."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/warp"]
+visible = false
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#A9DC76][b](ON, OFF)"
+text = "(ON, OFF)"
+scroll_active = false
+
+[node name="jump" type="VBoxContainer" parent="CanvasLayer/Control2/help/ScrollContainer2/List"]
+margin_top = 465.0
+margin_right = 475.0
+margin_bottom = 492.0
+rect_min_size = Vector2( 475, 0 )
+
+[node name="cmd" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/jump"]
+margin_right = 475.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 400, 15 )
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "'[color=#AB9DF2]@jump[/color] <[color=#FF6188]waypointSymbol[/color]>'"
+text = "'@jump <waypointSymbol>'"
+scroll_active = false
+
+[node name="details2" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/jump"]
+margin_left = 25.0
+margin_top = 19.0
+margin_right = 475.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "/ not implemented yet, darn."
+text = "/ not implemented yet, darn."
+scroll_active = false
+
+[node name="details" type="RichTextLabel" parent="CanvasLayer/Control2/help/ScrollContainer2/List/jump"]
+visible = false
+margin_left = 25.0
+margin_top = 31.0
+margin_right = 475.0
+margin_bottom = 39.0
+rect_min_size = Vector2( 450, 8 )
+size_flags_horizontal = 8
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#A9DC76][b](ON, OFF)"
+text = "(ON, OFF)"
+scroll_active = false
+
+[node name="bTAB" type="Panel" parent="CanvasLayer/Control2/help"]
+margin_right = 500.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 400, 20 )
+custom_styles/panel = SubResource( 34 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control2/help/bTAB"]
+margin_right = 120.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 120, 20 )
+size_flags_horizontal = 4
+alignment = 1
+
+[node name="Label" type="RichTextLabel" parent="CanvasLayer/Control2/help/bTAB/HBoxContainer"]
+margin_left = 10.0
+margin_top = 6.0
+margin_right = 110.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 100, 8 )
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[b]CMDS
+"
+text = "CMDS
+"
+scroll_active = false
+
+[node name="UniverseLoad" type="Control" parent="CanvasLayer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/UniverseLoad"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 0.666667 )
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/UniverseLoad"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -250.0
+margin_top = -4.0
+margin_right = 250.0
+margin_bottom = 4.0
+rect_min_size = Vector2( 500, 8 )
+theme = SubResource( 37 )
+percent_visible = false
+
+[node name="LoadLabel" type="RichTextLabel" parent="CanvasLayer/UniverseLoad"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -250.0
+margin_top = -23.5
+margin_right = 250.0
+margin_bottom = -8.5
+rect_min_size = Vector2( 0, 15 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 11 )
+custom_fonts/normal_font = ExtResource( 7 )
+bbcode_enabled = true
+bbcode_text = "[center][wave]loading universe"
+text = "loading universe"
+scroll_active = false
+
+[node name="LoadProgress" type="RichTextLabel" parent="CanvasLayer/UniverseLoad"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -150.0
+margin_top = 9.0
+margin_right = 150.0
+margin_bottom = 17.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[center][color=#69696b]0/12000"
+text = "0/12000"
 scroll_active = false
 
 [connection signal="focus_entered" from="CanvasLayer/Control2/CommandLine/Line" to="CanvasLayer/Control2/CommandLine" method="_on_Line_focus_entered"]

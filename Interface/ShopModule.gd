@@ -11,6 +11,9 @@ const iee = preload("res://Interface/ResourceMarket/importexportexchange.tscn")
 
 var Purging = false 
 
+var waiting_gs = false
+var waiting_gm = false
+
 #const infoline = preload("res://300linesmall.tscn")
 
 # Called when the node enters the scene tree for the first time.
@@ -24,6 +27,10 @@ func _ready():
 	Agent.connect("SellCargo",self,"reloadMarket")
 	Agent.connect("closeShop", self,"updateVis")
 	Agent.connect("mapHOME",self,"fauxClose")
+	
+	API.connect("get_shipyard_complete",self,"_on_request_completed")
+	API.connect("get_market_complete",self,"_on_request_completed")
+	API.connect("dock_ship_complete",self,"_on_DOCKrequest_completed")
 	
 	$MarketButtons.hide()
 	
@@ -91,75 +98,94 @@ func displayMarket(data, waypoint, system, YFFDQ = false): #Yield For Fleet, Don
 	
 
 func reloadShipyard():
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_request_completed")
-	var url = str("https://api.spacetraders.io/v2/systems/",shopss,"/waypoints/",shopws,"/shipyard")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Accept: application/json",headerstring,"Content-Type: application/json"]
-	
-	HTTP.request(url, header)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	API.get_shipyard(self,shopss,shopws)
+	waiting_gs = true
+	get_tree().call_group("loading","startload")
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_request_completed")
+#	var url = str("https://api.spacetraders.io/v2/systems/",shopss,"/waypoints/",shopws,"/shipyard")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Accept: application/json",headerstring,"Content-Type: application/json"]
+#
+#	HTTP.request(url, header)
+	yield(API,"get_shipyard_complete")
+#	HTTP.queue_free()
 	displayShipyard(reloadData,shopws,shopss)
 
 func reloadMarket(arg = null):
 	if Purging: return
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_request_completed")
-	var url = str("https://api.spacetraders.io/v2/systems/",shopss,"/waypoints/",shopws,"/market")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Accept: application/json",headerstring,"Content-Type: application/json"]
-	
-	HTTP.request(url, header)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	API.get_market(self,shopss,shopws)
+	waiting_gm = true
+	get_tree().call_group("loading","startload")
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_request_completed")
+#	var url = str("https://api.spacetraders.io/v2/systems/",shopss,"/waypoints/",shopws,"/market")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Accept: application/json",headerstring,"Content-Type: application/json"]
+#
+#	HTTP.request(url, header)
+	yield(API,"get_market_complete")
+#	HTTP.queue_free()
 	displayMarket(reloadData,shopws,shopss, true)
 
-func _on_request_completed(result, response_code, headers, body):
-	if result == 4:
-		print("bad",result,response_code)
-		return
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
-	if cleanbody.has("data"):
+func _on_request_completed(cleanbody): #result, response_code, headers, body
+#	if result == 4:
+#		print("bad",result,response_code)
+#		return
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+#	if cleanbody.has("data"):
+	#if !waiting_gs or !waiting_gm: return
+	if waiting_gs: 
+		waiting_gs = false
 		reloadData = cleanbody
-	else:
-		Agent.dispError(cleanbody)
-		#getfail()
-	print(json.result)
+		get_tree().call_group("loading","finishload")
+	if waiting_gm: 
+		waiting_gm = false
+		reloadData = cleanbody
+		get_tree().call_group("loading","finishload")
+	
+#	else:
+#		Agent.dispError(cleanbody)
+#		#getfail()
+#	print(json.result)
 
-func getfail():
-	pass
+#func getfail():
+#	pass
 
-
+var waiting_d = false
 func _on_Dock_pressed():
 	$MarketButtons/Dock.hide()
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_DOCKrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.interfaceShip,"/dock")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
-	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	API.dock_ship(self,Agent.interfaceShip)
+	waiting_d = true
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_DOCKrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.interfaceShip,"/dock")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#	yield(HTTP,"request_completed")
+#	HTTP.queue_free()
 
-func _on_DOCKrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
-	if cleanbody.has("data"):
-		cleanbody["meta"] = Agent.interfaceShip
-		Agent.emit_signal("DockFinished",cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+func _on_DOCKrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+#	if cleanbody.has("data"):
+	if !waiting_d: return
+	waiting_d = false
+	cleanbody["meta"] = Agent.interfaceShip
+	Agent.emit_signal("DockFinished",cleanbody)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 
 func _on_Info_pressed():
@@ -226,6 +252,7 @@ func _on_Purge_pressed():
 	
 	print(purgelist)
 	for purgable in purgelist:
+		#yield(get_tree(),"idle_frame")
 		#Agent.sellCargo(purgable["sym"],purgable["amt"],self)
 		
 		var PURGE_POST_REQUEST_OBj = {

@@ -126,7 +126,7 @@ func deliver_cargo(node,contractId : String,shipSymbol : String,tradeSymbol : St
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_deliver_cargo"
 	req.API_ext = str("my/contracts/",contractId,"/deliver")
-	req.data = JSON.print({"shipSymbol":shipSymbol,"tradeSymbol":tradeSymbol,"units":units})
+	req.data = {"shipSymbol":shipSymbol,"tradeSymbol":tradeSymbol,"units":units}
 	req.RID = str(node.name,"DELIVER (",tradeSymbol,"x",units,") : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -212,7 +212,7 @@ func purchase_ship(node, shipType : String, waypointSymbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_purchase_ship"
 	req.API_ext = "my/ships"
-	req.data = JSON.print({"shipType":shipType,"waypointSymbol":waypointSymbol})
+	req.data = {"shipType":shipType,"waypointSymbol":waypointSymbol}
 	req.RID = str(node.name,"PURCHASE_SHIP ",shipType,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -281,7 +281,7 @@ func ship_refine(node, shipSymbol : String, produce : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_ship_refine"
 	req.API_ext = str("my/ships/",shipSymbol,"/refine")
-	req.data = JSON.print({"produce":produce})
+	req.data = {"produce":produce}
 	req.RID = str(node.name,"SHIP_REFINE"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -367,7 +367,7 @@ func extract_resources(node, shipSymbol : String, survey = null): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_extract_resources"
 	req.API_ext = str("my/ships/",shipSymbol,"/extract")
-	if survey != null: req.data = JSON.print({"survey":survey})
+	if survey != null: req.data = {"survey":survey}
 	req.RID = str(node.name,"EXTRACT_RESOURCES"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -385,7 +385,7 @@ func jettison_cargo(node, shipSymbol : String, symbol : String, units : int): #P
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_jettison_cargo"
 	req.API_ext = str("my/ships/",shipSymbol,"/jettison")
-	req.data = JSON.print({"symbol":symbol,"units":units})
+	req.data = {"symbol":symbol,"units":units}
 	req.RID = str(node.name,"JETTISON (",symbol,"x",units,") : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -403,7 +403,7 @@ func jump_ship(node, shipSymbol : String, systemSymbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_jump_ship"
 	req.API_ext = str("my/ships/",shipSymbol,"/jump")
-	req.data = JSON.print({"systemSymbol":systemSymbol})
+	req.data = {"systemSymbol":systemSymbol}
 	req.RID = str(node.name,"JUMP_SHIP"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -421,7 +421,7 @@ func navigate_ship(node, shipSymbol : String, waypointSymbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_navigate_ship"
 	req.API_ext = str("my/ships/",shipSymbol,"/navigate")
-	req.data = JSON.print({"waypointSymbol":waypointSymbol})
+	req.data = {"waypointSymbol":waypointSymbol}
 	req.RID = str(node.name,"NAVIGATE_SHIP"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -439,7 +439,7 @@ func patch_ship_nav(node, shipSymbol : String, flightMode : String): #PATCH
 	var req = _PATCH_REQUEST_OBj.duplicate()
 	req.Callback = "_on_patch_ship_nav"
 	req.API_ext = str("my/ships/",shipSymbol,"/nav")
-	req.data = JSON.print({"flightMode":flightMode})
+	req.data = {"flightMode":flightMode}
 	req.RID = str(node.name,"PATCH_SHIP_NAV"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -474,7 +474,7 @@ func warp_ship(node, shipSymbol : String, waypointSymbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_warp_ship"
 	req.API_ext = str("my/ships/",shipSymbol,"/warp")
-	req.data = JSON.print({"waypointSymbol":waypointSymbol})
+	req.data = {"waypointSymbol":waypointSymbol}
 	req.RID = str(node.name,"WARP_SHIP"," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -492,7 +492,7 @@ func sell_cargo(node, shipSymbol : String, symbol : String, units : int): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_sell_cargo"
 	req.API_ext = str("my/ships/",shipSymbol,"/sell")
-	req.data = JSON.print({"symbol":symbol,"units":units})
+	req.data = {"symbol":symbol,"units":units}
 	req.RID = str(node.name,"SELL (",symbol,"x",units,") : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -579,7 +579,7 @@ func purchase_cargo(node, shipSymbol : String, symbol : String, units : int): #P
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_purchase_cargo"
 	req.API_ext = str("my/ships/",shipSymbol,"/purchase")
-	req.data = JSON.print({"symbol":symbol,"units":units})
+	req.data = {"symbol":symbol,"units":units}
 	req.RID = str(node.name,"PURCHASE (",symbol,"x",units,") : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -597,7 +597,7 @@ func transfer_cargo(node, FROM_shipSymbol : String, tradeSymbol : String, units 
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_transfer_cargo"
 	req.API_ext = str("my/ships/",FROM_shipSymbol,"/transfer")
-	req.data = JSON.print({"tradeSymbol":tradeSymbol,"units":units,"shipSymbol":TO_shipSymbol})
+	req.data = {"tradeSymbol":tradeSymbol,"units":units,"shipSymbol":TO_shipSymbol}
 	req.RID = str(node.name,"TRANSFER (",tradeSymbol,"x",units,") : ",FROM_shipSymbol,"->",TO_shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -649,7 +649,7 @@ func install_mount(node, shipSymbol : String, symbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_install_mount"
 	req.API_ext = str("my/ships/",shipSymbol,"/mounts/install")
-	req.data = JSON.print({"symbol":symbol})
+	req.data = {"symbol":symbol}
 	req.RID = str(node.name,"INSTALL ",symbol," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -667,7 +667,7 @@ func remove_mount(node, shipSymbol : String, symbol : String): #POST
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_remove_mount"
 	req.API_ext = str("my/ships/",shipSymbol,"/mounts/remove")
-	req.data = JSON.print({"symbol":symbol})
+	req.data = {"symbol":symbol}
 	req.RID = str(node.name,"REMOVE ",symbol," : ",shipSymbol,Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -718,7 +718,7 @@ func _on_get_system(result, response_code, headers, body):
 func list_waypoints_in_system(node, systemSymbol : String, page = 1): #GET
 	var req = _GET_REQUEST_OBj.duplicate()
 	req.Callback = "_on_list_waypoints_in_system"
-	req.API_ext = str("systems",systemSymbol,"/waypoints?page=",page,"&limit=20")
+	req.API_ext = str("systems/",systemSymbol,"/waypoints?page=",page,"&limit=20")
 	req.RID = str(node.name,"LIST_WAYPOINTS_IN_SYSTEM",Time.get_unix_time_from_system())
 	
 	Automation.callQueue.push_back(req)

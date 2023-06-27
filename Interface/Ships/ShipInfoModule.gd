@@ -6,6 +6,8 @@ var ArrivalTime = null
 var CooldownTime = null
 var SHIPDATA
 
+var dispCargo = PoolStringArray()
+
 var GROUP
 var NAVWAYPOINT
 var sSURVEY
@@ -19,6 +21,13 @@ func _ready():
 	Agent.connect("selectedGroup",self,"prepAssign")
 	
 	Automation.connect("EXTRACTRESOURCES",self,"refreshCargo")
+	
+	API.connect("navigate_ship_complete", self, "_on_NAVrequest_completed")
+	API.connect("dock_ship_complete", self, "_on_DOCKrequest_completed")
+	API.connect("orbit_ship_complete", self, "_on_ORBITrequest_completed")
+	API.connect("refuel_ship_complete", self, "_on_REFUELrequest_completed")
+	API.connect("create_survey_complete", self, "_on_SURVEYrequest_completed")
+	API.connect("extract_resources_complete", self, "_on_EXTRACTrequest_completed")
 	pass # Replace with function body.
 
 func _process(delta):
@@ -43,6 +52,7 @@ func updateTransit():
 
 func clearInfo():
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
+		dispCargo = PoolStringArray()
 		r.queue_free()
 	self.hide()
 
@@ -51,6 +61,7 @@ func refreshCargo(data):
 		return
 	
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
+		dispCargo = PoolStringArray()
 		r.queue_free()
 	
 	var cartotal = line.instance()
@@ -59,8 +70,10 @@ func refreshCargo(data):
 	
 	for c in data["data"]["cargo"]["inventory"]:
 		yield(get_tree(),"idle_frame")
+		if dispCargo.has(c["symbol"]): continue
 		var cargo = cargoline.instance()
 		cargo.setdat(c)
+		dispCargo.push_back(c["symbol"])
 		$VBoxContainer/ScrollContainer/Inventory.add_child(cargo)
 
 func setdat(data):
@@ -79,6 +92,7 @@ func setdat(data):
 	var actions = $VBoxContainer/Actions/OptionButton
 	
 	for r in $VBoxContainer/ScrollContainer/Inventory.get_children():
+		dispCargo = PoolStringArray()
 		r.queue_free()
 	
 	var cartotal = line.instance()
@@ -87,8 +101,10 @@ func setdat(data):
 	
 	for c in data["cargo"]["inventory"]:
 		yield(get_tree(),"idle_frame")
+		if dispCargo.has(c["symbol"]): continue
 		var cargo = cargoline.instance()
 		cargo.setdat(c)
+		dispCargo.push_back(c["symbol"])
 		$VBoxContainer/ScrollContainer/Inventory.add_child(cargo)
 	
 	actions.clear()
@@ -256,31 +272,39 @@ func prepNav(data):
 	NAVWAYPOINT = data
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/navigate
+var waiting_n = false
 func Navigate():
+	$VBoxContainer/Actions/Button.disabled = true
 	Agent.queryWaypoint(SHIPDATA["nav"]["systemSymbol"])
 	yield(Agent,"selectedWaypoint")
 	
 	if NAVWAYPOINT == "CANCEL": return
 	
-	$VBoxContainer/Actions/Button.disabled = true
-	
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_NAVrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/navigate")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var data = JSON.print({"waypointSymbol": NAVWAYPOINT})
-	var header = ["Content-Type: application/json",headerstring]
-	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	print(NAVWAYPOINT)
+	API.navigate_ship(self,Agent.focusShip,NAVWAYPOINT)
+	waiting_n = true
+	get_tree().call_group("loading","startload")
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_NAVrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/navigate")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var data = JSON.print({"waypointSymbol": NAVWAYPOINT})
+#	var header = ["Content-Type: application/json",headerstring]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
+	yield(API,"navigate_ship_complete")
+#	HTTP.queue_free()
 	$VBoxContainer/Actions/Button.disabled = false
 
-func _on_NAVrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_NAVrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	if !waiting_n: return
+	waiting_n = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		Agent.emit_signal("NavigationFinished",cleanbody)
 		Agent.emit_signal("mapGenLine",
@@ -295,10 +319,10 @@ func _on_NAVrequest_completed(result, response_code, headers, body):
 				}
 			})
 		refreshONNAV(cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 func refreshONNAV(data):
 	if data["data"]["nav"]["status"] != "IN_TRANSIT": return
@@ -358,30 +382,38 @@ func refreshONNAV(data):
 		actions.add_item("CHANGE FLIGHT MODE")
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/dock
+var waiting_d = false
 func Dock():
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_DOCKrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/dock")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
-	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	API.dock_ship(self,Agent.focusShip)
+	waiting_d = true
+	get_tree().call_group("loading","startload")
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_DOCKrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/dock")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#	yield(HTTP,"request_completed")
+#	HTTP.queue_free()
 
-func _on_DOCKrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_DOCKrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	if !waiting_d: return
+	waiting_d = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		cleanbody["meta"] = SHIPDATA["symbol"]
 		Agent.emit_signal("DockFinished",cleanbody)
 		refreshONDOCK(cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 func refreshONDOCK(data):
 	data = data["data"]
@@ -431,30 +463,38 @@ func refreshONDOCK(data):
 		actions.add_item("CHANGE FLIGHT MODE")
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/orbit
+var waiting_o = false
 func Orbit():
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_ORBITrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/orbit")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
-	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+	API.orbit_ship(self,Agent.focusShip)
+	waiting_o = true
+	get_tree().call_group("loading","startload")
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_ORBITrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/orbit")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#	yield(HTTP,"request_completed")
+#	HTTP.queue_free()
 
-func _on_ORBITrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_ORBITrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	if !waiting_o: return
+	waiting_o = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		cleanbody["meta"] = SHIPDATA["symbol"]
 		Agent.emit_signal("OrbitFinished",cleanbody)
 		refreshONORBIT(cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 func refreshONORBIT(data):
 	data = data["data"]
@@ -504,31 +544,40 @@ func refreshONORBIT(data):
 		actions.add_item("CHANGE FLIGHT MODE")
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/refuel
+var waiting_r = false
 func Refuel():
-	$VBoxContainer/Actions/Button.disabled = true
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_REFUELrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/refuel")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+	API.refuel_ship(self,Agent.focusShip)
+	waiting_r = true
+	get_tree().call_group("loading","startload")
 	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
-	$VBoxContainer/Actions/Button.disabled = false
+#	$VBoxContainer/Actions/Button.disabled = true
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_REFUELrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/refuel")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#	yield(HTTP,"request_completed")
+#	HTTP.queue_free()
+#	$VBoxContainer/Actions/Button.disabled = false
 
-func _on_REFUELrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_REFUELrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	if !waiting_r: return
+	waiting_r = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		Agent.emit_signal("RefuelFinished",cleanbody)
 		refreshONREFUEL(cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 func refreshONREFUEL(data):
 	data = data["data"]
@@ -547,46 +596,57 @@ func refreshONREFUEL(data):
 		twee.tween_property(fuelbar,"value",100.0,0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/survey
+var waiting_s = false
 func Survey():
 	if CooldownTime != null and Time.get_unix_time_from_datetime_string(CooldownTime) > Time.get_unix_time_from_system():
 		#tell player about cooldown
 		return
 	else: CooldownTime = null
 	
-	$VBoxContainer/Actions/Button.disabled = true
+	API.create_survey(self,Agent.focusShip)
+	waiting_s = true
+	get_tree().call_group("loading","startload")
 	
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_SURVEYrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/survey")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
-	
-	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
-	$VBoxContainer/Actions/Button.disabled = false
+#	$VBoxContainer/Actions/Button.disabled = true
+#
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_SURVEYrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/survey")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#
+#	HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#	yield(HTTP,"request_completed")
+#	HTTP.queue_free()
+#	$VBoxContainer/Actions/Button.disabled = false
 
-func _on_SURVEYrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_SURVEYrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	
+	if !waiting_s: return
+	waiting_s = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		for s in cleanbody["data"]["surveys"]:
 			Agent.surveys[s["signature"]] = s
 		Save.writeUserSave()
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
 		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 
 func prepExtract(signature):
 	sSURVEY = signature
 
 #https://api.spacetraders.io/v2/my/ships/{shipSymbol}/extract
+var waiting_e = false
 func Extract():
 	sSURVEY = null
 	if CooldownTime != null and Time.get_unix_time_from_datetime_string(CooldownTime) > Time.get_unix_time_from_system():
@@ -608,30 +668,42 @@ func Extract():
 			Agent.surveys.erase(sSURVEY)
 			sSURVEY = null
 	
-	var HTTP = HTTPRequest.new()
-	self.add_child(HTTP)
-	HTTP.use_threads = true
-	HTTP.connect("request_completed", self, "_on_EXTRACTrequest_completed")
-	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/extract")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var data
-	var header
-	
 	if sSURVEY != null:
-		data = JSON.print({"survey": Agent.surveys[sSURVEY]})
-		header = ["Content-Type: application/json",headerstring]
-		HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
+		API.extract_resources(self,Agent.focusShip,Agent.surveys[sSURVEY])
 	else:
-		header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
-		HTTP.request(url, header, true, HTTPClient.METHOD_POST)
-	
-	yield(HTTP,"request_completed")
-	HTTP.queue_free()
+		API.extract_resources(self,Agent.focusShip)
+	waiting_e = true
+	get_tree().call_group("loading","startload")
+#
+#	var HTTP = HTTPRequest.new()
+#	self.add_child(HTTP)
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed", self, "_on_EXTRACTrequest_completed")
+#	var url = str("https://api.spacetraders.io/v2/my/ships/",Agent.focusShip,"/extract")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var data
+#	var header
+#
+#	if sSURVEY != null:
+#		data = JSON.print({"survey": Agent.surveys[sSURVEY]})
+#		header = ["Content-Type: application/json",headerstring]
+#		HTTP.request(url, header, true, HTTPClient.METHOD_POST, data)
+#	else:
+#		header = ["Content-Type: application/json",headerstring,"Content-Length: 0"]
+#		HTTP.request(url, header, true, HTTPClient.METHOD_POST)
+#
+	yield(API,"extract_resources_complete")
+#	HTTP.queue_free()
 	$VBoxContainer/Actions/Button.disabled = false
 
-func _on_EXTRACTrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_EXTRACTrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+	
+	if !waiting_e: return
+	waiting_e = false
+	get_tree().call_group("loading","finishload")
+	
 	if cleanbody.has("data"):
 		refreshCargo(cleanbody)
 		#Extract returns cacheable data
@@ -644,6 +716,6 @@ func _on_EXTRACTrequest_completed(result, response_code, headers, body):
 		CooldownTime = cleanbody["data"]["cooldown"]["expiration"]
 		Agent.emit_signal("cooldownStarted",CooldownTime,cleanbody["data"]["cooldown"]["shipSymbol"])
 		Automation.emit_signal("EXTRACTRESOURCES",cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-		print(json.result)
+#	else:
+#		Agent.dispError(cleanbody)
+#		print(json.result)

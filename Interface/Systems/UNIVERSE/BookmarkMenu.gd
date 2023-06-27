@@ -10,6 +10,7 @@ func _ready():
 func _process(delta):
 	if Input.is_action_just_pressed("bookmarkMenu") and get_node(Parent).input:
 		self.visible = !self.visible
+		if self.visible: get_tree().call_group("help", "hide")
 
 func preview():
 	if !self.visible:

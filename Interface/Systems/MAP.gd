@@ -53,6 +53,7 @@ func _ready():
 	Agent.connect("chart",self,"tweenCam")
 	Agent.connect("FocusMapNav",self,"tweenCam")
 	Agent.connect("mapGenLine",self,"genLine")
+	Agent.connect("exitJumpgate",self,"focusHome")
 	self.hide()
 	
 	var circ = circle.instance()
@@ -158,6 +159,17 @@ func focusWPT(data):
 		OrbitNdList[data["data"]["symbol"]].modulate = Color(WPCM[data["data"]["type"]]["bg"]).lightened(0.7)
 	else:
 		SubOrbitNdList[data["data"]["symbol"]].modulate = Color(WPCM[data["data"]["type"]]["bg"]).lightened(0.7)
+
+func focusHome():
+	var mhtwee = get_tree().create_tween()
+	mhtwee.tween_property($Camera2D,"zoom",Vector2(0.1,0.1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	mhtwee.parallel().tween_property($Camera2D,"position",Vector2(500,500),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	resetWPTcol()
+	nearLine = null
+	for r in $Lines.get_children():
+		r.queue_free()
+	$CanvasLayer/VBoxContainer/DISTANCE.hide()
+	Agent.emit_signal("mapHOME")
 
 func _process(delta):
 	if Agent.AgentCredits.is_valid_float():
@@ -286,6 +298,10 @@ func clearAll():
 		r.queue_free()
 	for r in $Planets.get_children():
 		r.queue_free()
+	for r in $Lines.get_children():
+		r.queue_free()
+	for r in $Transit.get_children():
+		r.queue_free()
 
 func resetWPTcol():
 	var fwptTwee #focus waypoint tween
@@ -311,21 +327,24 @@ func generateORBITALLIST(data):
 func generateSYSTEM(data):
 	#Agent.systemData = data
 	
-	var star = circle.instance()
+#	var star = circle.instance()
 	var starnice = preload("res://EXTERNAL/Planets/Star/Star.tscn").instance()
 	starnice.rect_global_position = Vector2(450,450)
 	starnice.rect_pivot_offset = Vector2(50,50)
 	starnice.rect_scale = Vector2(0.16,0.16)
 	starnice.set_colors([Color("#eaeaea"),Color("#ffffff"),Color("#949495"),Color("#535355"),Color("#28282b"),Color("#a9a9aa"),Color("#28282b")])
-	star.pos = Vector2(500,500)
-	star.rad = 6
-	star.col = Color(1,1,1)
-	star.fill = true
-	self.add_child(star)
-	self.add_child(starnice)
+	starnice.modulate = Color(1,1,1,0)
+#	star.pos = Vector2(500,500)
+#	star.rad = 6
+#	star.col = Color(1,1,1)
+#	star.fill = true
+	#$Planets.add_child(star)
+	$Planets.add_child(starnice)
 	
 	yield(Agent,"systemWayFetch")
 	self.show()
+	var twee = get_tree().create_tween()
+	twee.tween_property(starnice,"modulate",Color(1,1,1,1),0.5)
 	
 	for w in data["data"]["waypoints"]:
 #		var wpt
@@ -343,10 +362,12 @@ func generateSYSTEM(data):
 #			long += str(i)
 		
 		#print(w["symbol"],ints,total)
+		var waypoi
+		var circ
 		match w["type"]:
 			"PLANET": 
 				if !w["symbol"] in orbitallist.keys():
-					var waypoi = circle.instance()
+					waypoi = circle.instance()
 					waypoi.rect_global_position = Vector2(w["x"],w["y"]) + Vector2(500,500)
 					waypoi.pos = Vector2.ZERO#Vector2(w["x"],w["y"]) + Vector2(500,500)
 					waypoi.rad = 0.6
@@ -356,7 +377,8 @@ func generateSYSTEM(data):
 					PlanetNdList[w["symbol"]] = waypoi
 					
 					#print(w["symbol"])
-					var circ = circle.instance()
+					circ = circle.instance()
+					#circ.rect_global_position = Vector2(500,500)
 					circ.pos = Vector2(500,500)
 					circ.rad = Vector2(w["x"],w["y"]).length()
 					circ.col = Color(1,1,1,0.6)
@@ -366,7 +388,7 @@ func generateSYSTEM(data):
 					genOrbitals(Vector2(w["x"],w["y"]))
 			_:
 				if !w["symbol"] in orbitallist.keys():
-					var waypoi = circle.instance()
+					waypoi = circle.instance()
 					waypoi.rect_global_position = Vector2(w["x"],w["y"]) + Vector2(500,500)
 					waypoi.pos = Vector2.ZERO#Vector2(w["x"],w["y"]) + Vector2(500,500)
 					waypoi.rad = 0.6
@@ -375,7 +397,8 @@ func generateSYSTEM(data):
 					$Planets.add_child(waypoi)
 					PlanetNdList[w["symbol"]] = waypoi
 					
-					var circ = circle.instance()
+					circ = circle.instance()
+					#circ.rect_global_position = Vector2(500,500)
 					circ.pos = Vector2(500,500)
 					circ.rad = Vector2(w["x"],w["y"]).length()
 					circ.col = Color(1,1,1,0.6)
@@ -383,6 +406,12 @@ func generateSYSTEM(data):
 					OrbitNdList[w["symbol"]] = circ
 				else:
 					genOrbitals(Vector2(w["x"],w["y"]))
+		if OrbitNdList.has(w["symbol"]):
+			twee = get_tree().create_tween()
+			PlanetNdList[w["symbol"]].modulate = Color(1,1,1,0)
+			OrbitNdList[w["symbol"]].modulate = Color(1,1,1,0)
+			twee.tween_property(PlanetNdList[w["symbol"]],"modulate",Color(1,1,1,1),0.2)
+			twee.parallel().tween_property(OrbitNdList[w["symbol"]],"modulate",Color(1,1,1,1),0.2)
 	nearNode = PlanetNdList[PlanetNdList.keys()[PlanetNdList.keys().size()-1]]
 	calc_nearNode()
 
@@ -392,12 +421,15 @@ func genOrbitals(pos):
 	
 	var onum = 2
 	var idx = 0
-	for o in orbitallist:
+	var twee
+	for o in orbitallist: #I have no idea how this works properly but it does so leave it
 		if orbitallist[o] != pos: continue
 		var circ = circle.instance()
-		circ.pos = pos+Vector2(500,500)
+		circ.rect_global_position = pos+Vector2(500,500)
+		circ.pos = Vector2.ZERO#pos+Vector2(500,500)
 		circ.rad = onum
 		circ.col = Color(1,1,1,0.4)
+		circ.width = 0.3
 		$Orbits.add_child(circ)
 		SubOrbitNdList[o] = circ
 		
@@ -411,6 +443,12 @@ func genOrbitals(pos):
 		
 		onum += 1.3
 		idx += 1
+		
+		twee = get_tree().create_tween()
+		waypt.modulate = Color(1,1,1,0)
+		circ.modulate = Color(1,1,1,0)
+		twee.tween_property(waypt,"modulate",Color(1,1,1,1),0.2)
+		twee.parallel().tween_property(circ,"modulate",Color(1,1,1,1),0.2)
 
 func genLine(one,two, col = null, transit = false, arrival = null):
 	if one == two: return

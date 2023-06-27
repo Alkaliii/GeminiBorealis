@@ -5,6 +5,8 @@
 [node name="CIRCLE" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -1280.0
-margin_bottom = -600.0
+rect_min_size = Vector2( 2000, 2000 )
+rect_pivot_offset = Vector2( 1000, 1000 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
 script = ExtResource( 1 )

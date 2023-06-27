@@ -10,6 +10,10 @@ var scrollTwee
 var oldscndata = null
 var stoptwee = false
 
+var waiting_lwin = false
+var waiting_gs = false
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	self.hide()
@@ -18,6 +22,9 @@ func _ready():
 	Agent.connect("chart", self, "setWaypointDat")
 	Agent.connect("mapHOME",self,"unFocus")
 	Agent.connect("mapSEL",self,"setCamNear")
+	
+	API.connect("list_waypoints_in_system_complete",self,"_on_WAYrequest_completed")
+	API.connect("get_system_complete",self,"_on_request_completed")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
 
 func unFocus():
@@ -27,18 +34,20 @@ func unFocus():
 	for b in $ScrollContainer/HBoxContainer.get_children():
 		b.release_focus()
 
-func _on_request_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
-	if cleanbody.has("data"):
-		setdat(cleanbody)
-		Agent.emit_signal("systemFetch",cleanbody)
-		Automation.emit_signal("GETSYSTEM",cleanbody)
-		fetchSysWay()
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-	print(json.result)
+func _on_request_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+#	if cleanbody.has("data"):
+	if !waiting_gs: return
+	waiting_gs = false
+	setdat(cleanbody)
+	Agent.emit_signal("systemFetch",cleanbody)
+	Automation.emit_signal("GETSYSTEM",cleanbody)
+	fetchSysWay()
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#	print(json.result)
 
 func setWaypointDat(data):
 	var twee = get_tree().create_tween()
@@ -151,42 +160,46 @@ func show():
 #or and system that can be found using get jump gate (select if multiple) for the current system
 
 func setSystem():
-	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem)
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = [headerstring]
-	$HTTPRequest.request(url, header)
+	API.get_system(self,Agent.CurrentSystem)
+	waiting_gs = true
+#	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem)
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = [headerstring]
+#	$HTTPRequest.request(url, header)
 
 func fetchSysWay():
-	var HTTP = HTTPRequest.new()
-	HTTP.use_threads = true
-	HTTP.connect("request_completed",self,"_on_WAYrequest_completed")
-	self.add_child(HTTP)
-	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem,"/waypoints?limt=20")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = [headerstring]
-	HTTP.request(url, header)
+	API.list_waypoints_in_system(self,Agent.CurrentSystem)
+	waiting_lwin = true
+#	var HTTP = HTTPRequest.new()
+#	HTTP.use_threads = true
+#	HTTP.connect("request_completed",self,"_on_WAYrequest_completed")
+#	self.add_child(HTTP)
+#	var url = str("https://api.spacetraders.io/v2/systems/",Agent.CurrentSystem,"/waypoints?limt=20")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = [headerstring]
+#	HTTP.request(url, header)
 
-func _on_WAYrequest_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
-	if cleanbody.has("data"):
-		Agent.emit_signal("systemWayFetch",cleanbody)
-		Automation.emit_signal("LISTSYSTEMWAYPOINTS",cleanbody)
-		Agent.systemData = cleanbody
-		for w in cleanbody["data"]:
-			for b in $ScrollContainer/HBoxContainer.get_children():
-				if w["symbol"] == b.symbol:
-					for t in w["traits"]:
-						if t["symbol"] == "SHIPYARD":
-							b.setIcon(t["symbol"])
-							break
-						elif t["symbol"] == "MARKETPLACE":
-							b.setIcon(t["symbol"])
-							continue
-						else:
-							continue
-	else:
-		Agent.dispError(cleanbody)
+func _on_WAYrequest_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
+#	if cleanbody.has("data"):
+	if !waiting_lwin: return
+	waiting_lwin = false
+	Agent.emit_signal("systemWayFetch",cleanbody)
+	Automation.emit_signal("LISTSYSTEMWAYPOINTS",cleanbody)
+	Agent.systemData = cleanbody
+	for w in cleanbody["data"]:
+		for b in $ScrollContainer/HBoxContainer.get_children():
+			if w["symbol"] == b.symbol:
+				for t in w["traits"]:
+					if t["symbol"] == "SHIPYARD":
+						b.setIcon(t["symbol"])
+						break
+					elif t["symbol"] == "MARKETPLACE":
+						b.setIcon(t["symbol"])
+						continue
+					else:
+						continue
 
 
 func _on_ScrollContainer_mouse_entered():

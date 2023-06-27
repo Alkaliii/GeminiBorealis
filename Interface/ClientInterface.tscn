@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=2]
+[gd_scene load_steps=61 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Interface/Theme.tres" type="Theme" id=2]
@@ -28,6 +28,8 @@
 [ext_resource path="res://300line.tscn" type="PackedScene" id=26]
 [ext_resource path="res://Interface/Ships/Groups/GroupBox.gd" type="Script" id=27]
 [ext_resource path="res://Interface/NetworthChartScript.gd" type="Script" id=28]
+[ext_resource path="res://Interface/Load.tscn" type="PackedScene" id=29]
+[ext_resource path="res://Interface/Systems/UNIVERSE/UNIVERSE.tscn" type="PackedScene" id=30]
 
 [sub_resource type="StyleBoxFlat" id=36]
 bg_color = Color( 0.156863, 0.156863, 0.168627, 1 )
@@ -35,7 +37,7 @@ border_width_right = 250
 border_color = Color( 0.156863, 0.156863, 0.168627, 0 )
 border_blend = true
 
-[sub_resource type="StyleBoxFlat" id=31]
+[sub_resource type="StyleBoxFlat" id=38]
 bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -47,7 +49,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id=2]
+[sub_resource type="StyleBoxFlat" id=39]
 bg_color = Color( 1, 0.74902, 0, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -59,7 +61,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=40]
 bg_color = Color( 1, 1, 1, 1 )
 border_width_left = 3
 border_width_top = 3
@@ -76,23 +78,23 @@ color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 thickness = 5
 
 [sub_resource type="Theme" id=5]
-HScrollBar/styles/grabber = SubResource( 31 )
-HScrollBar/styles/grabber_highlight = SubResource( 2 )
-HScrollBar/styles/grabber_pressed = SubResource( 3 )
+HScrollBar/styles/grabber = SubResource( 38 )
+HScrollBar/styles/grabber_highlight = SubResource( 39 )
+HScrollBar/styles/grabber_pressed = SubResource( 40 )
 HScrollBar/styles/scroll = SubResource( 4 )
 
-[sub_resource type="StyleBoxLine" id=32]
+[sub_resource type="StyleBoxLine" id=41]
 color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
 thickness = 5
 vertical = true
 
-[sub_resource type="Theme" id=33]
-VScrollBar/styles/grabber = SubResource( 31 )
-VScrollBar/styles/grabber_highlight = SubResource( 2 )
-VScrollBar/styles/grabber_pressed = SubResource( 3 )
-VScrollBar/styles/scroll = SubResource( 32 )
+[sub_resource type="Theme" id=42]
+VScrollBar/styles/grabber = SubResource( 38 )
+VScrollBar/styles/grabber_highlight = SubResource( 39 )
+VScrollBar/styles/grabber_pressed = SubResource( 40 )
+VScrollBar/styles/scroll = SubResource( 41 )
 
-[sub_resource type="StyleBoxFlat" id=40]
+[sub_resource type="StyleBoxFlat" id=50]
 bg_color = Color( 0.0627451, 0.211765, 0.560784, 1 )
 border_width_left = 1
 border_width_top = 1
@@ -110,7 +112,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=41]
+[sub_resource type="StyleBoxFlat" id=51]
 bg_color = Color( 0.0156863, 0.0156863, 0.0156863, 1 )
 border_width_left = 1
 border_width_top = 1
@@ -138,7 +140,7 @@ border_color = Color( 0.8, 0.8, 0.8, 0 )
 ProgressBar/styles/bg = SubResource( 22 )
 ProgressBar/styles/fg = SubResource( 23 )
 
-[sub_resource type="StreamTexture" id=42]
+[sub_resource type="StreamTexture" id=52]
 
 [sub_resource type="StyleBoxFlat" id=43]
 content_margin_left = 15.0
@@ -175,7 +177,7 @@ expand_margin_bottom = 2.0
 default_font = ExtResource( 1 )
 OptionButton/colors/font_color = Color( 0.917647, 0.917647, 0.917647, 1 )
 OptionButton/colors/font_color_hover = Color( 0.25098, 0.709804, 0.678431, 1 )
-OptionButton/icons/arrow = SubResource( 42 )
+OptionButton/icons/arrow = SubResource( 52 )
 OptionButton/styles/focus = null
 OptionButton/styles/hover = SubResource( 43 )
 OptionButton/styles/normal = SubResource( 43 )
@@ -196,7 +198,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxFlat" id=38]
+[sub_resource type="StyleBoxFlat" id=53]
 bg_color = Color( 0.25098, 0.709804, 0.678431, 1 )
 border_width_left = 1
 border_width_top = 1
@@ -204,7 +206,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 1, 1, 1, 1 )
 
-[sub_resource type="StyleBoxEmpty" id=39]
+[sub_resource type="StyleBoxEmpty" id=54]
 
 [sub_resource type="StyleBoxFlat" id=34]
 bg_color = Color( 1, 1, 1, 0 )
@@ -472,7 +474,7 @@ script = ExtResource( 15 )
 margin_right = 520.0
 margin_bottom = 280.0
 rect_min_size = Vector2( 520, 280 )
-theme = SubResource( 33 )
+theme = SubResource( 42 )
 
 [node name="Items" type="VBoxContainer" parent="MainWindow/Systems/Shop/ScrollContainer"]
 margin_right = 462.0
@@ -532,7 +534,7 @@ margin_bottom = 20.0
 rect_min_size = Vector2( 32, 20 )
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 40 )
+custom_styles/hover = SubResource( 50 )
 custom_styles/pressed = SubResource( 7 )
 custom_styles/normal = SubResource( 6 )
 text = "Dock"
@@ -545,7 +547,7 @@ margin_bottom = 44.0
 rect_min_size = Vector2( 32, 20 )
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 41 )
+custom_styles/hover = SubResource( 51 )
 custom_styles/pressed = SubResource( 7 )
 custom_styles/normal = SubResource( 6 )
 text = "Info"
@@ -558,7 +560,7 @@ margin_bottom = 68.0
 rect_min_size = Vector2( 32, 20 )
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 4 )
-custom_styles/hover = SubResource( 41 )
+custom_styles/hover = SubResource( 51 )
 custom_styles/pressed = SubResource( 7 )
 custom_styles/normal = SubResource( 6 )
 text = "Purge"
@@ -706,7 +708,7 @@ rect_min_size = Vector2( 250, 92 )
 margin_right = 424.0
 margin_bottom = 300.0
 rect_min_size = Vector2( 0, 300 )
-theme = SubResource( 33 )
+theme = SubResource( 42 )
 
 [node name="Inventory" type="VBoxContainer" parent="MainWindow/Ships/HBoxContainer/ShipInfoModule/VBoxContainer/ScrollContainer"]
 margin_right = 398.0
@@ -945,8 +947,8 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 custom_fonts/font = ExtResource( 1 )
 custom_styles/hover = SubResource( 37 )
-custom_styles/pressed = SubResource( 38 )
-custom_styles/focus = SubResource( 39 )
+custom_styles/pressed = SubResource( 53 )
+custom_styles/focus = SubResource( 54 )
 custom_styles/normal = SubResource( 34 )
 icon = SubResource( 35 )
 align = 2
@@ -1004,7 +1006,7 @@ margin_right = 320.0
 margin_bottom = 246.0
 rect_min_size = Vector2( 320, 200 )
 size_flags_horizontal = 8
-theme = SubResource( 33 )
+theme = SubResource( 42 )
 scroll_horizontal_enabled = false
 
 [node name="List" type="VBoxContainer" parent="MainWindow/Agent/Contracts/ScrollContainer"]
@@ -1103,7 +1105,7 @@ margin_top = -220.0
 margin_right = 205.0
 margin_bottom = 220.0
 rect_min_size = Vector2( 410, 440 )
-theme = SubResource( 33 )
+theme = SubResource( 42 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GroupBox/ScrollContainer"]
 
@@ -1116,6 +1118,35 @@ margin_right = 150.0
 margin_bottom = 55.0
 bbcode_text = "[color=#949495][center][b]GROUPS[/b] (CTRL+G)"
 text = "GROUPS (CTRL+G)"
+
+[node name="Loading" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Load" parent="Loading" instance=ExtResource( 29 )]
+visible = false
+
+[node name="UniverseMap" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="UniverseContainer" type="ViewportContainer" parent="UniverseMap"]
+visible = false
+modulate = Color( 1, 1, 1, 0 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -640.0
+margin_top = -300.0
+margin_right = 640.0
+margin_bottom = 300.0
+rect_pivot_offset = Vector2( 640, 300 )
+
+[node name="Viewport" type="Viewport" parent="UniverseMap/UniverseContainer"]
+size = Vector2( 1280, 600 )
+handle_input_locally = false
+render_target_update_mode = 0
+
+[node name="UNIVERSE" parent="UniverseMap/UniverseContainer/Viewport" instance=ExtResource( 30 )]
 
 [node name="Logout" type="Button" parent="."]
 anchor_left = 1.0

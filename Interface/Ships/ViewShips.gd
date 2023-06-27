@@ -15,19 +15,23 @@ func _ready():
 	Agent.connect("OrbitFinished",self,"show")
 	Agent.connect("RefuelFinished",self,"show")
 	$HTTPRequest.connect("request_completed", self, "_on_request_completed")
+	API.connect("list_ships_complete",self,"_on_request_completed")
 
-func _on_request_completed(result, response_code, headers, body):
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+func _on_request_completed(cleanbody): #result, response_code, headers, body
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
 	if cleanbody.has("data"):
 		setdat(cleanbody)
 		Agent._FleetData = cleanbody
 		Agent.emit_signal("fleetUpdated")
 		Automation.emit_signal("LISTSHIPS",cleanbody)
-	else:
-		Agent.dispError(cleanbody)
-#		getfail()
-		print(json.result)
+		
+		#need some lines for handling an agent with more than 20 ships
+		
+#	else:
+#		Agent.dispError(cleanbody)
+##		getfail()
+#		print(json.result)
 
 func show(arg = null):
 	self.modulate = Color(1,1,1,0)
@@ -41,8 +45,12 @@ func show(arg = null):
 		if arg.has("data") and arg["data"].has("transaction"):
 			for ship in Agent._FleetData["data"]:
 				if ship["symbol"] == arg["data"]["transaction"]["shipSymbol"]:
-					ship["cargo"] = arg["data"]["cargo"]
-					print("dataCached[s/pCargo]",arg["data"]["transaction"])
+					if arg["data"].has("cargo"): 
+						ship["cargo"] = arg["data"]["cargo"]
+						print("dataCached[s/pCargo]",arg["data"]["transaction"]) #arg["data"]["transaction"]
+					if arg["data"].has("fuel"):
+						ship["fuel"] = arg["data"]["fuel"]
+						print("dataCached[rFuel]",arg["data"]["transaction"])
 					Agent.emit_signal("fleetUpdated")
 		#jettisonCargo returns cacheable data
 		elif arg.has("data") and arg["data"].has("cargo"):
@@ -71,7 +79,8 @@ func setdat(data):
 		$ScrollContainer/HBoxContainer.add_child(ship)
 
 func setShips():
-	var url = str("https://api.spacetraders.io/v2/my/ships?limit=20")
-	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
-	var header = ["Accept: application/json",headerstring]
-	$HTTPRequest.request(url, header)
+	API.list_ships(self)
+#	var url = str("https://api.spacetraders.io/v2/my/ships?limit=20")
+#	var headerstring = str("Authorization: Bearer ", Agent.USERTOKEN)
+#	var header = ["Accept: application/json",headerstring]
+#	$HTTPRequest.request(url, header)

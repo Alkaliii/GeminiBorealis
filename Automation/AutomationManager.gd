@@ -42,6 +42,9 @@ var _FleetData : Dictionary
 var _SystemsData : Dictionary
 var _MarketData : Dictionary
 
+signal ERROR
+signal COMPLETE
+
 signal OperationChanged
 signal PushAPI
 
@@ -135,9 +138,11 @@ func cleanProgressQ():
 func pushAPI():
 	cooldown = 0
 	processQueue()
-	yield(get_tree().create_timer(0.2),"timeout")
+	#yield(get_tree().create_timer(0.25),"timeout")
+	yield(self,"COMPLETE")
 	processQueue()
-	yield(get_tree().create_timer(0.2),"timeout")
+	#yield(get_tree().create_timer(0.25),"timeout")
+	yield(self,"COMPLETE")
 	processQueue()
 
 func processQueue(idx = 0):
@@ -149,7 +154,7 @@ func processQueue(idx = 0):
 			"PATCH": executePATCH(r)
 		Current_Request = r.RID
 	else: 
-		print("empty")
+		#print("empty")
 		active = false
 
 func executePOST(request):
@@ -210,10 +215,13 @@ func _on_request_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody is Dictionary and cleanbody.has("error"):
 		Agent.dispError(cleanbody)
-		for req in progressQueue:
-			callQueue.push_back(progressQueue[req])
-			progressQueue.erase(req)
+		if cleanbody["error"]["code"] in [429,409]:
+			for req in progressQueue:
+				callQueue.push_back(progressQueue[req])
+				progressQueue.erase(req)
+		else: emit_signal("ERROR",cleanbody)
 	else:
+		emit_signal("COMPLETE")
 		progressQueue.erase(Current_Request)
 
 func cacheSHIPS(data):

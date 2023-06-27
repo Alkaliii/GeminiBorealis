@@ -3,6 +3,7 @@ extends Node
 export var AID : String
 export var AgentCredits : String
 export var Headquaters : String
+export var HQSys : String
 export var CurrentSystem : String
 export var AgentFaction : String
 export var AgentSymbol : String
@@ -29,6 +30,8 @@ signal systemWayFetch(cleanbody)
 signal chart(cleanbody)
 signal shipyard(cleanbody)
 signal visitmarket(cleanbody)
+signal jumpgate
+signal exitJumpgate
 signal closeShop
 signal fleetUpdated
 signal requestFleetUpdate
@@ -92,6 +95,7 @@ func cleanHQ():
 			break
 		else: HQ.erase(HQ.length()-1, 1)
 	CurrentSystem = HQ
+	HQSys = HQ
 
 func clear():
 	AID = ""

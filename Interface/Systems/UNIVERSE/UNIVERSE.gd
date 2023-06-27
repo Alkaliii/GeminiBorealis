@@ -1,7 +1,9 @@
 extends Node2D
 
 var _UNIDATA = {}
+var _JUMPDATA = {}
 var genSys = PoolStringArray()
+var uncharSys = PoolStringArray()
 var nodSys = {}
 var jumNodCor = {}
 var loadPage = 1
@@ -9,6 +11,8 @@ var curVer
 
 var input = true
 var lastFocus = null
+
+var oneShot = true
 
 const circle = preload("res://Interface/CIRCLE.tscn")
 const circleTEX = preload("res://Interface/CIRCLETEX.tscn")
@@ -40,27 +44,36 @@ signal universe_loaded
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	input = false
 	API.connect("list_systems_complete",self,"loadUNIVERSE")
 	API.connect("get_status_complete",self,"setUNIVERSE_VERSION")
-	API.connect("get_jump_gate_complete",self,"drawJUMP")
+	API.connect("get_jump_gate_complete",self,"writeJUMPS")
+	Automation.connect("ERROR",self,"writeJUMPS")
+	
+	Agent.connect("exitJumpgate",self,"exitUNI")
 	
 	API.get_status(self)
 	yield(API,"get_status_complete")
-	yield(get_tree().create_timer(10),"timeout")
+	$Camera2D.zoom = Vector2(90,90)
+	$Camera2D.position = Vector2.ZERO
+	#yield(get_tree().create_timer(10),"timeout")
 	
-	getUNIVERSE()
+	#getUNIVERSE()
 
 func setUNIVERSE_VERSION(data):
 	curVer = data["resetDate"]
 
 func getUNIVERSE():
-	if Save.universe["version"] == null: Save.loadUniverse()
-	yield(get_tree(),"idle_frame")
+	if Save.universe["version"] == null: 
+		Save.loadUniverse()
+		Save.loadJump()
+		yield(get_tree(),"idle_frame")
 	if (Save.universe["version"] == null) or (Time.get_unix_time_from_datetime_string(curVer) > Time.get_unix_time_from_datetime_string(Save.universe["version"])):
 		API.list_systems(self)
 	else:
 		emit_signal("universe_loaded")
 		_UNIDATA = Save.universe["data"]
+		_JUMPDATA = Save.jump["data"]
 		uselessSort()
 		yield(get_tree(),"idle_frame")
 		generateUNIVERSE()
@@ -83,9 +96,13 @@ static func centerSort (a,b):
 
 func generateUNIVERSE():
 	var fat = 0
-	$Camera2D.zoom = Vector2(90.1,90.1)
+#	$Camera2D.zoom = Vector2(90.1,90.1)
+#	$Camera2D.position = Vector2.ZERO
+#	if !nodSys.empty(): $Camera2D.position = nodSys[Agent.CurrentSystem].rect_position
+	input = true
 	for s in _UNIDATA:
 		if genSys.has(s): continue
+		#yield(get_tree(),"idle_frame")
 		fat += 1
 		
 		var system = circleTEX.instance()
@@ -101,7 +118,8 @@ func generateUNIVERSE():
 			if w["type"] == "JUMP_GATE":
 				system.modulate = Color(1,1,1,1)
 				var newS = str(s).replace("-",str("-[color=",Color(SCM[_UNIDATA[s]["type"]]["bg"]),"]"))
-				system.setLabel(newS)
+				if s == Agent.HQSys: system.setLabel("[wave][b]HOME")
+				else: system.setLabel(newS)
 				#system.setLabel(str("[b]",s))
 				#system.setOutCol(Color(SCM[_UNIDATA[s]["type"]]["bg"]))
 				#system.setLabel(str("[color=",SCM[_UNIDATA[s]["type"]]["bg"],"]",s))
@@ -114,22 +132,30 @@ func generateUNIVERSE():
 #		system.fill = true
 		$Stars.add_child(system)
 		var twee = get_tree().create_tween()
-		twee.tween_property(system,"rect_scale",Vector2(100,100),0.2).set_ease(Tween.EASE_IN_OUT)
-		twee.chain().tween_property(system,"rect_scale",Vector2(16,16),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
+		twee.tween_property(system,"rect_scale",Vector2(100,100),0.1).set_ease(Tween.EASE_IN_OUT)
+		twee.chain().tween_property(system,"rect_scale",Vector2(16,16),0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BOUNCE)
 		
 		genSys.push_back(s)
 		nodSys[s] = system
-		if fat > 100:
+		if fat > 50:
 			fat = 0
-			yield(get_tree().create_timer(0.1),"timeout")
+			yield(get_tree(),"idle_frame")
+			#yield(get_tree().create_timer(0.1),"timeout")
 	
 	print("finished generating")
 	
-	generateJUMPS()
+	if oneShot:
+		var camtwee = get_tree().create_tween()
+		camtwee.tween_property($Camera2D,"zoom",Vector2(0.5,0.5),5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+		if Agent.AgentCredits.is_valid_float(): camtwee.parallel().tween_property($Camera2D,"position",nodSys[Agent.CurrentSystem].rect_position,5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+		camtwee.parallel().tween_property($CanvasLayer/Control,"modulate",Color(1,1,1,0),5)
+		yield(camtwee,"finished")
+		yield(get_tree(),"idle_frame")
+		labels("ON")
+		oneShot = false
+	
 	yield(get_tree(),"idle_frame")
-	var camtwee = get_tree().create_tween()
-	camtwee.tween_property($Camera2D,"zoom",Vector2(1.5,1.5),10).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
-	camtwee.parallel().tween_property($CanvasLayer/Control,"modulate",Color(1,1,1,0),5)
+	generateJUMPS()
 #	camtwee.tween_property($Camera2D,"zoom",Vector2(12,12),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
 #	camtwee.chain().tween_property($Camera2D,"zoom",Vector2(24,24),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
 #	camtwee.chain().tween_property($Camera2D,"zoom",Vector2(48,48),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
@@ -205,7 +231,15 @@ func unFilterUNI():
 
 func labels(state):
 	match state:
-		"ON": get_tree().call_group("Stars","showLabel")
+		"ON": 
+			#get_tree().call_group("Stars","showLabel")
+			var fat = 0
+			for s in $Stars.get_children():
+				fat += 1
+				s.showLabel()
+				if fat > 300:
+					fat = 0
+					yield(get_tree(),"idle_frame")
 		"OFF": get_tree().call_group("Stars","hideLabel")
 
 func focusStar(starSym):
@@ -224,9 +258,16 @@ func focusStar(starSym):
 		if temp.size() != 0: starSym = temp[new]
 		else: starSym = "HOME"
 	if starSym in ["HOME","ZERO"]:
-		var twee = get_tree().create_tween()
-		twee.tween_property($Camera2D,"position",Vector2(0,0),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
-		if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+		match starSym:
+			"ZERO":
+				var twee = get_tree().create_tween()
+				twee.tween_property($Camera2D,"position",Vector2(0,0),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+			"HOME":
+				var twee = get_tree().create_tween()
+				twee.tween_property($Camera2D,"position",nodSys[Agent.HQSys].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+				lastFocus = Agent.HQSys
 		return
 	
 	lastFocus = starSym
@@ -240,7 +281,8 @@ func bookmarkStar(starSym):
 	if starSym == "CLEAR":
 		$CanvasLayer/Control2/Bookmarks.clear()
 		return
-	if starSym in ["LAST","RECENT"] and lastFocus != null:
+	if starSym in ["LAST","RECENT"]:
+		if lastFocus == null: return
 		$CanvasLayer/Control2/Bookmarks.addBookmark(_UNIDATA[lastFocus])
 		return
 	if starSym in ["RANDOM","RAND","R","IDK","SOMETHING"]: #Random Bookmark
@@ -255,41 +297,59 @@ func unmarkStar(starSym):
 	$CanvasLayer/Control2/Bookmarks.removeBookmark(starSym)
 
 var curSys
+var waiting_j
+signal JUMP_STORED
 func generateJUMPS():
-	var tempDATA = []
-	for s in _UNIDATA:
-		tempDATA.push_back([s,_UNIDATA[s]])
-	for a in tempDATA:
+#	Save.call_deferred("loadJump")
+#	yield(Save,"loadDataComplete")
+	if (Save.jump["version"] == null) or Time.get_unix_time_from_datetime_string(Save.jump["version"]) < Time.get_unix_time_from_datetime_string(curVer):
+		var tempDATA = []
+		for s in _UNIDATA:
+			tempDATA.push_back([s,_UNIDATA[s]])
+		
+		var num = 0
+		for a in tempDATA:
+			#yield(get_tree(),"idle_frame")
+			for w in a[1]["waypoints"]:
+				if w["type"] == "JUMP_GATE":
+					curSys = a[1]
+					API.get_jump_gate(self,a[1]["symbol"],w["symbol"])
+					waiting_j = true
+					print(str(num,"/",12000))
+					#yield(API,"get_jump_gate_complete")
+					yield(self,"JUMP_STORED")
+					_JUMPDATA[a[0]] = _JUMPDATA["raw"][_JUMPDATA["raw"].size()-1]
+					num += 1
+		Save.jump["version"] = curVer
+		Save.jump["data"] = _JUMPDATA
+		Save.writeJump()
+		print("finished loading")
+	
+#	_JUMPDATA = Save.jump["data"]
+	yield(get_tree().create_timer(3),"timeout")
+	#print(_JUMPDATA["data"].size())
+	for j in Save.jump["data"]: #_JUMPDATA["data"]:
+		if j == "raw": continue
+		if Save.jump["data"][j].has("error"):
+			uncharSys.push_back(Save.jump["data"][j]["error"]["data"]["waypointSymbol"])
+			continue
+		drawJUMP(_UNIDATA[j],Save.jump["data"][j])
 		yield(get_tree(),"idle_frame")
-		for w in a[1]["waypoints"]:
-			if w["type"] == "JUMP_GATE":
-				curSys = a[1]
-				API.get_jump_gate(self,a[1]["symbol"],w["symbol"])
-				yield(API,"get_jump_gate_complete")
-#		for b in tempDATA:
-#			$Camera2D.position = Vector2(a[1]["x"],a[1]["y"])
-#			if Vector2(b[1]["x"],b[1]["y"]).distance_to(Vector2(a[1]["x"],a[1]["y"])) <= 50:
-#				yield(get_tree(),"idle_frame")
-#				var line = Line2D.new()
-#				line.width = 3
-#				line.default_color = Color(1,1,1)
-#				line.add_point(Vector2(a[1]["x"],a[1]["y"]))
-#				line.add_point(Vector2(b[1]["x"],b[1]["y"]))
-#				$Lines.add_child(line)
-#				continue
-#			elif Vector2(b[1]["x"],b[1]["y"]).distance_to(Vector2(a[1]["x"],a[1]["y"])) <= 100:
-#				yield(get_tree(),"idle_frame")
-#				var line = Line2D.new()
-#				line.width = 1
-#				line.default_color = Color(1,1,1,0.5)
-#				line.add_point(Vector2(a[1]["x"],a[1]["y"]))
-#				line.add_point(Vector2(b[1]["x"],b[1]["y"]))
-#				$Lines.add_child(line)
-#		tempDATA.erase(a)
-	print("finished generating")
 
-func drawJUMP(data):
-	var sys = curSys
+func writeJUMPS(data):
+	if !waiting_j: return
+	waiting_j = false
+	
+	if _JUMPDATA.has("raw"):
+		_JUMPDATA["raw"].push_back(data)
+	else:
+		_JUMPDATA["raw"] = []
+		_JUMPDATA["raw"].push_back(data)
+	
+	emit_signal("JUMP_STORED")
+
+func drawJUMP(sys,data):
+	#var sys = curSys
 	for s in data["data"]["connectedSystems"]:
 		if s["distance"] > 500: continue
 		var conpass = false
@@ -327,8 +387,13 @@ func loadUNIVERSE(data):
 	if data["meta"]["total"] > size:
 		loadPage = data["meta"]["page"] + 1
 		API.list_systems(self, loadPage)
-		print(size)
+		
+		$CanvasLayer/UniverseLoad.show()
+		$CanvasLayer/UniverseLoad/ProgressBar.value = (size/float(data["meta"]["total"]))*100
+		$CanvasLayer/UniverseLoad/LoadProgress.bbcode_text = str("[center][color=#69696b]",size,"/",data["meta"]["total"])
+		#print(size)
 	else:
+		$CanvasLayer/UniverseLoad.hide()
 		emit_signal("universe_loaded")
 		Save.universe["version"] = curVer
 		Save.universe["data"] = _UNIDATA
@@ -346,21 +411,21 @@ func _process(delta):
 func mapZoom():
 	if Input.is_action_just_pressed("MAPzoom_out"): #OUT
 		var newZ = clamp(($Camera2D.zoom.x+(0.5*$Camera2D.zoom.x)),0.3,90)
-		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CIRC)
+		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		
 	if Input.is_action_just_pressed("MAPzoom_in"): #IN
 		var newZ = clamp(($Camera2D.zoom.x-(0.5*$Camera2D.zoom.x)),0.3,90)
-		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
+		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
 		
-var oldzoom
+var oldzoom = 0
 func cullStars():
 	if $Camera2D.zoom.x == oldzoom: return
 	else: oldzoom = $Camera2D.zoom.x
 	#print($Lines.get_child_count())
 	if $Stars.get_child_count() < 50: return
 	
+	var newZoom = clamp($Camera2D.zoom.x * 0.3,1,20)
 	for s in $Stars.get_children():
-		var newZoom = clamp($Camera2D.zoom.x * 0.17,1,15)
 		s.rect_scale = Vector2(newZoom,newZoom)
 		$ColorRect.color = Color("#28282b").darkened(clamp($Camera2D.zoom.x * 0.01,0,1))
 		#$ColorRect.color = Color("#000000").lightened(clamp($Camera2D.zoom.x * 0.01,0,0.2))
@@ -415,6 +480,19 @@ func mapTranslate():
 	$Camera2D.position.x = clamp($Camera2D.position.x,-60000,60000)
 	$Camera2D.position.y = clamp($Camera2D.position.y,-60000,60000)
 
-
-func _on_Button_pressed():
-	filterUNI("ORBITAL_STATION")
+func exitUNI():
+	input = false
+	var twee = get_tree().create_tween()
+#	$Camera2D.zoom = Vector2(90.1,90.1)
+#	$Camera2D.position = Vector2.ZERO
+	#twee.tween_property($Camera2D,"position",nodSys[Agent.CurrentSystem].rect_position,1)
+	
+	#twee.tween_property(nodSys[Agent.CurrentSystem],"rect_scale",Vector2(30,30),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+	twee.tween_property($Camera2D,"position",nodSys[Agent.CurrentSystem].rect_position,1)
+	twee.parallel().tween_property($Camera2D,"zoom",Vector2(0.1,0.1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+	yield(twee,"finished")
+	labels("ON")
+#	yield(get_tree().create_timer(2),"timeout")
+#	$Camera2D.zoom = Vector2(90.1,90.1)
+#	var newZoom = clamp($Camera2D.zoom.x * 0.3,1,20)
+#	nodSys[Agent.CurrentSystem].rect_scale = Vector2(newZoom,newZoom)

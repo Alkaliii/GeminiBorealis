@@ -4,12 +4,17 @@ extends Node
 const savePath = "user://USER_SAVE%s.json"
 const clientSavePath = "user://CLIENT_SAVE.json"
 const universeSavePath = "user://universe.json"
+const jumpSavePath = "user://jump.json"
 
 var clientVer = "0.1.0"
 
 #Client
 var pastTokens : Dictionary
 var universe = {
+	"version": null,
+	"data": null
+}
+var jump = {
 	"version": null,
 	"data": null
 }
@@ -20,6 +25,7 @@ var groups : Dictionary
 var _file = File.new()
 
 signal loadClientComplete
+signal loadDataComplete
 signal ShipAssigned
 
 func _ready():
@@ -74,6 +80,8 @@ func loadUserSave():
 	Agent.networth = data["networth"]
 	Agent.sellgood = data["sellgood"]
 	Agent.sellship = data["sellship"]
+	
+	emit_signal("loadDataComplete")
 
 func writeUserSave():
 	var error = _file.open(savePath % Agent.AgentSymbol, File.WRITE)
@@ -109,6 +117,8 @@ func loadUniverse():
 	var data = JSON.parse(content).result
 	universe.version = data.version
 	universe.data = data.data
+	
+	emit_signal("loadDataComplete")
 
 func writeUniverse():
 	var error = _file.open(universeSavePath, File.WRITE)
@@ -124,3 +134,34 @@ func writeUniverse():
 	_file.close()
 	
 	print("saved universe to file")
+
+func loadJump():
+	var error = _file.open(jumpSavePath, File.READ)
+	if error != OK:
+		#Agent.dispError("Could not open %s. Aborting load operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		printerr("Could not open %s. Aborting load operation. err: %s" % [jumpSavePath,error])
+		return
+	
+	var content = _file.get_as_text()
+	_file.close()
+	
+	var data = JSON.parse(content).result
+	jump.version = data.version
+	jump.data = data.data
+	#print("loaded JUMP")
+	emit_signal("loadDataComplete")
+
+func writeJump():
+	var error = _file.open(jumpSavePath, File.WRITE)
+	if error != OK:
+		#Agent.dispError("Could not open %s. Aborting save operation. err: %s" % [savePath % Agent.AgentSymbol,error])
+		printerr("Could not open %s. Aborting save operation. err: %s" % [jumpSavePath,error])
+		return
+	
+	var data = jump
+	
+	var JSONIFY = JSON.print(data)
+	_file.store_string(JSONIFY)
+	_file.close()
+	
+	print("saved jumpdata to file")
