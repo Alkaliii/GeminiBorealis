@@ -46,7 +46,7 @@ signal universe_loaded
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	input = false
+	#input = false
 	API.connect("list_systems_complete",self,"loadUNIVERSE")
 	API.connect("get_status_complete",self,"setUNIVERSE_VERSION")
 	API.connect("get_jump_gate_complete",self,"writeJUMPS")
@@ -289,6 +289,11 @@ func bookmarkStar(starSym):
 		if lastFocus == null: return
 		$CanvasLayer/Control2/Bookmarks.addBookmark(_UNIDATA[lastFocus])
 		return
+	if starSym in ["SELECTED","THAT"]:
+		if rect_selected.empty(): return
+		for sym in rect_selected:
+			$CanvasLayer/Control2/Bookmarks.addBookmark(_UNIDATA[sym])
+		return
 	if starSym in ["RANDOM","RAND","R","IDK","SOMETHING"]: #Random Bookmark
 		var rng = RandomNumberGenerator.new()
 		rng.randomize()
@@ -298,6 +303,11 @@ func bookmarkStar(starSym):
 
 func unmarkStar(starSym):
 	$CanvasLayer/Control2/Bookmarks.preview()
+	if starSym in ["SELECTED","THAT"]:
+		if rect_selected.empty(): return
+		for sym in rect_selected:
+			$CanvasLayer/Control2/Bookmarks.removeBookmark(_UNIDATA[sym])
+		return
 	$CanvasLayer/Control2/Bookmarks.removeBookmark(starSym)
 
 var curSys
@@ -336,62 +346,129 @@ func generateJUMPS():
 		Save.jump["data"] = _JUMPDATA
 		Save.writeJump()
 		print("finished loading")
-		yield(get_tree(),"idle_frame")
+		#yield(get_tree(),"idle_frame")
 		
 		tempDATA = []
 		jumpgates = []
 	
 	#Draw Jumps
+	var fat = 0
 	for j in _JUMPDATA:
+		fat += 1
 		var idx = aspoints.size()
 		drawJUMP(_UNIDATA[j],_JUMPDATA[j])
 		AS.add_point(idx,Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]),1.0)
 		#aspoints.push_back([j,Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"])])
 		aspoints[j] = [Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]),idx]
-		yield(get_tree(),"idle_frame")
+		if fat > 50:
+			fat = 0
+			yield(get_tree(),"idle_frame")
 	
 	#Finish AS setup
 	for point in aspoints:
 		var idx = aspoints[point][1]
 		for j in _JUMPDATA[point]["connectedSystems"]:
 			var cidx = aspoints[j["symbol"]][1]
-			AS.connect_points(idx, cidx, true)
+			AS.connect_points(idx, cidx, false)
+			#print(AS.are_points_connected(idx,cidx))
+			#yield(get_tree(),"idle_frame")
+			#print(idx," ",cidx)
 	
-	print(AS.get_point_count())
+	#print(AS.get_point_count())
+	#print(AS.are_points_connected(aspoints["X1-UZ17"][1],aspoints["X1-NG51"][1]))
+	#getPath(Agent.HQSys,"X1-YU85")
 	
 	get_tree().call_group("loading","finishload")
-#		var num = 0
-#		for a in tempDATA:
-#			#yield(get_tree(),"idle_frame")
-#			for w in a[1]["waypoints"]:
-#				if w["type"] == "JUMP_GATE":
-#					curSys = a[1]
-#					API.get_jump_gate(self,a[1]["symbol"],w["symbol"])
-#					waiting_j = true
-#					print(str(num,"/",12000))
-#					#yield(API,"get_jump_gate_complete")
-#					yield(self,"JUMP_STORED")
-#					_JUMPDATA[a[0]] = _JUMPDATA["raw"][_JUMPDATA["raw"].size()-1]
-#					num += 1
-#		Save.jump["version"] = curVer
-#		Save.jump["data"] = _JUMPDATA
-#		Save.writeJump()
-#		print("finished loading")
-	
-#	_JUMPDATA = Save.jump["data"]
-#	yield(get_tree().create_timer(3),"timeout")
-#	#print(_JUMPDATA["data"].size())
-#	for j in Save.jump["data"]: #_JUMPDATA["data"]:
-#		if j == "raw": continue
-#		if Save.jump["data"][j].has("error"):
-#			uncharSys.push_back(Save.jump["data"][j]["error"]["data"]["waypointSymbol"])
-#			continue
-#		drawJUMP(_UNIDATA[j],Save.jump["data"][j])
-#		yield(get_tree(),"idle_frame")
 
-func getPath(fromSym,toSym):
-	#ReWeight points
-	for j in
+func getPath(fromSym,toSym,noRec = false,noAnim = false):
+	#Clear oldpath
+	if !noRec: for l in $DispPath.get_children():
+		l.queue_free()
+	
+	#Reweight points
+	var aPos = Vector2(_UNIDATA[fromSym]["x"],_UNIDATA[fromSym]["y"])
+	for point in aspoints:
+		if point == fromSym: continue
+		var bPos = Vector2(_UNIDATA[point]["x"],_UNIDATA[point]["y"])
+		var dist = aPos.distance_to(bPos)
+		var idx = aspoints[point][1]
+		
+		AS.set_point_weight_scale(idx, dist)
+	
+	#get path
+	var path = AS.get_id_path(aspoints[fromSym][1],aspoints[toSym][1])
+	var rerouting = false
+	if path.empty() and !_JUMPDATA[toSym]["connectedSystems"].empty():
+		rerouting = true
+		var oldPos = Vector2(_UNIDATA[toSym]["x"],_UNIDATA[toSym]["y"])
+		var newToSym
+		var tested = []
+		var possibleNear = []
+		for t in _JUMPDATA[toSym]["connectedSystems"]:
+			tested.push_back(t["symbol"])
+		for j in _JUMPDATA:
+			if j in tested: continue
+			if j == fromSym: continue
+			var dist = Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]).distance_to(oldPos)
+			possibleNear.push_back([j,dist])
+		possibleNear.sort_custom(self,"reRouteSort")
+		#print(possibleNear)
+		#yield(get_tree(),"idle_frame")
+		while rerouting:
+			if possibleNear.empty():
+				noRec = true
+				break
+			newToSym = possibleNear.pop_back()[0]
+			var newPath = AS.get_id_path(aspoints[fromSym][1],aspoints[newToSym][1])
+			if newPath.empty():
+				continue
+			else:
+				path = newPath
+				if !noRec:
+					getPath(toSym,fromSym, true)
+				break
+	elif path.empty():
+		if !noRec:
+			getPath(toSym,fromSym, true)
+		noRec = true
+	
+	#drawPath
+	var pidx1 = 0
+	var pidx2 = 1
+	
+	if !noRec and !noAnim:
+		var twee = get_tree().create_tween()
+		var dur = clamp($Camera2D.position.distance_to(AS.get_point_position(path[pidx1])) * 0.0015,0.5,2)
+		twee.tween_property($Camera2D,"position",AS.get_point_position(path[pidx1]),dur).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CIRC)
+		yield(twee,"finished") #@path X1-SR60 X1-NM49
+	
+	for c in path:
+		var line = Line2D.new()
+		line.width = clamp($Camera2D.zoom.x + 2,2,90)
+		if rerouting:
+			line.default_color = Color(1,117/255,24/255,1) #ORANGE
+		else: line.default_color = Color(0.6,0,1,1) #(0.6,0,1) PURPLE
+		line.add_point(AS.get_point_position(path[pidx1]))
+		if !noRec and !noAnim:
+			line.add_point(AS.get_point_position(path[pidx1])+Vector2(1,1))
+		else: line.add_point(AS.get_point_position(path[pidx2]))
+		$DispPath.add_child(line)
+		if !noRec and !noAnim:
+			var twee = get_tree().create_tween()
+			var dur = clamp(AS.get_point_position(path[pidx1]).distance_to(AS.get_point_position(path[pidx2])) * 0.0005,0.1,1) + 0.5 - clamp($Camera2D.zoom.x /90,0,1)
+			twee.tween_method(self,"tweenJUMP",AS.get_point_position(path[pidx1]),AS.get_point_position(path[pidx2]),dur,[line]).set_ease(Tween.EASE_OUT_IN)
+			if pidx2 == path.size()-1:
+				twee.parallel().tween_property($Camera2D,"position",AS.get_point_position(path[pidx2]),dur).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
+			else: twee.parallel().tween_property($Camera2D,"position",AS.get_point_position(path[pidx2]),dur)
+			yield(twee,"finished") #@path X1-SR60 X1-NM49
+		pidx1 += 1
+		pidx2 += 1
+		if pidx2 > path.size()-1: break
+	print("finished Pathfinding")
+
+static func reRouteSort(a,b):
+	if a[1] > b[1]: return true
+	return false
 
 func writeJUMPS(data):
 	if !waiting_j: return
@@ -435,7 +512,7 @@ func drawJUMP(sys,data):
 		yield(get_tree(),"idle_frame")
 
 func tweenJUMP(newEnd : Vector2,line : Line2D):
-	line.call_deferred("set_point_position",0,newEnd)
+	line.call_deferred("set_point_position",1,newEnd)
 
 func loadUNIVERSE(data):
 	for s in data["data"]:
@@ -459,11 +536,55 @@ func loadUNIVERSE(data):
 		yield(get_tree(),"idle_frame")
 		generateUNIVERSE()
 
+var dragging = false  # Are we currently dragging?
+var rect_selected = []  # Array of selected units.
+var drag_start = Vector2.ZERO  # Location where drag began.
+var select_rect = Polygon2D.new()  # Collision shape for drag box.
+
+func selection():
+	if Input.is_action_just_pressed("ClickRight") and $Camera2D.zoom.x <= 10:
+		# We only want to start a drag if there's no selection.
+		#if rect_selected.size() == 0:
+			dragging = true
+			drag_start = get_global_mouse_position()#get_global_mouse_position()#get_viewport().get_mouse_position()
+	elif Input.is_action_just_pressed("ClickRight") and $Camera2D.zoom.x > 10:
+		#$Camera2D.zoom = Vector2(10,10)
+		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(10,10),0.2)
+		get_tree().call_group("cmd","notify","[shake][color=#EE4B2B]Zoom must be [b]10[/b]x or less to batch select stars.",4)
+	elif dragging and Input.is_action_just_released("ClickRight"):
+		# Button released while dragging.
+		dragging = false
+		update()
+		selectionEND(get_global_mouse_position())
+	if Input.is_action_pressed("ClickRight") and dragging:
+		update()
+
+func _draw():
+	if dragging:
+		draw_rect(Rect2(drag_start, get_global_mouse_position() - drag_start),
+				Color(.5, .5, .5), false)
+
+func selectionEND(drag_end):
+	#select_rect.extents = (drag_start - drag_end) / 2
+	rect_selected.clear()
+	var v2 = Vector2(drag_start.x,drag_end.y)
+	var v4 = Vector2(drag_end.x,drag_start.y)
+	select_rect.polygon = PoolVector2Array([drag_start, v2, drag_end, v4])
+	for s in nodSys:
+		if Geometry.is_point_in_polygon(nodSys[s].rect_position,PoolVector2Array([drag_start, v2, drag_end, v4])):
+			rect_selected.push_back(s)
+	if rect_selected.size() == 1:
+		get_tree().call_group("cmd","notify",str("[color=#FFBF00]Selected ",rect_selected.size()," system: ", str(rect_selected).substr(0,20)),13)
+	else:
+		get_tree().call_group("cmd","notify",str("[color=#FFBF00]Selected ",rect_selected.size()," systems, ", str(rect_selected).substr(0,65)),13)
+	
+	#print(drag_start," ",drag_end,"/",rect_selected)
 
 func _process(delta):
 	if input:
 		mapZoom()
 		mapTranslate()
+		selection()
 	cullStars()
 
 func mapZoom():
@@ -483,10 +604,14 @@ func cullStars():
 	if $Stars.get_child_count() < 50: return
 	
 	var newZoom = clamp($Camera2D.zoom.x * 0.3,1,20)
+	var newWidth = clamp($Camera2D.zoom.x + 2,2,90)
 	for s in $Stars.get_children():
 		s.rect_scale = Vector2(newZoom,newZoom)
-		$ColorRect.color = Color("#28282b").darkened(clamp($Camera2D.zoom.x * 0.01,0,1))
+	$ColorRect.color = Color("#28282b").darkened(clamp($Camera2D.zoom.x * 0.01,0,1))
 		#$ColorRect.color = Color("#000000").lightened(clamp($Camera2D.zoom.x * 0.01,0,0.2))
+	for l in $DispPath.get_children():
+		l.width = newWidth
+	
 	
 	if $Camera2D.zoom.x > 2 and $Lines.visible:
 		$Lines.hide()

@@ -19,6 +19,8 @@ func preview():
 		self.hide()
 
 func addBookmark(data):
+	for c in $ScrollContainer2/List.get_children():
+		if c.sysDat["symbol"] == data["symbol"]: return
 	var sys = book.instance()
 	sys.setdat(data)
 	sys.connect("focusME",get_node(Parent),"focusStar")

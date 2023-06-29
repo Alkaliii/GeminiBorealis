@@ -25,6 +25,8 @@ const SCM = {
 }
 signal focusME
 
+var doubleClick = false
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
@@ -40,4 +42,13 @@ func setdat(data):
 
 
 func _on_Button_pressed():
-	emit_signal("focusME",sysDat["symbol"])
+	match doubleClick:
+		false:
+			doubleClick = true
+			$VBoxContainer/Button.text = "COPIED"
+			OS.set_clipboard(sysDat["symbol"])
+			yield(get_tree().create_timer(1),"timeout")
+			$VBoxContainer/Button.text = sysDat["symbol"]
+		true:
+			doubleClick = false
+			emit_signal("focusME",sysDat["symbol"])

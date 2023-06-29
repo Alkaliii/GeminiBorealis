@@ -1,0 +1,385 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Font/pixel_operator/PixelOperator.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://Font/pixel_operator/PixelOperator-Bold.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://Font/H1Default.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Font/H1Bold.tres" type="DynamicFont" id=6]
+
+[sub_resource type="StyleBoxFlat" id=31]
+bg_color = Color( 0.32549, 0.32549, 0.333333, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 1, 0.74902, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 1, 1, 1 )
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color( 0.8, 0.8, 0.8, 0 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxLine" id=32]
+color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+thickness = 5
+vertical = true
+
+[sub_resource type="Theme" id=33]
+VScrollBar/styles/grabber = SubResource( 31 )
+VScrollBar/styles/grabber_highlight = SubResource( 2 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 32 )
+
+[sub_resource type="StyleBoxFlat" id=37]
+bg_color = Color( 0, 0, 0, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+
+[sub_resource type="StyleBoxFlat" id=36]
+bg_color = Color( 0, 0, 0, 0.666667 )
+border_color = Color( 1, 1, 1, 1 )
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="DynamicFont" id=34]
+extra_spacing_top = -3
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=35]
+extra_spacing_top = -3
+font_data = ExtResource( 3 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="SystemPopover" type="Control"]
+rect_min_size = Vector2( 394, 220 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="Waypoints" type="ScrollContainer" parent="HBoxContainer"]
+visible = false
+margin_right = 250.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 250, 60 )
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = SubResource( 33 )
+
+[node name="List" type="VBoxContainer" parent="HBoxContainer/Waypoints"]
+margin_right = 240.0
+margin_bottom = 80.0
+
+[node name="Waypoint" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_right = 240.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint2" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 12.0
+margin_right = 240.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint3" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 24.0
+margin_right = 240.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint4" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 36.0
+margin_right = 240.0
+margin_bottom = 44.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint5" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 48.0
+margin_right = 240.0
+margin_bottom = 56.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint6" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 60.0
+margin_right = 240.0
+margin_bottom = 68.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="Waypoint7" type="RichTextLabel" parent="HBoxContainer/Waypoints/List"]
+margin_top = 72.0
+margin_right = 240.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 240, 8 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][ORBITAL_STATION][/b] X1-GM58-58950C"
+text = "[ORBITAL_STATION] X1-GM58-58950C"
+scroll_active = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+margin_right = 140.0
+margin_bottom = 220.0
+rect_min_size = Vector2( 140, 220 )
+custom_constants/separation = 0
+alignment = 1
+
+[node name="Highlight" type="Panel" parent="HBoxContainer/VBoxContainer"]
+visible = false
+margin_right = 140.0
+margin_bottom = 140.0
+rect_min_size = Vector2( 140, 140 )
+custom_styles/panel = SubResource( 37 )
+
+[node name="Main" type="Panel" parent="HBoxContainer/VBoxContainer"]
+show_behind_parent = true
+margin_top = 70.0
+margin_right = 140.0
+margin_bottom = 150.0
+rect_min_size = Vector2( 140, 80 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+custom_styles/panel = SubResource( 36 )
+
+[node name="HBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/Main"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -65.0
+margin_top = -31.5
+margin_right = 65.0
+margin_bottom = 31.5
+rect_min_size = Vector2( 130, 0 )
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer"]
+margin_right = 130.0
+margin_bottom = 63.0
+rect_min_size = Vector2( 130, 0 )
+size_flags_horizontal = 4
+
+[node name="SYSTEM" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer/VBoxContainer"]
+margin_right = 130.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 55, 8 )
+size_flags_vertical = 8
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[color=#71797E][b]SYSTEM:"
+text = "SYSTEM:"
+scroll_active = false
+
+[node name="Symbol" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer/VBoxContainer"]
+margin_top = 12.0
+margin_right = 130.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 65, 15 )
+rect_clip_content = false
+custom_fonts/bold_font = SubResource( 34 )
+custom_fonts/normal_font = SubResource( 35 )
+bbcode_enabled = true
+bbcode_text = "X1-PT84[wave] [color=#71797E](DOMINION)"
+text = "X1-PT84 (DOMINION)"
+scroll_active = false
+
+[node name="Badge" type="Panel" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer/VBoxContainer"]
+self_modulate = Color( 0.278431, 0.333333, 0.411765, 1 )
+margin_top = 31.0
+margin_right = 130.0
+margin_bottom = 51.0
+rect_min_size = Vector2( 110, 20 )
+size_flags_vertical = 4
+custom_styles/panel = SubResource( 1 )
+
+[node name="BadgeLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer/VBoxContainer/Badge"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -47.5
+margin_top = -4.0
+margin_right = 47.5
+margin_bottom = 4.0
+rect_min_size = Vector2( 95, 8 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][color=#f8fafc]NEUTRON_STAR
+"
+text = "NEUTRON_STAR
+"
+scroll_active = false
+
+[node name="Coords" type="RichTextLabel" parent="HBoxContainer/VBoxContainer/Main/HBoxContainer/VBoxContainer"]
+margin_top = 55.0
+margin_right = 130.0
+margin_bottom = 63.0
+rect_min_size = Vector2( 95, 8 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[right][color=#71797E]x:[b]300[/b]/y:[b]300"
+text = "x:300/y:300"
+scroll_active = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 179.0
+margin_bottom = 30.0
+alignment = 1
+
+[node name="SYSTEM" type="RichTextLabel" parent="VBoxContainer/HBoxContainer"]
+margin_top = 22.0
+margin_right = 55.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 55, 8 )
+size_flags_vertical = 8
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[color=#71797E][b]SYSTEM:"
+text = "SYSTEM:"
+scroll_active = false
+
+[node name="Name" type="RichTextLabel" parent="VBoxContainer/HBoxContainer"]
+margin_left = 59.0
+margin_right = 179.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 120, 30 )
+custom_fonts/bold_font = ExtResource( 6 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "X1-PT84
+"
+text = "X1-PT84
+"
+scroll_active = false
+
+[node name="Badge" type="Panel" parent="VBoxContainer"]
+self_modulate = Color( 0.278431, 0.333333, 0.411765, 1 )
+margin_top = 34.0
+margin_right = 110.0
+margin_bottom = 54.0
+rect_min_size = Vector2( 110, 20 )
+size_flags_horizontal = 0
+size_flags_vertical = 4
+custom_styles/panel = SubResource( 1 )
+
+[node name="BadgeLabel" type="RichTextLabel" parent="VBoxContainer/Badge"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -47.5
+margin_top = -4.0
+margin_right = 47.5
+margin_bottom = 4.0
+rect_min_size = Vector2( 95, 8 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[b][color=#f8fafc]NEUTRON_STAR
+"
+text = "NEUTRON_STAR
+"
+scroll_active = false
+
+[node name="Coords" type="RichTextLabel" parent="VBoxContainer"]
+margin_top = 58.0
+margin_right = 179.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 95, 8 )
+custom_fonts/bold_font = ExtResource( 2 )
+custom_fonts/normal_font = ExtResource( 1 )
+bbcode_enabled = true
+bbcode_text = "[color=#71797E]x:[b]300[/b]/y:[b]300"
+text = "x:300/y:300"
+scroll_active = false
