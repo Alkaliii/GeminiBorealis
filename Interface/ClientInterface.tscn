@@ -1119,12 +1119,6 @@ margin_bottom = 55.0
 bbcode_text = "[color=#949495][center][b]GROUPS[/b] (CTRL+G)"
 text = "GROUPS (CTRL+G)"
 
-[node name="Loading" type="CanvasLayer" parent="."]
-layer = 2
-
-[node name="Load" parent="Loading" instance=ExtResource( 29 )]
-visible = false
-
 [node name="UniverseMap" type="CanvasLayer" parent="."]
 layer = 3
 
@@ -1147,6 +1141,12 @@ handle_input_locally = false
 render_target_update_mode = 0
 
 [node name="UNIVERSE" parent="UniverseMap/UniverseContainer/Viewport" instance=ExtResource( 30 )]
+
+[node name="Loading" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Load" parent="Loading" instance=ExtResource( 29 )]
+visible = false
 
 [node name="Logout" type="Button" parent="."]
 anchor_left = 1.0

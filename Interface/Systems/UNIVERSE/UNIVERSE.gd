@@ -39,6 +39,8 @@ const SCM = {
 		{"text":"#eef2ff","bg":"#4f46e5"}
 }
 
+var AS = AStar2D.new()
+var aspoints = {}
 
 signal universe_loaded
 
@@ -73,7 +75,8 @@ func getUNIVERSE():
 	else:
 		emit_signal("universe_loaded")
 		_UNIDATA = Save.universe["data"]
-		_JUMPDATA = Save.jump["data"]
+		if Save.jump["data"] != null:
+			_JUMPDATA = Save.jump["data"]
 		uselessSort()
 		yield(get_tree(),"idle_frame")
 		generateUNIVERSE()
@@ -155,7 +158,8 @@ func generateUNIVERSE():
 		oneShot = false
 	
 	yield(get_tree(),"idle_frame")
-	generateJUMPS()
+	if jumNodCor.size() == 0:
+		generateJUMPS()
 #	camtwee.tween_property($Camera2D,"zoom",Vector2(12,12),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
 #	camtwee.chain().tween_property($Camera2D,"zoom",Vector2(24,24),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
 #	camtwee.chain().tween_property($Camera2D,"zoom",Vector2(48,48),2).set_ease(Tween.EASE_OUT_IN).set_trans(Tween.TRANS_CIRC)
@@ -302,39 +306,92 @@ signal JUMP_STORED
 func generateJUMPS():
 #	Save.call_deferred("loadJump")
 #	yield(Save,"loadDataComplete")
+	
+	get_tree().call_group("loading","startload")
 	if (Save.jump["version"] == null) or Time.get_unix_time_from_datetime_string(Save.jump["version"]) < Time.get_unix_time_from_datetime_string(curVer):
 		var tempDATA = []
 		for s in _UNIDATA:
 			tempDATA.push_back([s,_UNIDATA[s]])
 		
-		var num = 0
-		for a in tempDATA:
-			#yield(get_tree(),"idle_frame")
-			for w in a[1]["waypoints"]:
-				if w["type"] == "JUMP_GATE":
-					curSys = a[1]
-					API.get_jump_gate(self,a[1]["symbol"],w["symbol"])
-					waiting_j = true
-					print(str(num,"/",12000))
-					#yield(API,"get_jump_gate_complete")
-					yield(self,"JUMP_STORED")
-					_JUMPDATA[a[0]] = _JUMPDATA["raw"][_JUMPDATA["raw"].size()-1]
-					num += 1
+		#Get Jump Gates
+		var jumpgates = []
+		for s in tempDATA:
+			for w in s[1]["waypoints"]: if w["type"] == "JUMP_GATE": jumpgates.push_back(s)
+		
+		#Create Jumpdata
+		for a in jumpgates: 
+			var aPos = Vector2(a[1]["x"],a[1]["y"])
+			_JUMPDATA[a[0]] = {"connectedSystems":[]}
+			var aDat = _JUMPDATA[a[0]]
+			for b in jumpgates:
+				if a[0] == b[0]: continue
+				var bPos = Vector2(b[1]["x"],b[1]["y"])
+				if bPos.distance_to(aPos) <= 2000:
+					var newEntry = b[1].duplicate()
+					newEntry.erase("waypoints")
+					newEntry["distance"] = bPos.distance_to(aPos)
+					aDat["connectedSystems"].push_back(newEntry)
+		
 		Save.jump["version"] = curVer
 		Save.jump["data"] = _JUMPDATA
 		Save.writeJump()
 		print("finished loading")
+		yield(get_tree(),"idle_frame")
+		
+		tempDATA = []
+		jumpgates = []
+	
+	#Draw Jumps
+	for j in _JUMPDATA:
+		var idx = aspoints.size()
+		drawJUMP(_UNIDATA[j],_JUMPDATA[j])
+		AS.add_point(idx,Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]),1.0)
+		#aspoints.push_back([j,Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"])])
+		aspoints[j] = [Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]),idx]
+		yield(get_tree(),"idle_frame")
+	
+	#Finish AS setup
+	for point in aspoints:
+		var idx = aspoints[point][1]
+		for j in _JUMPDATA[point]["connectedSystems"]:
+			var cidx = aspoints[j["symbol"]][1]
+			AS.connect_points(idx, cidx, true)
+	
+	print(AS.get_point_count())
+	
+	get_tree().call_group("loading","finishload")
+#		var num = 0
+#		for a in tempDATA:
+#			#yield(get_tree(),"idle_frame")
+#			for w in a[1]["waypoints"]:
+#				if w["type"] == "JUMP_GATE":
+#					curSys = a[1]
+#					API.get_jump_gate(self,a[1]["symbol"],w["symbol"])
+#					waiting_j = true
+#					print(str(num,"/",12000))
+#					#yield(API,"get_jump_gate_complete")
+#					yield(self,"JUMP_STORED")
+#					_JUMPDATA[a[0]] = _JUMPDATA["raw"][_JUMPDATA["raw"].size()-1]
+#					num += 1
+#		Save.jump["version"] = curVer
+#		Save.jump["data"] = _JUMPDATA
+#		Save.writeJump()
+#		print("finished loading")
 	
 #	_JUMPDATA = Save.jump["data"]
-	yield(get_tree().create_timer(3),"timeout")
-	#print(_JUMPDATA["data"].size())
-	for j in Save.jump["data"]: #_JUMPDATA["data"]:
-		if j == "raw": continue
-		if Save.jump["data"][j].has("error"):
-			uncharSys.push_back(Save.jump["data"][j]["error"]["data"]["waypointSymbol"])
-			continue
-		drawJUMP(_UNIDATA[j],Save.jump["data"][j])
-		yield(get_tree(),"idle_frame")
+#	yield(get_tree().create_timer(3),"timeout")
+#	#print(_JUMPDATA["data"].size())
+#	for j in Save.jump["data"]: #_JUMPDATA["data"]:
+#		if j == "raw": continue
+#		if Save.jump["data"][j].has("error"):
+#			uncharSys.push_back(Save.jump["data"][j]["error"]["data"]["waypointSymbol"])
+#			continue
+#		drawJUMP(_UNIDATA[j],Save.jump["data"][j])
+#		yield(get_tree(),"idle_frame")
+
+func getPath(fromSym,toSym):
+	#ReWeight points
+	for j in
 
 func writeJUMPS(data):
 	if !waiting_j: return
@@ -350,8 +407,8 @@ func writeJUMPS(data):
 
 func drawJUMP(sys,data):
 	#var sys = curSys
-	for s in data["data"]["connectedSystems"]:
-		if s["distance"] > 500: continue
+	for s in data["connectedSystems"]:
+		if s["distance"] > 500: continue #500
 		var conpass = false
 		for l in $Lines.get_children():
 			if (l.points[0] == Vector2(sys["x"],sys["y"]) and l.points[1] == Vector2(s["x"],s["y"])) or (l.points[1] == Vector2(sys["x"],sys["y"]) and l.points[0] == Vector2(s["x"],s["y"])):
@@ -375,6 +432,7 @@ func drawJUMP(sys,data):
 		if jumNodCor.has(s["symbol"]):
 			jumNodCor[s["symbol"]].push_back(line)
 		else: jumNodCor[s["symbol"]] = [line]
+		yield(get_tree(),"idle_frame")
 
 func tweenJUMP(newEnd : Vector2,line : Line2D):
 	line.call_deferred("set_point_position",0,newEnd)
