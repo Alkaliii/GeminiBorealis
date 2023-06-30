@@ -42,6 +42,8 @@ const SCM = {
 var AS = AStar2D.new()
 var aspoints = {}
 
+var focusCirc
+
 signal universe_loaded
 
 # Called when the node enters the scene tree for the first time.
@@ -58,6 +60,15 @@ func _ready():
 	yield(API,"get_status_complete")
 	$Camera2D.zoom = Vector2(90,90)
 	$Camera2D.position = Vector2.ZERO
+	
+	focusCirc = circle.instance()
+	focusCirc.rect_global_position = Vector2.ZERO
+	focusCirc.pos = Vector2.ZERO#pos+Vector2(500,500)
+	focusCirc.rad = 2000
+	focusCirc.col = Color(1,1,1,0.4)
+	focusCirc.width = 0.3
+	self.add_child(focusCirc)
+	
 	#yield(get_tree().create_timer(10),"timeout")
 	
 	#getUNIVERSE()
@@ -193,9 +204,10 @@ func getRad(type, symbol):
 func filterUNI(condition, invert = false):
 	condition = str(condition)
 	if condition == "OFF": unFilterUNI()
-	if !condition.is_valid_integer() and !condition in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]:
+	if !condition.is_valid_integer() and !condition in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL","NEUTRON_STAR","RED_STAR","ORANGE_STAR","BLUE_STAR","YOUNG_STAR","WHITE_DWARF","BLACK_HOLE","HYPERGIANT","NEBULAstar","UNSTABLE"]:
 		return
 	
+	var count = 0
 	if condition.is_valid_integer():
 		match invert:
 			true:
@@ -204,29 +216,63 @@ func filterUNI(condition, invert = false):
 						nodSys[s].hide()
 						if jumNodCor.has(s): for l in jumNodCor[s]:
 							l.hide()
+					else: count += 1
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter removed ",12000 - count," stars from total."),6)
 			false:
 				for s in _UNIDATA:
 					if _UNIDATA[s]["waypoints"].size() < int(condition): 
 						nodSys[s].hide()
 						if jumNodCor.has(s): for l in jumNodCor[s]:
 							l.hide()
-	else:
+					else: count += 1
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter removed ",12000 - count," stars from total."),6)
+	elif condition in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]:
 		match invert:
 			true:
-				for s in _UNIDATA: for w in _UNIDATA[s]["waypoints"]: if w["type"] == condition: 
-					nodSys[s].hide()
-					if jumNodCor.has(s): for l in jumNodCor[s]:
-						l.hide()
+				for s in _UNIDATA: for w in _UNIDATA[s]["waypoints"]: 
+					if w["type"] == condition: 
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+					else: count += 1
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter left ",count," waypoints."),6)
 			false:
 				for s in _UNIDATA: 
 					var keep = false
 					for w in _UNIDATA[s]["waypoints"]: 
-						if w["type"] == condition: keep = true
+						if w["type"] == condition: 
+							keep = true
+							count += 1
 					
 					if !keep:
 						nodSys[s].hide()
 						if jumNodCor.has(s): for l in jumNodCor[s]:
 							l.hide()
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter left ",count," waypoints."),6)
+	elif condition in ["NEUTRON_STAR","RED_STAR","ORANGE_STAR","BLUE_STAR","YOUNG_STAR","WHITE_DWARF","BLACK_HOLE","HYPERGIANT","NEBULAstar","UNSTABLE"]:
+		if condition == "NEBULAstar": condition = "NEBULA"
+		match invert:
+			true:
+				for s in _UNIDATA: 
+					if _UNIDATA[s]["type"] == condition: 
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+					else: count += 1
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter left ",count," waypoints."),6)
+			false:
+				for s in _UNIDATA: 
+					var keep = false
+					if _UNIDATA[s]["type"] == condition: 
+						keep = true
+						count += 1
+					
+					if !keep:
+						nodSys[s].hide()
+						if jumNodCor.has(s): for l in jumNodCor[s]:
+							l.hide()
+				get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter left ",count," waypoints."),6)
+		get_tree().call_group("cmd","notify",str("[color=#FFBF00]@filter removed ",12000 - count," stars from total."),6)
 
 func unFilterUNI():
 	for s in _UNIDATA:
@@ -244,7 +290,10 @@ func labels(state):
 				if fat > 300:
 					fat = 0
 					yield(get_tree(),"idle_frame")
-		"OFF": get_tree().call_group("Stars","hideLabel")
+			focusCirc.modulate = Color(1,1,1,1)
+		"OFF": 
+			get_tree().call_group("Stars","hideLabel")
+			focusCirc.modulate = Color(1,1,1,0)
 
 func focusStar(starSym):
 	#if !nodSys.has(starSym): return
@@ -267,10 +316,14 @@ func focusStar(starSym):
 				var twee = get_tree().create_tween()
 				twee.tween_property($Camera2D,"position",Vector2(0,0),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+				twee.parallel().tween_property(focusCirc,"rect_position",Vector2(0,0),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 			"HOME":
 				var twee = get_tree().create_tween()
 				twee.tween_property($Camera2D,"position",nodSys[Agent.HQSys].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+				twee.parallel().tween_property(focusCirc,"rect_position",nodSys[Agent.HQSys].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				lastFocus = Agent.HQSys
 		return
 	
@@ -278,6 +331,8 @@ func focusStar(starSym):
 	var twee = get_tree().create_tween()
 	twee.tween_property($Camera2D,"position",nodSys[starSym].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 	if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+	twee.parallel().tween_property(focusCirc,"rect_position",nodSys[starSym].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+	twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 
 func bookmarkStar(starSym):
 	$CanvasLayer/Control2/Bookmarks.preview()
@@ -385,6 +440,21 @@ func getPath(fromSym,toSym,noRec = false,noAnim = false):
 	if !noRec: for l in $DispPath.get_children():
 		l.queue_free()
 	
+	if fromSym in ["RAND","R","IDK","SOMETHING"]:
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,_JUMPDATA.size()-1)
+		fromSym = _JUMPDATA.keys()[new]
+	
+	if toSym in ["RAND","R","IDK","SOMETHING"]:
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,_JUMPDATA.size()-1)
+		toSym = _JUMPDATA.keys()[new]
+	
+	if fromSym == toSym:
+		get_tree().call_group("cmd","notify","[shake][color=#EE4B2B]Path failed, fromSym == toSym.",4)
+	
 	#Reweight points
 	var aPos = Vector2(_UNIDATA[fromSym]["x"],_UNIDATA[fromSym]["y"])
 	for point in aspoints:
@@ -407,7 +477,7 @@ func getPath(fromSym,toSym,noRec = false,noAnim = false):
 		for t in _JUMPDATA[toSym]["connectedSystems"]:
 			tested.push_back(t["symbol"])
 		for j in _JUMPDATA:
-			if j in tested: continue
+			if j in tested and noRec: continue
 			if j == fromSym: continue
 			var dist = Vector2(_UNIDATA[j]["x"],_UNIDATA[j]["y"]).distance_to(oldPos)
 			possibleNear.push_back([j,dist])
@@ -464,7 +534,7 @@ func getPath(fromSym,toSym,noRec = false,noAnim = false):
 		pidx1 += 1
 		pidx2 += 1
 		if pidx2 > path.size()-1: break
-	print("finished Pathfinding")
+	print("finished Pathfinding ",fromSym,"->",toSym)
 
 static func reRouteSort(a,b):
 	if a[1] > b[1]: return true

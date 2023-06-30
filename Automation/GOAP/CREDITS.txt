@@ -1,0 +1,6 @@
+GOAP code is a modified version of the godot-goap repo
+by This is Vini (viniciusgerevini)
+
+https://github.com/viniciusgerevini/godot-goap
+
+Thanks for providing it!

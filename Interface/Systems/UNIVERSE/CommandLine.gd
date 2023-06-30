@@ -97,7 +97,7 @@ func run_command(command : String, value : String, values := []):
 				badMessage(str("'",value,"' is not a valid argument for '",command,"'"))
 				command = ""
 		"@filter":
-			if value.is_valid_integer() or value in ["OFF","PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]:
+			if value.is_valid_integer() or value in ["OFF","PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL","NEUTRON_STAR","RED_STAR","ORANGE_STAR","BLUE_STAR","YOUNG_STAR","WHITE_DWARF","BLACK_HOLE","HYPERGIANT","NEBULAstar","UNSTABLE"]:
 				get_node(Parent).filterUNI(value)
 				if value != "OFF" and !value.is_valid_integer():
 					goodMessage(str("displaying stars with ",value))
@@ -108,7 +108,7 @@ func run_command(command : String, value : String, values := []):
 				badMessage(str("'",value,"' is not a valid argument for '",command,"'"))
 				command = ""
 		"@filter2":
-			if value.is_valid_integer() or value in ["OFF","PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]:
+			if value.is_valid_integer() or value in ["OFF","PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL","NEUTRON_STAR","RED_STAR","ORANGE_STAR","BLUE_STAR","YOUNG_STAR","WHITE_DWARF","BLACK_HOLE","HYPERGIANT","NEBULAstar","UNSTABLE"]:
 				get_node(Parent).filterUNI(value, true)
 				if value != "OFF" and !value.is_valid_integer():
 					goodMessage(str("displaying stars without ",value))
@@ -170,7 +170,7 @@ func run_command(command : String, value : String, values := []):
 				command = ""
 		"@path":
 			if values.size() >= 2:
-				if get_node(Parent)._JUMPDATA.has(values[0]) and get_node(Parent)._JUMPDATA.has(values[1]):
+				if (get_node(Parent)._JUMPDATA.has(values[0]) or values[0] in ["RAND","R","IDK","SOMETHING"]) and (get_node(Parent)._JUMPDATA.has(values[1]) or values[0] in ["RAND","R","IDK","SOMETHING"]):
 					if values.size() == 3:
 						get_node(Parent).getPath(values[0],values[1],false,values[2])
 					else: get_node(Parent).getPath(values[0],values[1])

@@ -54,7 +54,7 @@ margin_bottom = 40.0
 
 [node name="Main" type="VBoxContainer" parent="HBoxContainer"]
 margin_right = 300.0
-margin_bottom = 40.0
+margin_bottom = 41.0
 rect_min_size = Vector2( 300, 40 )
 custom_constants/separation = 2
 
@@ -119,10 +119,15 @@ align = 2
 icon_align = 2
 expand_icon = true
 
+[node name="Additionals" type="VBoxContainer" parent="HBoxContainer/Main"]
+margin_top = 41.0
+margin_right = 300.0
+margin_bottom = 41.0
+
 [node name="SimpleDetails" type="VBoxContainer" parent="HBoxContainer"]
 margin_left = 304.0
 margin_right = 454.0
-margin_bottom = 40.0
+margin_bottom = 41.0
 alignment = 1
 
 [node name="Frame" type="RichTextLabel" parent="HBoxContainer/SimpleDetails"]
@@ -166,5 +171,7 @@ margin_top = 38.0
 margin_right = 150.0
 margin_bottom = 38.0
 
+[connection signal="mouse_entered" from="." to="." method="_on_ShipPurchase_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_ShipPurchase_mouse_exited"]
 [connection signal="pressed" from="HBoxContainer/Main/HBoxContainer/Details" to="." method="_on_Details_pressed"]
 [connection signal="pressed" from="HBoxContainer/Main/HBoxContainer/Buy" to="." method="_on_Buy_pressed"]

@@ -26,9 +26,18 @@ func setdat(ShipData):
 	ShipFrame.bbcode_text = str("[right]F:[b]",ShipData["frame"]["symbol"].replace("FRAME","").replace("_"," "))
 	ShipReactor.bbcode_text = str("[right]R:[b]",ShipData["reactor"]["symbol"].replace("REACTOR","").replace("_"," "))
 	ShipEngine.bbcode_text = str("[right]E:[b]",ShipData["engine"]["symbol"].replace("ENGINE","").replace("_"," "))
+	
+	var modules = []
+	for m in ShipData["modules"]:
+		modules.push_back(m["symbol"].replace("MODULE_","").replace("PROCESSOR_","PROC_").replace("PASSENGER","PASS_").replace("REFINERY","REF_").replace("SCIENCE_","SCI_").replace("GENERATOR_","GEN_"))
+	self.hint_tooltip = str(modules)
+	
+	if ShipData["purchasePrice"] > float(Agent.AgentCredits): ShipPrice.disabled = true
 
 func _on_Details_pressed():
 	for r in $HBoxContainer/SimpleDetails/AdditionalDetails.get_children():
+		r.queue_free()
+	for r in $HBoxContainer/Main/Additionals.get_children():
 		r.queue_free()
 	details = !details
 	if details:
@@ -44,6 +53,10 @@ func _on_Details_pressed():
 		var fuelCap = addline.instance()
 		fuelCap.bbcode_text = str("[right]Fuel Capacity: [b][",ShipDat["frame"]["fuelCapacity"],"]")
 		$HBoxContainer/SimpleDetails/AdditionalDetails.add_child(fuelCap)
+		
+		var modules = addline.instance()
+		modules.bbcode_text = self.hint_tooltip
+		$HBoxContainer/Main/Additionals.add_child(modules)
 	else: self.rect_min_size = Vector2(462,40)
 
 func returnbutton():
@@ -102,3 +115,11 @@ func _on_request_completed(result, response_code, headers, body):
 
 func getfail():
 	pass
+
+
+func _on_ShipPurchase_mouse_entered():
+	print("hi",ShipDat["name"])
+
+
+func _on_ShipPurchase_mouse_exited():
+	pass # Replace with function body.

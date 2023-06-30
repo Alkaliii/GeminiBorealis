@@ -49,6 +49,7 @@ signal OperationChanged
 signal PushAPI
 
 signal LISTSHIPS
+signal SHIPSTATUSUPDATE
 signal GETSYSTEM
 signal LISTSYSTEMWAYPOINTS
 signal EXTRACTRESOURCES
@@ -64,6 +65,7 @@ func _ready():
 	self.connect("LISTSYSTEMWAYPOINTS",self,"cacheSYSTEMWPT")
 	self.connect("EXTRACTRESOURCES",self,"cacheEXTRACT")
 	self.connect("GETMARKET",self,"cacheMARKET")
+	self.connect("SHIPSTATUSUPDATE",self,"cacheSHIPstatus")
 	
 	Agent.connect("DockFinished",self,"cacheSHIPstatus")
 	Agent.connect("OrbitFinished",self,"cacheSHIPstatus")
@@ -73,6 +75,7 @@ func _ready():
 	Agent.connect("visitmarket",self,"cacheMARKET")
 	
 	_setRate(SelectRateTime)
+	#activateAu()
 #	for i in 25:
 #		var r = _GET_REQUEST_OBj
 #		r.Author = self
@@ -82,17 +85,82 @@ func _ready():
 #		callQueue.push_back(r)
 
 func activateAu():
-	yield(get_tree().create_timer(10),"timeout")
-	active = true
-	print("AUTORUNNING",RateTime)
-	var routine = AutoExtractRoutine.new()
+	yield(get_tree().create_timer(2),"timeout")
+	print("start")
+	var officer = goapOFFICER.new()
+	self.add_child(officer)
+	officer._ship_state["cargo_is_full"] = false
+	officer._ship_state["cargo_is_empty"] = true
 	
-	yield(Automation,"EXTRACTRESOURCES")
-	for w in _FleetData:
-		routine.groupData[_FleetData[w]["symbol"]] = _FleetData[w]
-		break
-	self.add_child(routine)
-	routine.startRoutine()
+	#initiate goals
+	var LUG = LOAD_UPgoal.new()
+	officer.add_child(LUG)
+	var PG = PURGEgoal.new()
+	officer.add_child(PG)
+	officer._goals = [LUG,PG]
+	
+	
+	#initiate actions and action_planner
+	var planner = goapACTION_PLANNER.new()
+	officer.add_child(planner)
+	var a0 = Devise_Extract_Site_Flight_Plan_Action.new()
+	planner.add_child(a0)
+	var a1 = Devise_Market_Site_Flight_Plan_Action.new()
+	planner.add_child(a1)
+	var a2 = Devise_Refuel_Site_Flight_Plan_Action.new()
+	planner.add_child(a2)
+	var a3 = Ensure_fuel_to_extract_site_Action.new()
+	planner.add_child(a3)
+	var a4 = Ensure_fuel_to_market_site_Action.new()
+	planner.add_child(a4)
+	var a5 = Extract_Cycle_Action.new()
+	planner.add_child(a5)
+	var a6 = Get_Survey_Action.new()
+	planner.add_child(a6)
+	var a7 = Navigate_to_extract_site_Action.new()
+	planner.add_child(a7)
+	var a8 = Navigate_to_market_site_Action.new()
+	planner.add_child(a8)
+	var a9 = Navigate_to_refuel_site_Action.new()
+	planner.add_child(a9)
+	var a10 = Purge_Cycle_Action.new()
+	planner.add_child(a10)
+	planner._symbol = "FAKESHIP-1"
+	planner.set_actions([a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10])
+	
+	officer._action_planner = planner
+	
+	officer._relevant_data["ship"] = "FAKESHIP-1"
+	officer._relevant_data["shipData"] = {
+		"symbol": "FAKESHIP-1",
+		"nav": {
+			"status": "DOCKED"
+		},
+		"cargo": {
+			"capacity": 100,
+			"units": 0
+		}
+	}
+	_FleetData["FAKESHIP-1"] = {
+		"symbol": "FAKESHIP-1",
+		"nav": {
+			"status": "DOCKED"
+		},
+		"cargo": {
+			"capacity": 100,
+			"units": 0
+		}
+	}
+#	active = true
+#	print("AUTORUNNING",RateTime)
+#	var routine = AutoExtractRoutine.new()
+#
+#	yield(Automation,"EXTRACTRESOURCES")
+#	for w in _FleetData:
+#		routine.groupData[_FleetData[w]["symbol"]] = _FleetData[w]
+#		break
+#	self.add_child(routine)
+#	routine.startRoutine()
 
 func setRoutine(data):
 	match data["state"]:
@@ -100,14 +168,35 @@ func setRoutine(data):
 			for c in self.get_children():
 				if c.assigned_Group == data["group"]:
 					c.endRoutine()
+					print(c.name," was ended")
 			return
+		"Pause":
+			for c in self.get_children():
+				if c.assigned_Group == data["group"]:
+					c.pauseRoutine()
+					print(c.name," was paused")
+			return
+		"Restart":
+			for c in self.get_children():
+				if c.assigned_Group == data["group"]:
+					c.restartRoutine()
+					print(c.name," was restarted")
+			return
+	
+	for c in self.get_children():
+		if c.assigned_Group == data["group"]:
+			c.resumeRoutine()
+			print(c.name," was resumed")
 	
 	var routine
 	match data["routine"]:
 		"Auto-Extract":
 			routine = AutoExtractRoutine.new()
 		"Purge Cargo": pass
+		"MINER":
+			routine = MINER_routine.new()
 	
+	routine.name = str(data["group"],"_Routine").replace(" ","")
 	routine.assigned_Group = data["group"]
 	routine.groupData = Save.groups[data["group"]]["Ships"]
 	self.add_child(routine)
@@ -284,6 +373,14 @@ func cacheSELL(data):
 
 func cacheSHIPstatus(data):
 	_FleetData[data["meta"]]["nav"] = data["data"]["nav"]
+	
+	if data["data"]["nav"]["status"] == "IN_TRANSIT" and data["data"]["nav"]["route"].has("arrival"):
+		var expire = Time.get_unix_time_from_datetime_string(data["data"]["nav"]["route"]["arrival"])
+		while expire > Time.get_unix_time_from_system():
+			yield(get_tree(),"idle_frame")
+			if expire < Time.get_unix_time_from_system():
+				break
+		_FleetData[data["meta"]]["nav"]["status"] = "IN_ORBIT"
 
 func cacheMARKET(data,ws = null,ss = null,_4 = null):
 	_MarketData[data["data"]["symbol"]] = data["data"]

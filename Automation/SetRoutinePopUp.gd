@@ -7,12 +7,15 @@ func _ready():
 	var sDrop = $VBoxContainer/Double/StateOptionButton
 	
 	sDrop.add_item("Start")
+	sDrop.add_item("Pause")
+	sDrop.add_item("Restart")
 	sDrop.add_item("Stop")
 	
 	var rDrop = $VBoxContainer/Double/RoutineOptionButton
 	
-	rDrop.add_item("Auto-Extract")
-	rDrop.add_item("Purge Cargo")
+	rDrop.add_item("MINER")
+	#rDrop.add_item("Auto-Extract")
+	#rDrop.add_item("Purge Cargo")
 
 func _on_CONFIRM_pressed():
 	var sDrop = $VBoxContainer/Double/StateOptionButton
