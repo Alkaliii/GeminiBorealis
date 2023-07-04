@@ -61,16 +61,16 @@ func compute(relevant):
 	
 	var max_reach
 	var refuel = false
-	for m in Automation._MarketData: if m["symbol"] == location: #determine if location is a refuel site
-		for tg in m["exchange"]:
+	for m in Automation._MarketData: if m == location: #determine if location is a refuel site
+		for tg in Automation._MarketData[m]["exchange"]:
 			if tg["symbol"] == "FUEL": 
 				refuel = true
 				break
-		if !refuel: for tg in m["exports"]:
+		if !refuel: for tg in Automation._MarketData[m]["exports"]:
 			if tg["symbol"] == "FUEL": 
 				refuel = true
 				break
-		if !refuel: for tg in m["imports"]:
+		if !refuel: for tg in Automation._MarketData[m]["imports"]:
 			if tg["symbol"] == "FUEL": 
 				refuel = true
 				break

@@ -78,6 +78,8 @@ func singleStep(fp):
 		
 		orbit()
 		yield(self,"orbit_complete")
+		operation = {"Ship":symbol,"Op":"TRANSIT"}
+		Automation.emit_signal("OperationChanged",operation)
 		outputRID(str("/",self.get_action_name(),"/ RESUMING:(single step navigation) on ", symbol," @ ",Time.get_datetime_string_from_system()))
 	
 	var req = _POST_REQUEST_OBj.duplicate()
@@ -120,9 +122,9 @@ func multiStep(fp):
 				cur = states.COMPLETE
 				return
 			_: #symbol hopefully
-				var site = Automation._SystemsData[x]
+				var site = Automation._SystemsData[Automation._FleetData[symbol]["nav"]["systemSymbol"]]["waypoints"][x]
 				var sitePOS = Vector2(site["x"],site["y"])
-				var location = Automation._SystemsData[Automation._FleetData[symbol]["nav"]["waypointSymbol"]]
+				var location = Automation._SystemsData[Automation._FleetData[symbol]["nav"]["systemSymbol"]]["waypoints"][Automation._FleetData[symbol]["nav"]["waypointSymbol"]]
 				var locationPOS = Vector2(location["x"],location["y"])
 				if sitePOS.distance_to(locationPOS) < Automation._FleetData[symbol]["fuel"]["current"] - 3:
 					#self orbit
@@ -195,6 +197,19 @@ func _on_navigate_ship(result, response_code, headers, body):
 		PARSE["meta"] = symbol
 		Automation.emit_signal("SHIPSTATUSUPDATE",PARSE)
 		API.emit_signal("navigate_ship_complete",PARSE)
+		
+		Agent.emit_signal("NavigationFinished",PARSE)
+		Agent.emit_signal("mapGenLine",
+		Vector2(PARSE["data"]["nav"]["route"]["departure"]["x"],PARSE["data"]["nav"]["route"]["departure"]["y"]),
+		Vector2(PARSE["data"]["nav"]["route"]["destination"]["x"],PARSE["data"]["nav"]["route"]["destination"]["y"]), Color(1,1,0,0.5), true, PARSE["data"]["nav"]["route"]["arrival"])
+		Agent.emit_signal("FocusMapNav",
+			{
+			"data":
+				{
+				"x": (PARSE["data"]["nav"]["route"]["departure"]["x"]+PARSE["data"]["nav"]["route"]["destination"]["x"])/2,
+				"y": (PARSE["data"]["nav"]["route"]["departure"]["y"]+PARSE["data"]["nav"]["route"]["destination"]["y"])/2
+				}
+			})
 		
 		var expire = Time.get_unix_time_from_datetime_string(PARSE["data"]["nav"]["route"]["arrival"])
 		while expire > Time.get_unix_time_from_system():

@@ -8,6 +8,7 @@ var doubleConfirm = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	API.connect("purchase_ship_complete",self,"_on_request_completed")
 	pass # Replace with function body.
 
 func setdat(ShipData):
@@ -98,20 +99,27 @@ func _on_Buy_pressed():
 		returnbutton()
 	elif doubleConfirm:
 		doubleConfirm = false
-		Agent.purchaseShip(ShipDat["type"],Waypoint,self)
+		#Agent.purchaseShip(ShipDat["type"],Waypoint,self)
+		API.purchase_ship(self,ShipDat["type"],Waypoint)
+		waiting_ps = true
+		get_tree().call_group("loading","startload")
 
-func _on_request_completed(result, response_code, headers, body):
-	if result == 4:
-		print("bad",result,response_code)
-		return
-	var json = JSON.parse(body.get_string_from_utf8())
-	var cleanbody = json.result
+var waiting_ps = false
+func _on_request_completed(cleanbody):
+	if !waiting_ps: return
+	waiting_ps = false
+	get_tree().call_group("loading","finishload")
+#	if result == 4:
+#		print("bad",result,response_code)
+#		return
+#	var json = JSON.parse(body.get_string_from_utf8())
+#	var cleanbody = json.result
 	if cleanbody.has("data"):
-		Agent.emit_signal("PurchaseShip")
-	else:
-		Agent.dispError(cleanbody)
-		#getfail()
-	print(json.result)
+		Agent.emit_signal("PurchaseShip",cleanbody)
+#	else:
+#		Agent.dispError(cleanbody)
+#		#getfail()
+#	print(json.result)
 
 func getfail():
 	pass

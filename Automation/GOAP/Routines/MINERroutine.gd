@@ -12,8 +12,16 @@ func startRoutine():
 		#officer._relevant_data["shipData"] = ship
 		officer.name = str(groupData[ship]["symbol"],"_","CO") #COMMANDING_OFFICER
 		self.add_child(officer)
-		officer._ship_state["cargo_is_full"] = false
-		officer._ship_state["cargo_is_empty"] = true
+		officer.connect("requestStateUpdate",self,"stateUpdate")
+		if Automation._FleetData[ship]["cargo"]["units"] == Automation._FleetData[ship]["cargo"]["capacity"]:
+			officer._ship_state["cargo_is_full"] = true
+			officer._ship_state["cargo_is_empty"] = false
+		elif Automation._FleetData[ship]["cargo"]["units"] > 0:
+			officer._ship_state["cargo_is_full"] = false
+			officer._ship_state["cargo_is_empty"] = false
+		else:
+			officer._ship_state["cargo_is_full"] = false
+			officer._ship_state["cargo_is_empty"] = true
 		
 		#initiate goals
 		var LUG = LOAD_UPgoal.new()
@@ -65,3 +73,17 @@ func startRoutine():
 		officer._action_planner = planner
 		#yield(get_tree(),"idle_frame")
 		officer.officer = officer.has.STARTED
+
+func stateUpdate(officer):
+	var ship = officer._relevant_data["ship"]
+	if Automation._FleetData[ship]["cargo"]["units"] == Automation._FleetData[ship]["cargo"]["capacity"]:
+		officer._ship_state["cargo_is_full"] = true
+		officer._ship_state["cargo_is_empty"] = false
+	elif Automation._FleetData[ship]["cargo"]["units"] > 0:
+		officer._ship_state["cargo_is_full"] = false
+		officer._ship_state["cargo_is_empty"] = false
+	else:
+		officer._ship_state["cargo_is_full"] = false
+		officer._ship_state["cargo_is_empty"] = true
+	
+	officer.emit_signal("stateUpdated")

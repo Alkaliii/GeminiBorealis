@@ -17,6 +17,7 @@ func _ready():
 	Agent.connect("mapHOME",self,"clearInfo")
 	Agent.connect("shipfocused",self,"setdat")
 	Agent.connect("JettisonCargo",self,"refreshCargo")
+	Agent.connect("TransferCargo",self,"refreshCargo")
 	Agent.connect("selectedWaypoint",self,"prepNav")
 	Agent.connect("selectedGroup",self,"prepAssign")
 	

@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=2]
+[gd_scene load_steps=68 format=2]
 
 [ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Interface/Theme.tres" type="Theme" id=2]
@@ -30,6 +30,9 @@
 [ext_resource path="res://Interface/NetworthChartScript.gd" type="Script" id=28]
 [ext_resource path="res://Interface/Load.tscn" type="PackedScene" id=29]
 [ext_resource path="res://Interface/Systems/UNIVERSE/UNIVERSE.tscn" type="PackedScene" id=30]
+[ext_resource path="res://Interface/Agent/Graph.tscn" type="PackedScene" id=31]
+[ext_resource path="res://300linesmall.tscn" type="PackedScene" id=32]
+[ext_resource path="res://Interface/GreetingScript.gd" type="Script" id=33]
 
 [sub_resource type="StyleBoxFlat" id=36]
 bg_color = Color( 0.156863, 0.156863, 0.168627, 1 )
@@ -220,6 +223,43 @@ border_color = Color( 1, 1, 1, 1 )
 flags = 4
 atlas = ExtResource( 13 )
 region = Rect2( 225, 34, 30, 30 )
+
+[sub_resource type="StyleBoxFlat" id=55]
+bg_color = Color( 0.243137, 0.243137, 0.25098, 0.498039 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform float columns = 64.0;
+uniform float rows = 36.0;
+uniform float border_width = 0.05;
+uniform vec4 border_color : hint_color;
+
+
+void fragment() {
+    vec2 grid = fract(vec2(UV.x * columns, UV.y * rows));
+	vec2 bottom_left = step(vec2(border_width), grid);
+	vec2 top_right = step(vec2(border_width), 1.0 - grid);
+	COLOR = border_color - (bottom_left.x * bottom_left.y * top_right.x * top_right.y);
+}"
+
+[sub_resource type="ShaderMaterial" id=56]
+shader = SubResource( 1 )
+shader_param/columns = 30.0
+shader_param/rows = 5.0
+shader_param/border_width = 0.06
+shader_param/border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=57]
+bg_color = Color( 0.243137, 0.243137, 0.25098, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="Node" type="Node"]
 script = ExtResource( 11 )
@@ -963,18 +1003,318 @@ margin_bottom = 550.0
 rect_min_size = Vector2( 1280, 525 )
 size_flags_vertical = 8
 
-[node name="Contracts" type="VBoxContainer" parent="MainWindow/Agent"]
-margin_left = 30.0
-margin_top = 140.0
-margin_right = 350.0
-margin_bottom = 386.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MainWindow/Agent"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -610.0
+margin_top = -437.0
+margin_right = 610.0
+margin_bottom = -37.0
+
+[node name="Panel2" type="Panel" parent="MainWindow/Agent/HBoxContainer"]
+margin_right = 856.0
+margin_bottom = 400.0
+rect_min_size = Vector2( 856, 400 )
+custom_styles/panel = SubResource( 55 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Agent/HBoxContainer/Panel2"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -423.0
+margin_top = -195.0
+margin_right = 423.0
+margin_bottom = 195.0
+rect_min_size = Vector2( 846, 390 )
+theme = SubResource( 42 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer"]
+margin_right = 819.0
+margin_bottom = 215.0
+
+[node name="Greeting" type="Control" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer"]
+margin_right = 819.0
+margin_bottom = 73.0
+rect_min_size = Vector2( 624, 73 )
+script = ExtResource( 33 )
+
+[node name="TextandName" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting"]
+margin_right = 624.0
+margin_bottom = 73.0
+
+[node name="text" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName"]
+margin_right = 624.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+rect_clip_content = false
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "Good Morning!"
+text = "Good Morning!"
+scroll_active = false
+
+[node name="name" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName"]
+margin_top = 12.0
+margin_right = 624.0
+margin_bottom = 42.0
+rect_min_size = Vector2( 300, 30 )
+custom_fonts/bold_font = ExtResource( 7 )
+custom_fonts/normal_font = ExtResource( 5 )
+bbcode_enabled = true
+bbcode_text = "[b]GEMINI_THREE"
+text = "GEMINI_THREE"
+scroll_active = false
+
+[node name="Overview" type="HBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName"]
+margin_top = 46.0
+margin_right = 624.0
+margin_bottom = 73.0
+
+[node name="Credits" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview"]
+margin_right = 200.0
+margin_bottom = 27.0
+size_flags_vertical = 4
+
+[node name="creditAMT" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Credits"]
+margin_right = 200.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[center]999"
+text = "999"
+scroll_active = false
+
+[node name="creditLabel" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Credits"]
+margin_top = 19.0
+margin_right = 200.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][center][b][CREDITS][/b]"
+text = "[CREDITS]"
+scroll_active = false
+
+[node name="VSeparator" type="VSeparator" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview"]
+margin_left = 204.0
+margin_right = 208.0
+margin_bottom = 27.0
+
+[node name="Ships" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview"]
+margin_left = 212.0
+margin_right = 412.0
+margin_bottom = 27.0
+size_flags_vertical = 4
+
+[node name="shipAMT" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Ships"]
+margin_right = 200.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[center]999"
+text = "999"
+scroll_active = false
+
+[node name="shipLabel" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Ships"]
+margin_top = 19.0
+margin_right = 200.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][center][b][SHIPS][/b]"
+text = "[SHIPS]"
+scroll_active = false
+
+[node name="VSeparator2" type="VSeparator" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview"]
+margin_left = 416.0
+margin_right = 420.0
+margin_bottom = 27.0
+
+[node name="Officers" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview"]
+margin_left = 424.0
+margin_right = 624.0
+margin_bottom = 27.0
+size_flags_vertical = 4
+
+[node name="officerAMT" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Officers"]
+margin_right = 200.0
+margin_bottom = 15.0
+rect_min_size = Vector2( 0, 15 )
+custom_fonts/bold_font = ExtResource( 3 )
+custom_fonts/normal_font = ExtResource( 4 )
+bbcode_enabled = true
+bbcode_text = "[center]900"
+text = "900"
+scroll_active = false
+
+[node name="officerLabel" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Greeting/TextandName/Overview/Officers"]
+margin_top = 19.0
+margin_right = 200.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 200, 8 )
+custom_fonts/bold_font = ExtResource( 1 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[color=#69696b][center][b][OFFICERS][/b]"
+text = "[OFFICERS]"
+scroll_active = false
+
+[node name="HSeparator" type="HSeparator" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer"]
+margin_top = 77.0
+margin_right = 819.0
+margin_bottom = 81.0
+
+[node name="Graphs" type="HBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer"]
+margin_top = 85.0
+margin_right = 819.0
+margin_bottom = 215.0
+custom_constants/separation = 9
+
+[node name="NetworthChart" type="Control" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs"]
+margin_right = 500.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 500, 130 )
+script = ExtResource( 28 )
+
+[node name="Graph" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/NetworthChart" instance=ExtResource( 31 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 0.0
+margin_bottom = 0.0
+rect_min_size = Vector2( 500, 130 )
+chart_color_A = Color( 1, 0.74902, 0, 1 )
+x_axis_unit = ""
+y_axis_unit = "$"
+labels = false
+
+[node name="ReferenceRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/NetworthChart/Graph" index="0"]
+margin_right = 500.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 500, 130 )
+
+[node name="Camera2D" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/NetworthChart/Graph" index="1"]
+visible = false
+
+[node name="ShipGraphs" type="ScrollContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs"]
+margin_left = 509.0
+margin_right = 819.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 310, 130 )
+theme = SubResource( 42 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs"]
+margin_right = 300.0
+margin_bottom = 194.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer"]
+margin_right = 300.0
+margin_bottom = 62.0
+
+[node name="300line" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer" instance=ExtResource( 32 )]
+bbcode_text = "Ship Name
+"
+text = "Ship Name
+"
+
+[node name="Graph" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer" instance=ExtResource( 31 )]
+margin_top = 12.0
+margin_right = 300.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 300, 50 )
+labels = false
+
+[node name="ReferenceRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer/Graph" index="0"]
+margin_right = 300.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 300, 50 )
+
+[node name="ColorRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer/Graph/ReferenceRect" index="4"]
+material = SubResource( 56 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer"]
+margin_top = 66.0
+margin_right = 300.0
+margin_bottom = 128.0
+
+[node name="300line" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer2" instance=ExtResource( 32 )]
+bbcode_text = "Ship Name
+"
+text = "Ship Name
+"
+
+[node name="Graph" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer2" instance=ExtResource( 31 )]
+margin_top = 12.0
+margin_right = 300.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 300, 50 )
+labels = false
+
+[node name="ReferenceRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer2/Graph" index="0"]
+margin_right = 300.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 300, 50 )
+
+[node name="ColorRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer2/Graph/ReferenceRect" index="4"]
+material = SubResource( 56 )
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer"]
+margin_top = 132.0
+margin_right = 300.0
+margin_bottom = 194.0
+
+[node name="300line" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer3" instance=ExtResource( 32 )]
+bbcode_text = "Ship Name
+"
+text = "Ship Name
+"
+
+[node name="Graph" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer3" instance=ExtResource( 31 )]
+margin_top = 12.0
+margin_right = 300.0
+margin_bottom = 62.0
+rect_min_size = Vector2( 300, 50 )
+labels = false
+
+[node name="ReferenceRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer3/Graph" index="0"]
+margin_right = 300.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 300, 50 )
+
+[node name="ColorRect" parent="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer3/Graph/ReferenceRect" index="4"]
+material = SubResource( 56 )
+
+[node name="Panel" type="Panel" parent="MainWindow/Agent/HBoxContainer"]
+margin_left = 860.0
+margin_right = 1220.0
+margin_bottom = 400.0
+rect_min_size = Vector2( 360, 400 )
+custom_styles/panel = SubResource( 57 )
+
+[node name="Contracts" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -160.0
+margin_top = 24.0
+margin_right = 160.0
+margin_bottom = 270.0
 rect_min_size = Vector2( 320, 0 )
 script = ExtResource( 18 )
 
-[node name="HTTPRequest" type="HTTPRequest" parent="MainWindow/Agent/Contracts"]
+[node name="HTTPRequest" type="HTTPRequest" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts"]
 use_threads = true
 
-[node name="Contracts" type="RichTextLabel" parent="MainWindow/Agent/Contracts"]
+[node name="Contracts" type="RichTextLabel" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts"]
 margin_right = 320.0
 margin_bottom = 8.0
 rect_min_size = Vector2( 320, 8 )
@@ -985,7 +1325,7 @@ bbcode_text = "[b]CONTRACTS"
 text = "CONTRACTS"
 scroll_active = false
 
-[node name="Button" type="Button" parent="MainWindow/Agent/Contracts"]
+[node name="Button" type="Button" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts"]
 margin_top = 12.0
 margin_right = 320.0
 margin_bottom = 34.0
@@ -994,13 +1334,13 @@ custom_fonts/font = ExtResource( 4 )
 text = "Refresh"
 flat = true
 
-[node name="HSeparator" type="HSeparator" parent="MainWindow/Agent/Contracts"]
+[node name="HSeparator" type="HSeparator" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts"]
 margin_top = 38.0
 margin_right = 320.0
 margin_bottom = 42.0
 rect_min_size = Vector2( 320, 0 )
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Agent/Contracts"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts"]
 margin_top = 46.0
 margin_right = 320.0
 margin_bottom = 246.0
@@ -1009,22 +1349,11 @@ size_flags_horizontal = 8
 theme = SubResource( 42 )
 scroll_horizontal_enabled = false
 
-[node name="List" type="VBoxContainer" parent="MainWindow/Agent/Contracts/ScrollContainer"]
+[node name="List" type="VBoxContainer" parent="MainWindow/Agent/HBoxContainer/Panel/Contracts/ScrollContainer"]
 margin_right = 320.0
 rect_min_size = Vector2( 320, 0 )
 custom_constants/separation = 10
 alignment = 2
-
-[node name="NetworthChart" type="Control" parent="MainWindow/Agent"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -250.0
-margin_top = -65.0
-margin_right = 250.0
-margin_bottom = 65.0
-script = ExtResource( 28 )
 
 [node name="MainMenu" type="HBoxContainer" parent="."]
 anchor_left = 0.5
@@ -1171,8 +1500,13 @@ expand_icon = true
 [connection signal="mouse_entered" from="MainWindow/Ships/HBoxContainer/ShipInfoModule/VBoxContainer/ScrollContainer" to="MainWindow/Systems/ViewSystem" method="_on_ScrollContainer_mouse_entered"]
 [connection signal="mouse_exited" from="MainWindow/Ships/HBoxContainer/ShipInfoModule/VBoxContainer/ScrollContainer" to="MainWindow/Systems/ViewSystem" method="_on_ScrollContainer_mouse_exited"]
 [connection signal="pressed" from="MainWindow/Ships/HBoxContainer/ShipInfoModule/VBoxContainer/Actions/Button" to="MainWindow/Ships/HBoxContainer/ShipInfoModule" method="_on_Button_pressed"]
-[connection signal="pressed" from="MainWindow/Agent/Contracts/Button" to="MainWindow/Agent/Contracts" method="_on_Button_pressed"]
+[connection signal="pressed" from="MainWindow/Agent/HBoxContainer/Panel/Contracts/Button" to="MainWindow/Agent/HBoxContainer/Panel/Contracts" method="_on_Button_pressed"]
 [connection signal="pressed" from="MainMenu/Systems" to="." method="_on_Systems_pressed"]
 [connection signal="pressed" from="MainMenu/Ships" to="." method="_on_Ships_pressed"]
 [connection signal="pressed" from="MainMenu/Agent" to="." method="_on_Agent_pressed"]
 [connection signal="pressed" from="Logout" to="." method="_on_Button_pressed"]
+
+[editable path="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/NetworthChart/Graph"]
+[editable path="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer/Graph"]
+[editable path="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer2/Graph"]
+[editable path="MainWindow/Agent/HBoxContainer/Panel2/ScrollContainer/VBoxContainer/Graphs/ShipGraphs/VBoxContainer/VBoxContainer3/Graph"]

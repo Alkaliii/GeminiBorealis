@@ -1,0 +1,122 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Graph.gd" type="Script" id=1]
+[ext_resource path="res://Interface/Systems/DragCamera2D.gd" type="Script" id=2]
+[ext_resource path="res://Font/Small.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Interface/Agent/resizeRR.gd" type="Script" id=5]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+uniform float columns = 64.0;
+uniform float rows = 36.0;
+uniform float border_width = 0.05;
+uniform vec4 border_color : hint_color;
+
+
+void fragment() {
+    vec2 grid = fract(vec2(UV.x * columns, UV.y * rows));
+	vec2 bottom_left = step(vec2(border_width), grid);
+	vec2 top_right = step(vec2(border_width), 1.0 - grid);
+	COLOR = border_color - (bottom_left.x * bottom_left.y * top_right.x * top_right.y);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/columns = 30.0
+shader_param/rows = 5.0
+shader_param/border_width = 0.06
+shader_param/border_color = Color( 1, 1, 1, 1 )
+
+[node name="Graph" type="Control"]
+margin_right = 100.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 200, 200 )
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource( 1 )
+chart_color_A = Color( 0.219608, 0.827451, 0.756863, 1 )
+
+[node name="ReferenceRect" type="ReferenceRect" parent="."]
+margin_right = 200.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 200, 200 )
+border_color = Color( 1, 1, 1, 1 )
+border_width = 2.0
+editor_only = false
+script = ExtResource( 5 )
+graph = NodePath("..")
+
+[node name="x min" type="RichTextLabel" parent="ReferenceRect"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = 8.0
+margin_right = 300.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 0, 8 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "x.0"
+text = "x.0"
+scroll_active = false
+
+[node name="y min" type="RichTextLabel" parent="ReferenceRect"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = -308.0
+margin_top = -8.0
+margin_right = -8.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 300, 0 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[right]y.0"
+text = "y.0"
+scroll_active = false
+
+[node name="x max" type="RichTextLabel" parent="ReferenceRect"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -300.0
+margin_top = 8.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 300, 0 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[right]999"
+text = "999"
+scroll_active = false
+
+[node name="y max" type="RichTextLabel" parent="ReferenceRect"]
+margin_left = -308.0
+margin_right = -8.0
+margin_bottom = 8.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 300, 0 )
+custom_fonts/bold_font = ExtResource( 4 )
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+bbcode_text = "[right]999"
+text = "999"
+scroll_active = false
+
+[node name="ColorRect" type="ColorRect" parent="ReferenceRect"]
+modulate = Color( 1, 1, 1, 0.121569 )
+show_behind_parent = true
+material = SubResource( 2 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource( 2 )
+
+[node name="Elements" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0

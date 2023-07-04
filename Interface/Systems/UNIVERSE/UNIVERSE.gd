@@ -48,7 +48,7 @@ signal universe_loaded
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#input = false
+	input = false
 	API.connect("list_systems_complete",self,"loadUNIVERSE")
 	API.connect("get_status_complete",self,"setUNIVERSE_VERSION")
 	API.connect("get_jump_gate_complete",self,"writeJUMPS")
@@ -65,9 +65,10 @@ func _ready():
 	focusCirc.rect_global_position = Vector2.ZERO
 	focusCirc.pos = Vector2.ZERO#pos+Vector2(500,500)
 	focusCirc.rad = 2000
-	focusCirc.col = Color(1,1,1,0.4)
+	focusCirc.col = Color(1,1,1,0.1)
 	focusCirc.width = 0.3
 	self.add_child(focusCirc)
+	dispRange("OFF")
 	
 	#yield(get_tree().create_timer(10),"timeout")
 	
@@ -295,6 +296,29 @@ func labels(state):
 			get_tree().call_group("Stars","hideLabel")
 			focusCirc.modulate = Color(1,1,1,0)
 
+func dispRange(state, starSym = Agent.HQSys, radius = 2000):
+	match state:
+		"ON":
+			if starSym in ["LAST","RECENT"] and lastFocus != null:
+				starSym = lastFocus
+			elif starSym in ["LAST","RECENT"]: starSym = Agent.CurrentSystem
+			
+			if starSym in ["SELECTED","THAT"] and !rect_selected.empty():
+				starSym = rect_selected[0]
+			elif starSym in ["SELECTED","THAT"]: starSym = Agent.CurrentSystem
+			
+			if !_JUMPDATA.has(starSym): return
+			var twee = get_tree().create_tween()
+			var new_scale = Vector2((float(radius)/2000.0),(float(radius)/2000.0))
+			focusCirc.rect_scale = Vector2(0.005,0.005)
+			focusCirc.rect_pivot_offset = Vector2.ZERO#Vector2(focusCirc.rect_size.x/2.0,focusCirc.rect_size.y/2.0)
+			twee.tween_property(focusCirc,"rect_position",nodSys[starSym].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+			twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+			twee.tween_property(focusCirc,"rect_scale",new_scale,0.3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+		"OFF":
+			var twee = get_tree().create_tween()
+			twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,0),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+
 func focusStar(starSym):
 	#if !nodSys.has(starSym): return
 	if starSym in ["RANDOM","RAND","R","IDK","SOMETHING"]: #Random Focus
@@ -302,37 +326,68 @@ func focusStar(starSym):
 		rng.randomize()
 		var new = rng.randi_range(0,genSys.size()-1)
 		starSym = genSys[new]
-	if starSym in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]: #Random Focus Type
+	if starSym in ["PLANET","GAS_GIANT","MOON","ORBITAL_STATION","JUMP_GATE","ASTEROID_FIELD","NEBULA","DEBRIS_FIELD","GRAVITY_WELL"]: #Focus Random with Waypoint Type
 		var temp = []
 		for s in _UNIDATA: for w in _UNIDATA[s]["waypoints"]: if w["type"] == starSym: temp.push_back(s)
 		var rng = RandomNumberGenerator.new()
 		rng.randomize()
 		var new = rng.randi_range(0,(temp.size()-1))
 		if temp.size() != 0: starSym = temp[new]
-		else: starSym = "HOME"
+		else: 
+			get_tree().call_group("cmd","notify",str("[color=#FFBF00]Could not focus. There are zero avalible stars with '",starSym,"'"),5)
+			starSym = "HOME"
+	if starSym in ["NEUTRON_STAR","RED_STAR","ORANGE_STAR","BLUE_STAR","YOUNG_STAR","WHITE_DWARF","BLACK_HOLE","HYPERGIANT","NEBULAstar","UNSTABLE"]: #Focus Random with System Type
+		var temp = []
+		if starSym == "NEBULAstar": starSym = "NEBULA"
+		for s in _UNIDATA: if _UNIDATA[s]["type"] == starSym: temp.push_back(s)
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		var new = rng.randi_range(0,(temp.size()-1))
+		if temp.size() != 0: starSym = temp[new]
+		else:
+			get_tree().call_group("cmd","notify",str("[color=#FFBF00]Could not focus. There are zero avalible stars with '",starSym,"'"),5) 
+			starSym = "HOME"
+	if starSym in ["LAST","RECENT","SELECTED","THAT"]:
+		match starSym:
+			"LAST","RECENT": 
+				if lastFocus != null: starSym = lastFocus 
+				else: starSym = Agent.CurrentSystem
+			"SELECTED","THAT":
+				if !rect_selected.empty(): starSym = rect_selected[0]
+				else: starSym = Agent.CurrentSystem
 	if starSym in ["HOME","ZERO"]:
 		match starSym:
 			"ZERO":
+				$CanvasLayer/SystemPopover.animateOUT()
+				
 				var twee = get_tree().create_tween()
 				twee.tween_property($Camera2D,"position",Vector2(0,0),3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
-				twee.parallel().tween_property(focusCirc,"rect_position",Vector2(0,0),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
-				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+#				twee.parallel().tween_property(focusCirc,"rect_position",Vector2(0,0),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+#				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 			"HOME":
+				if _JUMPDATA.has(Agent.HQSys): $CanvasLayer/SystemPopover.setdat(_UNIDATA[Agent.HQSys],_JUMPDATA[Agent.HQSys]["connectedSystems"].size())
+				else: $CanvasLayer/SystemPopover.setdat(_UNIDATA[Agent.HQSys],0)
+				
 				var twee = get_tree().create_tween()
 				twee.tween_property($Camera2D,"position",nodSys[Agent.HQSys].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
-				twee.parallel().tween_property(focusCirc,"rect_position",nodSys[Agent.HQSys].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
-				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+				dispRange("ON",Agent.HQSys,11)
+#				twee.parallel().tween_property(focusCirc,"rect_position",nodSys[Agent.HQSys].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+#				twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 				lastFocus = Agent.HQSys
 		return
+	
+	if _JUMPDATA.has(starSym): $CanvasLayer/SystemPopover.setdat(_UNIDATA[starSym],_JUMPDATA[starSym]["connectedSystems"].size())
+	else: $CanvasLayer/SystemPopover.setdat(_UNIDATA[starSym],0)
 	
 	lastFocus = starSym
 	var twee = get_tree().create_tween()
 	twee.tween_property($Camera2D,"position",nodSys[starSym].rect_position,3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 	if $Camera2D.zoom.x > 2: twee.tween_property($Camera2D,"zoom",Vector2(1,1),2).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
-	twee.parallel().tween_property(focusCirc,"rect_position",nodSys[starSym].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
-	twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+	dispRange("ON",starSym,11)
+#	twee.parallel().tween_property(focusCirc,"rect_position",nodSys[starSym].rect_position,0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
+#	twee.parallel().tween_property(focusCirc,"modulate",Color(1,1,1,1),0.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUINT)
 
 func bookmarkStar(starSym):
 	$CanvasLayer/Control2/Bookmarks.preview()
@@ -641,12 +696,32 @@ func selectionEND(drag_end):
 	var v4 = Vector2(drag_end.x,drag_start.y)
 	select_rect.polygon = PoolVector2Array([drag_start, v2, drag_end, v4])
 	for s in nodSys:
-		if Geometry.is_point_in_polygon(nodSys[s].rect_position,PoolVector2Array([drag_start, v2, drag_end, v4])):
+		if Geometry.is_point_in_polygon(nodSys[s].rect_position,PoolVector2Array([drag_start, v2, drag_end, v4])) and nodSys[s].visible:
 			rect_selected.push_back(s)
 	if rect_selected.size() == 1:
-		get_tree().call_group("cmd","notify",str("[color=#FFBF00]Selected ",rect_selected.size()," system: ", str(rect_selected).substr(0,20)),13)
+		#get_tree().call_group("cmd","notify",str("[color=#FFBF00]Selected ",rect_selected.size()," system: ", str(rect_selected).substr(0,20)),13)
+		if _JUMPDATA.has(rect_selected[0]): $CanvasLayer/SystemPopover.setdat(_UNIDATA[rect_selected[0]],_JUMPDATA[rect_selected[0]]["connectedSystems"].size())
+		else: $CanvasLayer/SystemPopover.setdat(_UNIDATA[rect_selected[0]],0)
+		
+		var pos = get_viewport().get_mouse_position()
+		pos.x = clamp(pos.x,(-get_viewport_rect().size.x) + 100,get_viewport_rect().size.x - 100)
+		pos.y = clamp(pos.y,(-get_viewport_rect().size.y) + 100,get_viewport_rect().size.y - 100)
+		$CanvasLayer/Control2/Quickmenu.rect_position = pos
+		$CanvasLayer/Control2/Quickmenu.show()
+		if !rect_selected[0] in [lastFocus,null] and _JUMPDATA.has(rect_selected[0]) and _JUMPDATA.has(lastFocus): $CanvasLayer/Control2/Quickmenu.single(rect_selected[0],true)
+		else: $CanvasLayer/Control2/Quickmenu.single(rect_selected[0])
 	else:
+		$CanvasLayer/SystemPopover.animateOUT()
 		get_tree().call_group("cmd","notify",str("[color=#FFBF00]Selected ",rect_selected.size()," systems, ", str(rect_selected).substr(0,65)),13)
+		
+		if rect_selected.size() > 0:
+			var pos = get_viewport().get_mouse_position()
+			pos.x = clamp(pos.x,(-get_viewport_rect().size.x) + 100,get_viewport_rect().size.x - 100)
+			pos.y = clamp(pos.y,(-get_viewport_rect().size.y) + 100,get_viewport_rect().size.y - 100)
+			$CanvasLayer/Control2/Quickmenu.rect_position = pos
+			$CanvasLayer/Control2/Quickmenu.show()
+			$CanvasLayer/Control2/Quickmenu.multi(rect_selected)
+		else: $CanvasLayer/Control2/Quickmenu.hide()
 	
 	#print(drag_start," ",drag_end,"/",rect_selected)
 
@@ -658,11 +733,11 @@ func _process(delta):
 	cullStars()
 
 func mapZoom():
-	if Input.is_action_just_pressed("MAPzoom_out"): #OUT
+	if Input.is_action_just_pressed("MAPzoom_out") or Input.is_action_just_released("MAPscroll_out"): #OUT
 		var newZ = clamp(($Camera2D.zoom.x+(0.5*$Camera2D.zoom.x)),0.3,90)
 		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		
-	if Input.is_action_just_pressed("MAPzoom_in"): #IN
+	if Input.is_action_just_pressed("MAPzoom_in") or Input.is_action_just_released("MAPscroll_in"): #IN
 		var newZ = clamp(($Camera2D.zoom.x-(0.5*$Camera2D.zoom.x)),0.3,90)
 		get_tree().create_tween().tween_property($Camera2D,"zoom",Vector2(newZ,newZ),0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
 		
@@ -730,6 +805,7 @@ func mapTranslate():
 	if Input.is_action_pressed("MAPdown"):
 		$Camera2D.position.y += $Camera2D.zoom.y * 10
 	$CanvasLayer/Control2/Coords.bbcode_text = str("[color=#69696b][b]x.[/b]",round($Camera2D.position.x),", [b]y.[/b]",round($Camera2D.position.y)," / (",round($Camera2D.zoom.x),"x)")
+	$CanvasLayer/Control2/LastFocus.bbcode_text = str("[right][color=#69696b] recent. ",lastFocus)
 	$Camera2D.position.x = clamp($Camera2D.position.x,-60000,60000)
 	$Camera2D.position.y = clamp($Camera2D.position.y,-60000,60000)
 

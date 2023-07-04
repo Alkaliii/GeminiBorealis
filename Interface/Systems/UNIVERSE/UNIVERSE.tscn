@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=32 format=2]
 
 [ext_resource path="res://Interface/Systems/UNIVERSE/UNIVERSE.gd" type="Script" id=1]
 [ext_resource path="res://Interface/Systems/DragCamera2D.gd" type="Script" id=2]
@@ -11,6 +11,8 @@
 [ext_resource path="res://Interface/Systems/UNIVERSE/SystemButton.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Interface/Systems/UNIVERSE/BookmarkMenu.gd" type="Script" id=10]
 [ext_resource path="res://Font/Bold.tres" type="DynamicFont" id=11]
+[ext_resource path="res://Interface/Systems/UNIVERSE/SystemPopover.tscn" type="PackedScene" id=12]
+[ext_resource path="res://Interface/Systems/UNIVERSE/Quickmenu.tscn" type="PackedScene" id=13]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 5.0
@@ -286,6 +288,22 @@ custom_fonts/bold_font = ExtResource( 5 )
 custom_fonts/normal_font = ExtResource( 6 )
 bbcode_enabled = true
 bbcode_text = "..."
+text = "..."
+scroll_active = false
+
+[node name="LastFocus" type="RichTextLabel" parent="CanvasLayer/Control2"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -316.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 0, 8 )
+rect_pivot_offset = Vector2( 300, 0 )
+custom_fonts/bold_font = ExtResource( 5 )
+custom_fonts/normal_font = ExtResource( 6 )
+bbcode_enabled = true
+bbcode_text = "[right]..."
 text = "..."
 scroll_active = false
 
@@ -1196,6 +1214,24 @@ bbcode_text = "[b]CMDS
 text = "CMDS
 "
 scroll_active = false
+
+[node name="Quickmenu" parent="CanvasLayer/Control2" instance=ExtResource( 13 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 99.0
+margin_bottom = 40.0
+Parent = NodePath("../../..")
+
+[node name="SystemPopover" parent="CanvasLayer" instance=ExtResource( 12 )]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = -72.0
+margin_right = 240.0
+margin_bottom = -32.0
+rect_pivot_offset = Vector2( 10.5, 10.5 )
 
 [node name="UniverseLoad" type="Control" parent="CanvasLayer"]
 visible = false

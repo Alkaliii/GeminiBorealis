@@ -161,6 +161,9 @@ func _on_Button_pressed():
 
 func logout():
 	Agent.clear()
+	for g in Save.groups:
+		var data = {"state":"Stop","routine":"CANCEL","group":g}
+		Automation.setRoutine(data)
 	var login = preload("res://Interface/Systems/LoginScreen.tscn")
 	login.instance()
 	$CanvasLayer.add_child(login.instance())
@@ -168,6 +171,7 @@ func logout():
 
 func _on_Agent_pressed():
 	Agent.menu = "AGENT"
+	Agent.emit_signal("updateAgent")
 	showPanel()
 	var Window = $MainWindow
 	var SysArt = $Back/SystemArt
@@ -192,7 +196,7 @@ func _on_Systems_pressed():
 	twee.parallel().tween_property($MainWindow/Agent, "modulate", Color(1,1,1,0),0.5)
 
 
-func _on_Ships_pressed():
+func _on_Ships_pressed(arg_1 = null):
 	$MainMenu/Ships.disabled = true
 	Agent.menu = "SHIPS"
 	var Window = $MainWindow
@@ -208,6 +212,7 @@ func _on_Ships_pressed():
 	$MainMenu/Ships.disabled = false
 
 func displayUniverse():
+	Agent.menu = "UNI"
 	$UniverseMap/UniverseContainer/Viewport.gui_disable_input = false
 	var twee = get_tree().create_tween()
 	$UniverseMap/UniverseContainer.visible = true
@@ -216,6 +221,7 @@ func displayUniverse():
 	$UniverseMap/UniverseContainer/Viewport/UNIVERSE.getUNIVERSE()
 
 func exitUniverse():
+	Agent.menu = "SYSTEMS"
 	#$UniverseMap/UniverseContainer/Viewport/UNIVERSE.getUNIVERSE()
 	$MainWindow.show()
 	$Back.show()

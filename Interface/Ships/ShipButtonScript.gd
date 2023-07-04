@@ -7,6 +7,10 @@ var cooldownTime = null
 func _ready():
 	Agent.connect("fleetUpdated",self,"refreshSelf")
 	Agent.connect("cooldownStarted",self,"setCooldown")
+	Agent.connect("TransferTarget",self,"transferRefresh")
+	API.connect("get_ship_cargo_complete",self,"cargoget")
+	Automation.connect("SHIPSTATUSUPDATE",self,"setStatus")
+	Automation.connect("SHIPTRANSITFINISHED",self,"updateStatus")
 	pass # Replace with function body.
 
 func _process(delta):
@@ -30,6 +34,31 @@ func refreshSelf():
 	if ShipDat == null: return
 	if Agent.focusShip == ShipDat["symbol"]:
 		_on_Button_pressed()
+
+var waiting_gsc = false
+func transferRefresh(symbol):
+	if symbol == ShipDat["symbol"]:
+		API.get_ship_cargo(self,ShipDat["symbol"])
+		waiting_gsc = true
+
+func cargoget(data):
+	if waiting_gsc == true:
+		waiting_gsc = false
+		ShipDat["cargo"] = data["data"]
+		data["meta"] = ShipDat["symbol"]
+		Agent.emit_signal("TransferTargetUpdate",data)
+		for s in Agent._FleetData["data"]:
+			if s["symbol"] == ShipDat["symbol"]:
+				s["cargo"] = data["data"]
+				break
+
+func updateStatus(status):
+	var Status = $VBoxContainer/ButtonStatus/ShipStatusBadge
+	Status.sns = status["status"]
+
+func setStatus(data):
+	var Status = $VBoxContainer/ButtonStatus/ShipStatusBadge
+	Status.sns = data["data"]["nav"]["status"]
 
 func setdat(data):
 	ShipDat = data

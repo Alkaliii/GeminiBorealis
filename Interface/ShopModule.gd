@@ -97,7 +97,7 @@ func displayMarket(data, waypoint, system, YFFDQ = false): #Yield For Fleet, Don
 		$ScrollContainer/Items.add_child(trade)
 	
 
-func reloadShipyard():
+func reloadShipyard(arg_1 = null):
 	API.get_shipyard(self,shopss,shopws)
 	waiting_gs = true
 	get_tree().call_group("loading","startload")
@@ -116,6 +116,7 @@ func reloadShipyard():
 
 func reloadMarket(arg = null):
 	if Purging: return
+	if Agent.menu != "SYSTEMS": return
 	API.get_market(self,shopss,shopws)
 	waiting_gm = true
 	get_tree().call_group("loading","startload")
@@ -268,6 +269,7 @@ func _on_Purge_pressed():
 		purgeReq.push_back(PURGE_POST_REQUEST_OBj.RID)
 		#yield(Agent,"SellCargo")
 		itemspurged += 1
+		yield(self,"cargo_sold")
 		#$MarketButtons/Purge.text = "wait"
 		#yield(get_tree().create_timer(1),"timeout")
 		#$MarketButtons/Purge.text = str(itemspurged)
@@ -283,10 +285,12 @@ func _on_Purge_pressed():
 	yield(get_tree(),"idle_frame")
 	self.call_deferred("reloadMarket")
 
+signal cargo_sold
 func _on_SELLrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
 	if cleanbody.has("data"):
+		emit_signal("cargo_sold")
 		Agent.emit_signal("SellCargo",cleanbody)
 	else:
 		Agent.dispError(cleanbody)

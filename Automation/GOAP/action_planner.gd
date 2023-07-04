@@ -19,7 +19,7 @@ func set_actions(actions: Array):
 
 
 func get_plan(goal: goapGOAL,whiteboard = {}) -> Array:
-	print("Goal: %s" % goal.get_goal_name())
+	print("%s | %s has selected a new goal: %s" % [_officer,_symbol,goal.get_goal_name()])
 	var desire = goal.get_desire().duplicate()
 	
 	if desire.empty():

@@ -88,6 +88,7 @@ func _ready():
 	add_state("Yield_Dock") #-> Purge,Visit
 	add_state("Visit_Market") #-> Purge
 	add_state("Purge") #-> Orbit
+	add_state("pause")
 	add_state("error")
 
 func endFSM():
@@ -295,6 +296,7 @@ func _enter_state(new_state, old_state):
 				}
 				
 				Automation.callQueue.push_back(PURGE_POST_REQUEST_OBj)
+				yield(self,"cargo_sold")
 			
 			Leftover = shipData["cargo"]["capacity"] - rmvAMT
 			
@@ -367,6 +369,7 @@ func _on_MARKETrequest_completed(result, response_code, headers, body):
 	else:
 		Agent.emit_signal("visitmarket",cleanbody,shipData["nav"]["waypointSymbol"],shipData["nav"]["systemSymbol"],true)
 
+signal cargo_sold
 func _on_SELLrequest_completed(result, response_code, headers, body):
 	var json = JSON.parse(body.get_string_from_utf8())
 	var cleanbody = json.result
@@ -375,4 +378,5 @@ func _on_SELLrequest_completed(result, response_code, headers, body):
 		pass
 	else:
 		shipData["cargo"] = cleanbody["data"]["cargo"]
+		emit_signal("cargo_sold")
 		Agent.emit_signal("SellCargo",cleanbody)

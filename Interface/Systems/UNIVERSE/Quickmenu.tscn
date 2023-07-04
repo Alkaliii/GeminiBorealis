@@ -1,0 +1,133 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://Font/SmallBold.tres" type="DynamicFont" id=1]
+[ext_resource path="res://sprite-action-black.png" type="Texture" id=2]
+[ext_resource path="res://Interface/Systems/UNIVERSE/UNIQuickmenuScript.gd" type="Script" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0784314, 0.0784314, 0.0862745, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.25098, 0.709804, 0.678431, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 1, 1, 1, 0 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 1, 1, 1, 1 )
+
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 161, 33, 30, 30 )
+
+[sub_resource type="AtlasTexture" id=7]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 33, 129, 30, 30 )
+
+[sub_resource type="AtlasTexture" id=8]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 161, 161, 30, 30 )
+
+[sub_resource type="AtlasTexture" id=9]
+flags = 4
+atlas = ExtResource( 2 )
+region = Rect2( 33, 417, 30, 30 )
+
+[node name="Quickmenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1218.0
+margin_bottom = -576.0
+rect_min_size = Vector2( 83, 24 )
+script = ExtResource( 3 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+show_behind_parent = true
+margin_right = 62.0
+margin_bottom = 24.0
+custom_constants/separation = 1
+
+[node name="Bookmark" type="Button" parent="HBoxContainer"]
+margin_right = 20.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 20, 24 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+icon = SubResource( 5 )
+align = 0
+expand_icon = true
+
+[node name="Copy" type="Button" parent="HBoxContainer"]
+margin_left = 21.0
+margin_right = 41.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 20, 24 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+icon = SubResource( 7 )
+align = 0
+expand_icon = true
+
+[node name="Focus" type="Button" parent="HBoxContainer"]
+margin_left = 42.0
+margin_right = 62.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 20, 24 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+icon = SubResource( 8 )
+align = 0
+expand_icon = true
+
+[node name="Path" type="Button" parent="HBoxContainer"]
+margin_left = 63.0
+margin_right = 83.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 20, 24 )
+size_flags_horizontal = 8
+size_flags_vertical = 4
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = SubResource( 1 )
+custom_styles/pressed = SubResource( 2 )
+custom_styles/focus = SubResource( 3 )
+custom_styles/normal = SubResource( 4 )
+icon = SubResource( 9 )
+align = 0
+expand_icon = true
+
+[connection signal="pressed" from="HBoxContainer/Bookmark" to="." method="_on_Bookmark_pressed"]
+[connection signal="pressed" from="HBoxContainer/Copy" to="." method="_on_Copy_pressed"]
+[connection signal="pressed" from="HBoxContainer/Focus" to="." method="_on_Focus_pressed"]
+[connection signal="pressed" from="HBoxContainer/Path" to="." method="_on_Path_pressed"]

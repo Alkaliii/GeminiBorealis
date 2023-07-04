@@ -16,6 +16,8 @@ var _relevant_data = {
 
 var _ship_state : Dictionary
 enum has {NOT_STARTED,PAUSED,STARTED}
+signal requestStateUpdate
+signal stateUpdated
 var officer = has.NOT_STARTED
 
 func _ready():
@@ -67,8 +69,13 @@ func _follow_plan(plan, delta):
 		print(str("NEW TASK: (",plan[_current_plan_step].get_action_name(),") on ",plan[_current_plan_step].symbol," @ ",Time.get_datetime_string_from_system()))
 		
 	elif is_step_complete:
-		var desires = _current_goal.get_desire()
-		for d in desires:
-			_ship_state[d] = desires[d]
-		for g in _goals:
-			g.state = _ship_state
+		emit_signal("requestStateUpdate",self)
+		yield(self,"stateUpdated")
+		#var desires = _current_goal.get_desire()
+#		var desires = plan[_current_plan_step].get_effects()
+#		for d in desires:
+#			_ship_state[d] = desires[d]
+#		for g in _goals:
+#			g.state = _ship_state
+		_current_goal = null
+		_current_plan_step = 0

@@ -50,6 +50,7 @@ signal PushAPI
 
 signal LISTSHIPS
 signal SHIPSTATUSUPDATE
+signal SHIPTRANSITFINISHED
 signal GETSYSTEM
 signal LISTSYSTEMWAYPOINTS
 signal EXTRACTRESOURCES
@@ -70,9 +71,13 @@ func _ready():
 	Agent.connect("DockFinished",self,"cacheSHIPstatus")
 	Agent.connect("OrbitFinished",self,"cacheSHIPstatus")
 	Agent.connect("JettisonCargo",self,"cacheJETTISON")
+	Agent.connect("TransferCargo",self,"cacheTRANSFER")
+	Agent.connect("TransferTargetUpdate",self,"cacheCARGO_UPDATE")
 	Agent.connect("PurchaseCargo",self,"cachePURCHASE")
 	Agent.connect("SellCargo",self,"cacheSELL")
 	Agent.connect("visitmarket",self,"cacheMARKET")
+	
+	API.connect("get_market_complete",self,"cacheMARKET")
 	
 	_setRate(SelectRateTime)
 	#activateAu()
@@ -166,24 +171,28 @@ func setRoutine(data):
 	match data["state"]:
 		"Stop":
 			for c in self.get_children():
+				if c is HTTPRequest: continue
 				if c.assigned_Group == data["group"]:
 					c.endRoutine()
 					print(c.name," was ended")
 			return
 		"Pause":
 			for c in self.get_children():
+				if c is HTTPRequest: continue
 				if c.assigned_Group == data["group"]:
 					c.pauseRoutine()
 					print(c.name," was paused")
 			return
 		"Restart":
 			for c in self.get_children():
+				if c is HTTPRequest: continue
 				if c.assigned_Group == data["group"]:
 					c.restartRoutine()
 					print(c.name," was restarted")
 			return
 	
 	for c in self.get_children():
+		if c is HTTPRequest: continue
 		if c.assigned_Group == data["group"]:
 			c.resumeRoutine()
 			print(c.name," was resumed")
@@ -304,6 +313,7 @@ func _on_request_completed(result, response_code, headers, body):
 	var cleanbody = json.result
 	if cleanbody is Dictionary and cleanbody.has("error"):
 		Agent.dispError(cleanbody)
+		OS.request_attention()
 		if cleanbody["error"]["code"] in [429,409]:
 			for req in progressQueue:
 				callQueue.push_back(progressQueue[req])
@@ -337,6 +347,13 @@ func cacheEXTRACT(data):
 func cacheJETTISON(data):
 	_FleetData[data["meta"]]["cargo"] = data["data"]["cargo"]
 
+func cacheTRANSFER(data):
+	_FleetData[data["meta"]]["cargo"] = data["data"]["cargo"]
+	#print(data)
+
+func cacheCARGO_UPDATE(data):
+	_FleetData[data["meta"]]["cargo"] = data["data"]
+
 func cachePURCHASE(data):
 	_FleetData[data["data"]["transaction"]["shipSymbol"]]["cargo"] = data["data"]["cargo"]
 
@@ -351,13 +368,19 @@ func cacheSELL(data):
 		var TotalRevenue = Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]]["TotalRevenue"]
 		var NewTotalRevenue = TotalRevenue[TotalRevenue.size()-1].values()[0] + data["data"]["transaction"]["totalPrice"]
 		TotalRevenue.push_back({str(Time.get_unix_time_from_system()):NewTotalRevenue})
+		
+		#Use sell price to set focus, note which market had the good price for script to use when devising flight plan
+		var SellPrice = data["data"]["transaction"]["pricePerUnit"]
+		Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]]["LatestSellPrice"] = SellPrice
 	else:
 		var FirstTotalSold = {str(Time.get_unix_time_from_system()):data["data"]["transaction"]["units"]}
 		var FirstTotalRevenue = {str(Time.get_unix_time_from_system()):data["data"]["transaction"]["totalPrice"]}
+		var SellPrice = data["data"]["transaction"]["pricePerUnit"]
 		Agent.sellgood[data["data"]["transaction"]["tradeSymbol"]] = {
 			"symbol": data["data"]["transaction"]["tradeSymbol"],
 			"TotalSold": [FirstTotalSold],
-			"TotalRevenue": [FirstTotalRevenue]
+			"TotalRevenue": [FirstTotalRevenue],
+			"LatestSellPrice": SellPrice
 		}
 	
 	if Agent.sellship.has(data["data"]["transaction"]["shipSymbol"]):
@@ -380,7 +403,10 @@ func cacheSHIPstatus(data):
 			yield(get_tree(),"idle_frame")
 			if expire < Time.get_unix_time_from_system():
 				break
+		
 		_FleetData[data["meta"]]["nav"]["status"] = "IN_ORBIT"
+		emit_signal("SHIPTRANSITFINISHED",_FleetData[data["meta"]]["nav"])
+		
 
 func cacheMARKET(data,ws = null,ss = null,_4 = null):
 	_MarketData[data["data"]["symbol"]] = data["data"]

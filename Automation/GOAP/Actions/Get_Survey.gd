@@ -30,6 +30,8 @@ var possibleFocus = ["PRECIOUS_STONES","QUARTZ_SAND","SILICON_CRYSTALS",
 "MOUNT_TURRET_I"]
 var focusList : Array
 
+var cooldown = null
+
 func _ready():
 	set_action_name("Get_Survey")
 	set_cost(1)
@@ -60,12 +62,17 @@ var cur = states.IDLE
 func execute(relevant, delta) -> bool:
 	match cur:
 		states.IDLE:
+			if Agent.cooldowns.has(symbol):
+				cooldown = Agent.cooldowns[symbol]
+				if cooldown > Time.get_unix_time_from_system(): return false
+				elif cooldown < Time.get_unix_time_from_system():
+					cooldown = null
+			
 			cur = states.IN_PROGRESS
 			var operation = {"Ship":symbol,"Op":"SURVEYING"}
 			Automation.emit_signal("OperationChanged",operation)
 			
 			outputRID(str("SUBTASK:(create survey) started in /",self.get_action_name(),"/ on ",symbol," @ ",Time.get_datetime_string_from_system()))
-			
 			survey(Automation._FleetData[symbol])
 		states.IN_PROGRESS: pass
 		states.COMPLETE:
@@ -143,6 +150,10 @@ func _on_create_survey(result, response_code, headers, body):
 	if PARSE.has("data"):
 		API.emit_signal("create_survey_complete",PARSE)
 		Agent.emit_signal("cooldownStarted",PARSE["data"]["cooldown"]["expiration"],PARSE["data"]["cooldown"]["shipSymbol"])
+		for s in PARSE["data"]["surveys"]:
+			Agent.surveys[s["signature"]] = s
+		Save.writeUserSave()
+		yield(get_tree(),"idle_frame")
 		var operation = {"Ship":symbol,"Op":"COOLDOWN"}
 		Automation.emit_signal("OperationChanged",operation)
 		

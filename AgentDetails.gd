@@ -40,8 +40,13 @@ signal PurchaseShip
 signal PurchaseCargo
 signal SellCargo
 signal JettisonCargo
+signal TransferCargo
+signal TransferTarget
+signal TransferTargetUpdate
 
 signal showFMAPbut
+
+signal updateAgent
 
 signal mapHOME
 signal mapSEL(sym)
@@ -106,13 +111,15 @@ func clear():
 	AgentSymbol = ""
 	USERTOKEN = ""
 
-func queryUser_Ship(waypoint = null):
+func queryUser_Ship(waypoint = null,condition = ""):
 	var Ships : Array
 	if waypoint == null:
 		for s in _FleetData["data"]:
 			Ships.push_back(s)
 	else:
 		for s in _FleetData["data"]:
+			if s["symbol"] == focusShip and condition == "TRANSFER": continue
+			if s["cargo"]["units"] == s["cargo"]["capacity"] and condition == "TRANSFER": continue
 			if s["nav"]["waypointSymbol"] == waypoint and s["nav"]["status"] != "IN_TRANSIT":
 				Ships.push_back(s)
 	if Ships.size() == 1:
@@ -148,6 +155,29 @@ func setInterfaceShip(symbol):
 	interfaceShip = symbol
 	#print(symbol)
 	emit_signal("interfaceShipSet")
+
+func cleanSurveys():
+	#Assumptions
+	#A good price is >20
+	#More deposits is a good thing
+	
+	if surveys.empty(): return
+	for s in surveys:
+		#Expired
+		if Time.get_unix_time_from_datetime_string(surveys[s]["expiration"]) < Time.get_unix_time_from_system():
+			surveys.erase(s)
+			continue
+		
+		var score = 0
+		score += surveys[s]["deposits"].size()
+		
+		for d in surveys[s]["deposits"]:
+			score += sellgood[d["symbol"]]["LatestSellPrice"]
+		
+		match surveys[s]["size"]:
+			"SMALL": score += 0
+			"MODERATE": score += 10
+			"LARGE": score += 20
 
 func acceptContract(CID, node):
 	var HTTP = HTTPRequest.new()

@@ -9,6 +9,7 @@ func _ready():
 	Agent.connect("requestFleetUpdate",self,"show")
 	Agent.connect("PurchaseCargo",self,"show")
 	Agent.connect("JettisonCargo",self,"show")
+	Agent.connect("TransferCargo",self,"show")
 	Agent.connect("SellCargo",self,"show")
 	Agent.connect("NavigationFinished",self,"show")
 	Agent.connect("DockFinished",self,"show")
@@ -52,12 +53,12 @@ func show(arg = null):
 						ship["fuel"] = arg["data"]["fuel"]
 						print("dataCached[rFuel]",arg["data"]["transaction"])
 					Agent.emit_signal("fleetUpdated")
-		#jettisonCargo returns cacheable data
+		#transferCargo and jettisonCargo returns cacheable data
 		elif arg.has("data") and arg["data"].has("cargo"):
 			for ship in Agent._FleetData["data"]:
 				if ship["symbol"] == Agent.focusShip:
 					ship["cargo"] = arg["data"]["cargo"]
-					print("dataCached[jCargo]")
+					print("dataCached[t/jCargo]")
 					Agent.emit_signal("fleetUpdated")
 		else:
 			setShips()

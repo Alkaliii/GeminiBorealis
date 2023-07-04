@@ -29,6 +29,8 @@ var possibleFocus = ["PRECIOUS_STONES","QUARTZ_SAND","SILICON_CRYSTALS",
 "MOUNT_MINING_LASER_III","MOUNT_LASER_CANNON_I","MOUNT_MISSILE_LAUNCHER_I",
 "MOUNT_TURRET_I"]
 var focusList : Array
+var cooldown = null
+var lastUsedSurvey = null
 
 func _ready():
 	set_action_name("Extract_Cycle")
@@ -64,6 +66,12 @@ var cur = states.IDLE
 func execute(relevant, delta) -> bool:
 	match cur:
 		states.IDLE:
+			if Agent.cooldowns.has(symbol):
+				cooldown = Agent.cooldowns[symbol]
+				if cooldown > Time.get_unix_time_from_system(): return false
+				elif cooldown < Time.get_unix_time_from_system():
+					cooldown = null
+			
 			if Automation._FleetData[symbol]["nav"]["status"] == "IN_ORBIT":
 				cur = states.EXTRACTING
 			elif Automation._FleetData[symbol]["nav"]["status"] == "DOCKED":
@@ -122,7 +130,9 @@ func extract(relevant):
 	var req = _POST_REQUEST_OBj.duplicate()
 	req.Callback = "_on_extract_resources"
 	req.API_ext = str("my/ships/",symbol,"/extract")
-	if survey != null: req.data = {"survey":survey}
+	if survey != null: 
+		req.data = {"survey":survey}
+		lastUsedSurvey = survey
 	req.RID = str(officer,"-EXTRACT_RESOURCES"," : ",symbol,Time.get_datetime_string_from_system())
 	
 	Automation.callQueue.push_back(req)
@@ -147,6 +157,9 @@ func _on_extract_resources(result, response_code, headers, body):
 		#Agent.cooldowns[symbol] = PARSE["data"]["cooldown"]["expiration"]
 		yield(get_tree(),"idle_frame")
 		cur = states.COOLING_DOWN
+	else:
+		Agent.surveys.erase(lastUsedSurvey["signature"])
+		cur = states.IDLE
 
 func orbit(relevant):
 	var req = _POST_REQUEST_OBj.duplicate()
